@@ -15,6 +15,7 @@ import ObjectsFem
 import FemGui
 from PySide import QtCore, QtGui
 
+from freecad.chronoConcrete.ldpmMeshing.particleGeneration import ParticleGen
 
 
 class inputLDPMwindow:
@@ -38,16 +39,12 @@ class inputLDPMwindow:
         self.form[2].setWindowTitle("Aggregate")        
         self.form[3].setWindowTitle("Mix Design")
         self.form[4].setWindowTitle("Additional Parameters")
-        self.form[5].setWindowTitle("Model Generation")        
+        self.form[5].setWindowTitle("Model Generation") 
 
+    
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
+        QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generation)
 
-
-
-
-
-        QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generationRectangularPrism)
-        self.form[5].progressBar.setValue(10) 
 
 
 
@@ -64,17 +61,23 @@ class inputLDPMwindow:
 
 
 
+    def getStandardButtons(self):
+        # only show a close button
+        # def accept() in no longer needed, since there is no OK button
+        return int(0)
+
+
 
     def openFile(self):
 
-        path = App.ConfigGet("UserAppData")
+        path = App.ConfigGet("UserHomePath")
 
         OpenName = ""
         try:
-            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file txt"),path,             "*.txt") # PyQt4
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file parameter file"),path,             "*.para") # PyQt4
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         except Exception:
-            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file txt", path,             "*.txt") #PySide
+            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file parameter file", path,             "*.para") #PySide
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         if OpenName == "":                                                            # if the name file are not selected then Abord process
             App.Console.PrintMessage("Process aborted"+"\n")
@@ -105,39 +108,34 @@ class inputLDPMwindow:
 
 
 
-
-
-
-
-
-
-    def generationRectangularPrism(self):
-
-
-        width = self.form[1].geoWidth.value()
-        length = self.form[1].geoLength.value()
-        height = self.form[1].geoHeight.value()
-
-
-
-
+    def genGeometry(self,dimensions,geoType,geoName):
 
 
         # Store document
         docGui = Gui.activeDocument()
 
-        # Create a box and name it
-        geo = App.ActiveDocument.addObject("Part::Box",self.geoName)
-        geo.Label = self.geoName
-        geo.Height = height
-        geo.Width = width 
-        geo.Length = length
+
+
+
+        if geoType == "Box":
+
+            # Create a box and name it
+            geo = App.ActiveDocument.addObject("Part::Box",geoName)
+            geo.Label = geoName
+            geo.Height = dimensions[0]
+            geo.Width = dimensions[1] 
+            geo.Length = dimensions[2]
+
+
         App.ActiveDocument.recompute()
 
         # Set view
         docGui.activeView().viewAxonometric()
         Gui.SendMsgToActiveView("ViewFit")
         Gui.runCommand('Std_DrawStyle',6)
+
+
+    def genAnalysis(self):
 
         # Analysis
         analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,self.elementType)
@@ -157,6 +155,10 @@ class inputLDPMwindow:
         material_object.Material = mat
         analysis_object.addObject(material_object)
 
+
+    def genSurfMesh(self):
+
+
         # Set up Gmsh
         femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, self.meshName)
         App.ActiveDocument.getObject(self.meshName).CharacteristicLengthMin = self.minAgg
@@ -174,11 +176,70 @@ class inputLDPMwindow:
 
 
 
+    def generation(self):
+
+        geoType = self.form[1].PrimitiveTypeCB.currentText()
+        
+        dimensions = []
+
+        if geoType == "Box":
+            dimensions.append(self.form[1].boxWidth.text())
+            dimensions.append(self.form[1].boxLength.text())
+            dimensions.append(self.form[1].boxHeight.text())
+
+
+
+        genGeo = self.genGeometry(dimensions,geoType,self.geoName)
 
 
 
 
-    def accept(self):
+
+
+
+        genAna = genAnalysis()
+
+        genSuf = genSurfMesh()
+
+
+
+
+
+
+
+
+        self.form[5].progressBar.setValue(10) 
+
+
+
+
+        gen = ParticleGen(maxAggD,minAggD,fullerCoef,wcRatio,\
+            cementC,volFracAir,q,maxIter,geoFile,aggOffsetCoeff,densityWater,\
+            densityCement,dataType,output,verbose,fibers,dFiber,lFiber,vFiber,\
+            fiberFile,multiMaterial,materialFile,maxGrainD,minGrainD,\
+            grainFullerCoef,maxBinderD,minBinderD,binderFullerCoef,maxITZD,minITZD,\
+            ITZFullerCoef,rebar,rebarFile1,dRebar1,rebarFile2,dRebar2,rebarFile3,dRebar3,edgeElements,\
+            surfaceExtLength,fiberOrientation,orientationStrength,sieveCurveDiameter,sieveCurvePassing,\
+            grainSieveCurveDiameter,grainSieveCurvePassing,binderSieveCurveDiameter,\
+            binderSieveCurvePassing,itzSieveCurveDiameter,itzSieveCurvePassing,materialRule,\
+            cementStructure,cementmaterialFile,cementStructureResolution,numberofPhases,\
+            maxPoresD,minPoresD,PoresFullerCoef,PoresSieveCurveDiameter,PoresSieveCurvePassing,\
+            maxClinkerD,minClinkerD,ClinkerFullerCoef,ClinkerSieveCurveDiameter,ClinkerSieveCurvePassing,\
+            maxCHD,minCHD,CHFullerCoef,CHSieveCurveDiameter,CHSieveCurvePassing,\
+            maxCSH_LDD,minCSH_LDD,CSH_LDFullerCoef,CSH_LDSieveCurveDiameter,CSH_LDSieveCurvePassing,\
+            maxCSH_HDD,minCSH_HDD,CSH_HDFullerCoef,CSH_HDSieveCurveDiameter,CSH_HDSieveCurvePassing,\
+            Mean_CSH_LD,Mean_CSH_HD,SDev_CSH_LD,SDev_CSH_HD,Alphac,SaturatedCSHDensity,\
+            caeFile,periodic,prismX,prismY,prismZ,randomField,cutFiber,outputUnits,numIncrements,numCPU)
+
+
+
+
+
+
+
+
+
+
 
         # Switch to FEM GUI
         Gui.Control.closeDialog()
@@ -187,8 +248,12 @@ class inputLDPMwindow:
         FemGui.setActiveAnalysis(App.activeDocument().getObject(self.elementType))
         Gui.Selection.clearSelection()
         Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.meshName)
+
+
         
 
+    def reject(self):
+        Gui.ActiveDocument.resetEdit()
 
 
 class inputLDPM_Class():

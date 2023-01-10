@@ -22,7 +22,7 @@ class ChronoWorkbench(Gui.Workbench):
 
     MenuText = "Chrono Workbench"
     ToolTip = "A workbench for building LDPM, CSL, DEM, and SPH models for Project Chrono"
-    Icon = os.path.join(ICONPATH, "template_resource.svg")
+    Icon = os.path.join(ICONPATH, "ldpm.svg")
     toolbox = ["inputLDPM"] # a list of command names 
 
 
