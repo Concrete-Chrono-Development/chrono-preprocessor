@@ -21,13 +21,15 @@ from freecad.chronoConcrete.ldpmMeshing.particleGeneration import ParticleGen
 class inputLDPMwindow:
     def __init__(self):
 
+        # Load Button Icon
+        #self.icon = os.path.join(ICONPATH, "ldpm.svg")
 
-        self.icon = os.path.join(ICONPATH, "ldpm.svg")
+        # Load UI's for Side Panel
         ui_file_A = os.path.join(GUIPATH, "ldpmMeshProps.ui")
         ui_file_B = os.path.join(GUIPATH, "geometry.ui")
-        ui_file_C = os.path.join(GUIPATH, "aggregate.ui")   
-        ui_file_D = os.path.join(GUIPATH, "mixDesign.ui")
-        ui_file_E = os.path.join(GUIPATH, "additionalParameters.ui")
+        ui_file_C = os.path.join(GUIPATH, "ldpmParticles.ui")   
+        ui_file_D = os.path.join(GUIPATH, "ldpmMixDesign.ui")
+        ui_file_E = os.path.join(GUIPATH, "ldpmAdditionalPara.ui")
         ui_file_F = os.path.join(GUIPATH, "generation.ui")
         a = Gui.PySideUic.loadUi(ui_file_A)
         b = Gui.PySideUic.loadUi(ui_file_B)
@@ -35,44 +37,112 @@ class inputLDPMwindow:
         d = Gui.PySideUic.loadUi(ui_file_D)          
         e = Gui.PySideUic.loadUi(ui_file_E)        
         f = Gui.PySideUic.loadUi(ui_file_F)
+
+        # Label, Load Icons, and Initialize Panels
         self.form = [a, b, c, d, e, f]
         self.form[0].setWindowTitle("LDPM Meshing Settings")
         self.form[1].setWindowTitle("Geometry")
-        self.form[2].setWindowTitle("Aggregate")        
+        self.form[2].setWindowTitle("Particles")        
         self.form[3].setWindowTitle("Mix Design")
         self.form[4].setWindowTitle("Additional Parameters")
         self.form[5].setWindowTitle("Model Generation") 
 
-        self.form[0].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
-        self.form[1].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
-        self.form[2].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
-        self.form[3].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
-        self.form[4].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
-        self.form[5].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[0].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_MaterialMechanicalNonlinear.svg"))))
+        self.form[1].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "PartDesign_AdditiveBox.svg"))))
+        self.form[2].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "Arch_Material_Group.svg"))))
+        self.form[3].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_ConstraintFlowVelocity.svg"))))
+        self.form[4].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_CreateNodesSet.svg"))))
+        self.form[5].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "ldpm.svg"))))
 
+
+
+        # Connect Buttons
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
+
+
+        # Run generation
         QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generation)
 
 
 
-
-
-        self.minAgg = self.form[2].minAgg.value()
-        self.maxAgg = self.form[2].maxAgg.value()
+    def readInputs(self):
 
 
 
-        self.elementType = "LDPM"
-        self.constitutiveEQ = "quasiBrittle"
-        self.meshName = self.elementType + "mesh"
-        self.geoName = self.elementType + "geo"
+        # Generation Type
+        elementType         = "LDPM"
+        meshName            = elementType + "mesh"
+        geoName             = elementType + "geo"
+
+
+        # Basic Settings
+        if self.form[0].inelasticQuasi.isChecked():
+            constitutiveEQ  = "quasiBrittle"
+        else:
+            constitutiveEQ  = "elastic"
+        paramLocation       = self.form[0].paramLocation.text()
+        numCPU              = self.form[0].numCPUbox.value()
+        numIncrements       = self.form[0].numPIncBox.value()
+
+        # Geometry Settings
+        geoType             = self.form[1].geometryType.currentText()
+        dimensions = []
+        if geoType == "Box":
+            dimensions.append(self.form[1].boxLength.text())
+            dimensions.append(self.form[1].boxWidth.text())
+            dimensions.append(self.form[1].boxHeight.text())
+        if geoType == "Cylinder":
+            dimensions.append(self.form[1].cylinderHeight.text())
+            dimensions.append(self.form[1].cylinderRadius.text())
+        if geoType == "Cone":
+            dimensions.append(self.form[1].coneHeight.text())
+            dimensions.append(self.form[1].coneRadius1.text())
+            dimensions.append(self.form[1].coneRadius2.text())
+        if geoType == "Sphere":
+            dimensions.append(self.form[1].sphereRadius.text())
+        if geoType == "Ellipsoid":
+            dimensions.append(self.form[1].ellipsoidRadius1.text())
+            dimensions.append(self.form[1].ellipsoidRadius2.text())
+            dimensions.append(self.form[1].ellipsoidRadius3.text())
+            dimensions.append(self.form[1].ellipsoidAngle1.text())
+            dimensions.append(self.form[1].ellipsoidAngle2.text())
+            dimensions.append(self.form[1].ellipsoidAngle3.text())
+        if geoType == "Prism":
+            dimensions.append(self.form[1].prismCircumradius.text())
+            dimensions.append(self.form[1].prismHeight.text())
+            dimensions.append(self.form[1].prismPolygon.text())
+
+        # Particle Settings
+        minPar              = self.form[2].minPar.value()
+        maxPar              = self.form[2].maxPar.value()        
+        fullerCoef          = self.form[2].fullerCoef.value()  
+        sieveCurveDiameter  = self.form[2].sieveDiameters.text()        
+        sieveCurvePassing   = self.form[2].sievePassing.text()   
+
+        # Mix Design
+        wcRatio             = self.form[3].wcRatio.value()
+        densityWater        = self.form[3].waterDensity.text()
+        cementC             = self.form[3].cementContent.text()
+        densityCement       = self.form[3].cementDensity.text()
+        airFrac1            = self.form[3].airFrac.value()
+        airFrac2            = self.form[3].airFracArb.value()
+ 
+        # Additional Parameters
+        # ... Coming Soon ...
+
+
+        return elementType, meshName, geoName,\
+            constitutiveEQ, paramLocation, numCPU, numIncrements,\
+            geoType, dimensions,\
+            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
+            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2
 
 
 
     def getStandardButtons(self):
         # only show a close button
         # def accept() in no longer needed, since there is no OK button
-        return int(0)
+        return int(QtGui.QDialogButtonBox.Close)
 
 
 
@@ -119,8 +189,7 @@ class inputLDPMwindow:
     def genGeometry(self,dimensions,geoType,geoName):
 
 
-        # Store document
-        docGui = Gui.activeDocument()
+
 
 
 
@@ -137,16 +206,12 @@ class inputLDPMwindow:
 
         App.ActiveDocument.recompute()
 
-        # Set view
-        docGui.activeView().viewAxonometric()
-        Gui.SendMsgToActiveView("ViewFit")
-        Gui.runCommand('Std_DrawStyle',6)
 
 
-    def genAnalysis(self):
+    def genAnalysis(self,elementType,constitutiveEQ):
 
         # Analysis
-        analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,self.elementType)
+        analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,elementType)
 
         # Solver 
         solver_object = ObjectsFem.makeSolverCalculixCcxTools(App.ActiveDocument, "Project Chrono")
@@ -157,24 +222,26 @@ class inputLDPMwindow:
         analysis_object.addObject(solver_object)
 
         # Store Material
-        material_object = ObjectsFem.makeMaterialSolid(App.ActiveDocument, self.constitutiveEQ)
+        material_object = ObjectsFem.makeMaterialSolid(App.ActiveDocument, constitutiveEQ)
         mat = material_object.Material
-        mat['Name'] = self.constitutiveEQ
+        mat['Name'] = constitutiveEQ
         material_object.Material = mat
         analysis_object.addObject(material_object)
 
 
-    def genSurfMesh(self):
+    def genSurfMesh(self,elementType,geoName,meshName,minPar,maxPar):
 
+   
 
         # Set up Gmsh
-        femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, self.meshName)
-        App.ActiveDocument.getObject(self.meshName).CharacteristicLengthMin = self.minAgg
-        App.ActiveDocument.getObject(self.meshName).CharacteristicLengthMax = self.maxAgg
-        App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(self.geoName)
+        femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName)
+        App.ActiveDocument.getObject(meshName).CharacteristicLengthMin = minPar
+        App.ActiveDocument.getObject(meshName).CharacteristicLengthMax = maxPar
+        App.ActiveDocument.getObject(meshName).ElementOrder = u"1st"
+        App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(geoName)
         App.ActiveDocument.recompute()
-        App.ActiveDocument.getObject(self.meshName).adjustRelativeLinks(App.ActiveDocument.getObject(self.elementType))
-        App.ActiveDocument.getObject(self.elementType).addObject(App.ActiveDocument.getObject(self.meshName))
+        App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(elementType))
+        App.ActiveDocument.getObject(elementType).addObject(App.ActiveDocument.getObject(meshName))
 
         # Run Gmsh
         gmsh_mesh = gmsh(femmesh_obj)
@@ -182,46 +249,83 @@ class inputLDPMwindow:
         print(error)
         App.ActiveDocument.recompute()
 
+        femmesh = App.ActiveDocument.getObject(meshName).FemMesh
+        #femmesh.Nodes[1]  # the first node, for all nodes ues femmesh.Nodes
+        #femmesh.Volumes[0]  # the first volume, for all volumes use femmesh.Volumes
+        #femmesh.getElementNodes(149) # nodes of the first volume, for all volumes use a for loop
+
+        for v in femmesh.Edges:
+            print(v) # Note that this starts after edges so number is not 1
+            print(femmesh.getElementNodes(v))
+
+        for v in femmesh.Faces:
+            print(v) # Note that this starts after edges so number is not 1
+            print(femmesh.getElementNodes(v))
 
 
     def generation(self):
 
-        geoType = self.form[1].PrimitiveTypeCB.currentText()
+        # Store document
+        docGui = Gui.activeDocument()
+
+        # Make new document and set view if does not exisit
+        try:
+            docGui.activeView().viewAxonometric()
+        except:
+            App.newDocument("Unnamed")
+            docGui = Gui.activeDocument()
+            docGui.activeView().viewAxonometric()
+
         
-        dimensions = []
+        # Read in inputs from input panel
+        [elementType, meshName, geoName,\
+            constitutiveEQ, paramLocation, numCPU, numIncrements,\
+            geoType, dimensions,\
+            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
+            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2] = self.readInputs()
+        self.form[5].progressBar.setValue(1) 
 
-        if geoType == "Box":
-            dimensions.append(self.form[1].boxWidth.text())
-            dimensions.append(self.form[1].boxLength.text())
-            dimensions.append(self.form[1].boxHeight.text())
+        # Generate geometry
+        print("Generating geometry")
+        genGeo = self.genGeometry(dimensions,geoType,geoName)
+        self.form[5].progressBar.setValue(2) 
 
-
-
-        genGeo = self.genGeometry(dimensions,geoType,self.geoName)
-
-
-
-
-
-
-
-        genAna = genAnalysis()
-
-        genSuf = genSurfMesh()
+        # Set view
+        docGui.activeView().viewAxonometric()
+        Gui.SendMsgToActiveView("ViewFit")
+        Gui.runCommand('Std_DrawStyle',6)
 
 
+        # Generate analysis objects
+        genAna = self.genAnalysis(elementType,constitutiveEQ)
+        self.form[5].progressBar.setValue(3) 
 
 
-
-
-
-
-        self.form[5].progressBar.setValue(10) 
-
+        # Generate surface mesh
+        print("Generating surface mesh")
+        genSuf = self.genSurfMesh(elementType,geoName,meshName,minPar,maxPar)
+        self.form[5].progressBar.setValue(5) 
 
 
 
-        gen = ParticleGen(maxAggD,minAggD,fullerCoef,wcRatio,\
+
+
+
+
+
+        feminout.importVTKResults.export(ExportObjectList,FilePath)
+
+        # Make object to store VTK files
+        vtk_object = ObjectsFem.makePostVtkResult(doc,base_result,name = "VTK Files")
+
+
+
+
+
+
+
+
+        gen = ParticleGen(maxPar,minPar,fullerCoef,wcRatio,\
             cementC,volFracAir,q,maxIter,geoFile,aggOffsetCoeff,densityWater,\
             densityCement,dataType,output,verbose,fibers,dFiber,lFiber,vFiber,\
             fiberFile,multiMaterial,materialFile,maxGrainD,minGrainD,\
@@ -259,9 +363,16 @@ class inputLDPMwindow:
 
 
         
-
+    # What to do when "Close" Button Clicked
     def reject(self):
-        Gui.ActiveDocument.resetEdit()
+         try:
+             Gui.ActiveDocument.resetEdit()
+             Gui.Control.closeDialog()
+         except:
+             Gui.Control.closeDialog()
+
+        
+        
 
 
 class inputLDPM_Class():

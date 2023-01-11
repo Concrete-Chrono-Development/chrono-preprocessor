@@ -19,7 +19,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QComboBox" name="PrimitiveTypeCB">
+    <widget class="QComboBox" name="geometryType">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -93,6 +93,11 @@
       <property name="icon">
        <iconset>
         <normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Custom</string>
       </property>
      </item>
     </widget>
@@ -274,30 +279,17 @@
             <property name="spacing">
              <number>6</number>
             </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="textLabel5">
-              <property name="text">
-               <string>Radius:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="Gui::QuantitySpinBox" name="cylinderRadius" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">mm</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>2.000000000000000</double>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="textLabel6">
               <property name="text">
                <string>Height:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="textLabel5">
+              <property name="text">
+               <string>Radius:</string>
               </property>
              </widget>
             </item>
@@ -314,113 +306,22 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="labelCylinderXSkew">
-              <property name="text">
-               <string>Angle in first direction:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="Gui::QuantitySpinBox" name="cylinderXSkew" native="true">
-              <property name="toolTip">
-               <string>Angle in first direction</string>
-              </property>
+            <item row="0" column="1">
+             <widget class="Gui::QuantitySpinBox" name="cylinderRadius" native="true">
               <property name="keyboardTracking" stdset="0">
                <bool>false</bool>
               </property>
               <property name="unit" stdset="0">
-               <string notr="true">deg</string>
+               <string notr="true">mm</string>
               </property>
-              <property name="minimum" stdset="0">
-               <double>-90.000000000000000</double>
-              </property>
-              <property name="maximum" stdset="0">
-               <double>90.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="labelCylinderYSkew">
-              <property name="text">
-               <string>Angle in second direction:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="Gui::QuantitySpinBox" name="cylinderYSkew" native="true">
-              <property name="toolTip">
-               <string>Angle in second direction</string>
-              </property>
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="minimum" stdset="0">
-               <double>-90.000000000000000</double>
-              </property>
-              <property name="maximum" stdset="0">
-               <double>90.000000000000000</double>
+              <property name="value" stdset="0">
+               <double>2.000000000000000</double>
               </property>
              </widget>
             </item>
            </layout>
           </item>
           <item row="1" column="0">
-           <widget class="Line" name="line_2">
-            <property name="frameShape">
-             <enum>QFrame::HLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <layout class="QGridLayout" name="gridLayout_7">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="minimumSize">
-               <size>
-                <width>123</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Rotation angle:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="Gui::QuantitySpinBox" name="cylinderAngle" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>360.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0">
            <spacer>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -455,6 +356,22 @@
           <property name="spacing">
            <number>6</number>
           </property>
+          <item row="1" column="0">
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>31</width>
+              <height>91</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="0" column="0">
            <layout class="QGridLayout">
             <property name="leftMargin">
@@ -534,68 +451,6 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="0">
-           <widget class="Line" name="line_3">
-            <property name="frameShape">
-             <enum>QFrame::HLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <layout class="QGridLayout" name="gridLayout_12">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Angle:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="Gui::QuantitySpinBox" name="coneAngle" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>360.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Expanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>31</width>
-              <height>91</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="Page4_sphere">
@@ -655,104 +510,6 @@
            </layout>
           </item>
           <item row="1" column="0">
-           <widget class="Line" name="line">
-            <property name="frameShape">
-             <enum>QFrame::HLine</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Sunken</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <layout class="QGridLayout">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>U parameter:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="Gui::QuantitySpinBox" name="sphereAngle3" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>360.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>V parameters:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="Gui::QuantitySpinBox" name="sphereAngle1" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>-90.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <spacer>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>81</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="2">
-             <widget class="Gui::QuantitySpinBox" name="sphereAngle2" native="true">
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="value" stdset="0">
-               <double>90.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0">
            <spacer>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1020,6 +777,13 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelPrismCircumradius">
+              <property name="text">
+               <string>Circumradius:</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="2">
              <widget class="QSpinBox" name="prismPolygon">
               <property name="keyboardTracking">
@@ -1033,13 +797,6 @@
               </property>
               <property name="value">
                <number>6</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="labelPrismCircumradius">
-              <property name="text">
-               <string>Circumradius:</string>
               </property>
              </widget>
             </item>
@@ -1076,58 +833,6 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="labelPrismXSkew">
-              <property name="text">
-               <string>Angle in first direction:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="Gui::QuantitySpinBox" name="prismXSkew" native="true">
-              <property name="toolTip">
-               <string>Angle in first direction</string>
-              </property>
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="minimum" stdset="0">
-               <double>-90.000000000000000</double>
-              </property>
-              <property name="maximum" stdset="0">
-               <double>90.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="labelPrismYSkew">
-              <property name="text">
-               <string>Angle in second direction:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="Gui::QuantitySpinBox" name="prismYSkew" native="true">
-              <property name="toolTip">
-               <string>Angle in second direction</string>
-              </property>
-              <property name="keyboardTracking" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="unit" stdset="0">
-               <string notr="true">deg</string>
-              </property>
-              <property name="minimum" stdset="0">
-               <double>-90.000000000000000</double>
-              </property>
-              <property name="maximum" stdset="0">
-               <double>90.000000000000000</double>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item row="1" column="0">
@@ -1161,21 +866,16 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>PrimitiveTypeCB</tabstop>
+  <tabstop>geometryType</tabstop>
   <tabstop>boxLength</tabstop>
   <tabstop>boxWidth</tabstop>
   <tabstop>boxHeight</tabstop>
   <tabstop>cylinderRadius</tabstop>
   <tabstop>cylinderHeight</tabstop>
-  <tabstop>cylinderAngle</tabstop>
   <tabstop>coneRadius1</tabstop>
   <tabstop>coneRadius2</tabstop>
   <tabstop>coneHeight</tabstop>
-  <tabstop>coneAngle</tabstop>
   <tabstop>sphereRadius</tabstop>
-  <tabstop>sphereAngle3</tabstop>
-  <tabstop>sphereAngle1</tabstop>
-  <tabstop>sphereAngle2</tabstop>
   <tabstop>ellipsoidRadius1</tabstop>
   <tabstop>ellipsoidRadius2</tabstop>
   <tabstop>ellipsoidRadius3</tabstop>
@@ -1191,7 +891,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>PrimitiveTypeCB</sender>
+   <sender>geometryType</sender>
    <signal>activated(int)</signal>
    <receiver>widgetStack2</receiver>
    <slot>setCurrentIndex(int)</slot>

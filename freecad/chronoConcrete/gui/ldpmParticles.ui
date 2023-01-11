@@ -30,7 +30,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QDoubleSpinBox" name="minAgg">
+       <widget class="QDoubleSpinBox" name="minPar">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -57,7 +57,7 @@
       <item>
        <widget class="QLabel" name="label_9">
         <property name="text">
-         <string>Minimum Aggregate Size [mm]</string>
+         <string>Minimum Particle Size [mm]</string>
         </property>
        </widget>
       </item>
@@ -66,7 +66,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QDoubleSpinBox" name="maxAgg">
+       <widget class="QDoubleSpinBox" name="maxPar">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -93,7 +93,7 @@
       <item>
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>Maximum Aggregate Size [mm]</string>
+         <string>Maximum Particle Size [mm]</string>
         </property>
        </widget>
       </item>
@@ -102,7 +102,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+       <widget class="QDoubleSpinBox" name="fullerCoef">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -138,7 +138,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="sieveDiameters">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -180,7 +180,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="sievePassing">
         <property name="enabled">
          <bool>false</bool>
         </property>
