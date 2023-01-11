@@ -21,6 +21,8 @@ from freecad.chronoConcrete.ldpmMeshing.particleGeneration import ParticleGen
 class inputLDPMwindow:
     def __init__(self):
 
+
+        self.icon = os.path.join(ICONPATH, "ldpm.svg")
         ui_file_A = os.path.join(GUIPATH, "ldpmMeshProps.ui")
         ui_file_B = os.path.join(GUIPATH, "geometry.ui")
         ui_file_C = os.path.join(GUIPATH, "aggregate.ui")   
@@ -41,7 +43,13 @@ class inputLDPMwindow:
         self.form[4].setWindowTitle("Additional Parameters")
         self.form[5].setWindowTitle("Model Generation") 
 
-    
+        self.form[0].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[1].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[2].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[3].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[4].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+        self.form[5].setWindowIcon(QtGui.QIcon.fromTheme("cancel",QtGui.QIcon(":/icons/parametric/Part_Box_Parametric.svg")))
+
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
         QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generation)
 
@@ -265,6 +273,7 @@ class inputLDPM_Class():
                 "ToolTip" : "Generation of a standard geometry LDPM"}
 
     def Activated(self):
+
         Gui.Control.showDialog(inputLDPMwindow())
 
         return

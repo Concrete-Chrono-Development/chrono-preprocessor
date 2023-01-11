@@ -39,6 +39,9 @@
       <property name="enabled">
        <bool>false</bool>
       </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(182, 182, 182);</string>
+      </property>
       <property name="title">
        <string>Read Existing Parameter File</string>
       </property>
@@ -81,7 +84,7 @@
        <bool>false</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">border-color: rgb(182, 182, 182);</string>
       </property>
       <property name="title">
        <string>Constitutive Behavior Type</string>
@@ -117,6 +120,9 @@
      <widget class="QGroupBox" name="gb_analysis_type_2">
       <property name="enabled">
        <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-color: rgb(182, 182, 182);</string>
       </property>
       <property name="title">
        <string>Placement Parameters</string>

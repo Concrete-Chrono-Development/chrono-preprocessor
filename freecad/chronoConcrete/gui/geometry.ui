@@ -100,7 +100,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="styleSheet">
-      <string notr="true">border-color: rgb(255, 85, 0);</string>
+      <string notr="true">border-color: rgb(182, 182, 182);</string>
      </property>
      <property name="title">
       <string>Parameter</string>
