@@ -10,13 +10,16 @@ import MeshPartGui, FreeCADGui
 import MeshPart
 import Mesh, Part, PartGui
 import MaterialEditor
-from femmesh.gmshtools import GmshTools as gmsh
+
 import ObjectsFem
 import FemGui
 from PySide import QtCore, QtGui
 
 from freecad.chronoConcrete.ldpmMeshing.particleGeneration import ParticleGen
+from freecad.chronoConcrete.gui.readInputsLDPM import readInputs
 
+from freecad.chronoConcrete.generation.genAnalysis import genAnalysis
+from freecad.chronoConcrete.generation.genSurfaceMesh import genSurfMesh
 
 class inputLDPMwindow:
     def __init__(self):
@@ -64,78 +67,6 @@ class inputLDPMwindow:
         QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generation)
 
 
-
-    def readInputs(self):
-
-
-
-        # Generation Type
-        elementType         = "LDPM"
-        meshName            = elementType + "mesh"
-        geoName             = elementType + "geo"
-
-
-        # Basic Settings
-        if self.form[0].inelasticQuasi.isChecked():
-            constitutiveEQ  = "quasiBrittle"
-        else:
-            constitutiveEQ  = "elastic"
-        paramLocation       = self.form[0].paramLocation.text()
-        numCPU              = self.form[0].numCPUbox.value()
-        numIncrements       = self.form[0].numPIncBox.value()
-
-        # Geometry Settings
-        geoType             = self.form[1].geometryType.currentText()
-        dimensions = []
-        if geoType == "Box":
-            dimensions.append(self.form[1].boxLength.text())
-            dimensions.append(self.form[1].boxWidth.text())
-            dimensions.append(self.form[1].boxHeight.text())
-        if geoType == "Cylinder":
-            dimensions.append(self.form[1].cylinderHeight.text())
-            dimensions.append(self.form[1].cylinderRadius.text())
-        if geoType == "Cone":
-            dimensions.append(self.form[1].coneHeight.text())
-            dimensions.append(self.form[1].coneRadius1.text())
-            dimensions.append(self.form[1].coneRadius2.text())
-        if geoType == "Sphere":
-            dimensions.append(self.form[1].sphereRadius.text())
-        if geoType == "Ellipsoid":
-            dimensions.append(self.form[1].ellipsoidRadius1.text())
-            dimensions.append(self.form[1].ellipsoidRadius2.text())
-            dimensions.append(self.form[1].ellipsoidRadius3.text())
-            dimensions.append(self.form[1].ellipsoidAngle1.text())
-            dimensions.append(self.form[1].ellipsoidAngle2.text())
-            dimensions.append(self.form[1].ellipsoidAngle3.text())
-        if geoType == "Prism":
-            dimensions.append(self.form[1].prismCircumradius.text())
-            dimensions.append(self.form[1].prismHeight.text())
-            dimensions.append(self.form[1].prismPolygon.text())
-
-        # Particle Settings
-        minPar              = self.form[2].minPar.value()
-        maxPar              = self.form[2].maxPar.value()        
-        fullerCoef          = self.form[2].fullerCoef.value()  
-        sieveCurveDiameter  = self.form[2].sieveDiameters.text()        
-        sieveCurvePassing   = self.form[2].sievePassing.text()   
-
-        # Mix Design
-        wcRatio             = self.form[3].wcRatio.value()
-        densityWater        = self.form[3].waterDensity.text()
-        cementC             = self.form[3].cementContent.text()
-        densityCement       = self.form[3].cementDensity.text()
-        airFrac1            = self.form[3].airFrac.value()
-        airFrac2            = self.form[3].airFracArb.value()
- 
-        # Additional Parameters
-        # ... Coming Soon ...
-
-
-        return elementType, meshName, geoName,\
-            constitutiveEQ, paramLocation, numCPU, numIncrements,\
-            geoType, dimensions,\
-            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
-            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2
 
 
 
@@ -208,59 +139,10 @@ class inputLDPMwindow:
 
 
 
-    def genAnalysis(self,elementType,constitutiveEQ):
-
-        # Analysis
-        analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,elementType)
-
-        # Solver 
-        solver_object = ObjectsFem.makeSolverCalculixCcxTools(App.ActiveDocument, "Project Chrono")
-        solver_object.GeometricalNonlinearity = 'linear'
-        solver_object.ThermoMechSteadyState = True
-        solver_object.MatrixSolverType = 'default'
-        solver_object.IterationsControlParameterTimeUse = False
-        analysis_object.addObject(solver_object)
-
-        # Store Material
-        material_object = ObjectsFem.makeMaterialSolid(App.ActiveDocument, constitutiveEQ)
-        mat = material_object.Material
-        mat['Name'] = constitutiveEQ
-        material_object.Material = mat
-        analysis_object.addObject(material_object)
 
 
-    def genSurfMesh(self,elementType,geoName,meshName,minPar,maxPar):
 
-   
 
-        # Set up Gmsh
-        femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName)
-        App.ActiveDocument.getObject(meshName).CharacteristicLengthMin = minPar
-        App.ActiveDocument.getObject(meshName).CharacteristicLengthMax = maxPar
-        App.ActiveDocument.getObject(meshName).ElementOrder = u"1st"
-        App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(geoName)
-        App.ActiveDocument.recompute()
-        App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(elementType))
-        App.ActiveDocument.getObject(elementType).addObject(App.ActiveDocument.getObject(meshName))
-
-        # Run Gmsh
-        gmsh_mesh = gmsh(femmesh_obj)
-        error = gmsh_mesh.create_mesh()
-        print(error)
-        App.ActiveDocument.recompute()
-
-        femmesh = App.ActiveDocument.getObject(meshName).FemMesh
-        #femmesh.Nodes[1]  # the first node, for all nodes ues femmesh.Nodes
-        #femmesh.Volumes[0]  # the first volume, for all volumes use femmesh.Volumes
-        #femmesh.getElementNodes(149) # nodes of the first volume, for all volumes use a for loop
-
-        for v in femmesh.Edges:
-            print(v) # Note that this starts after edges so number is not 1
-            print(femmesh.getElementNodes(v))
-
-        for v in femmesh.Faces:
-            print(v) # Note that this starts after edges so number is not 1
-            print(femmesh.getElementNodes(v))
 
 
     def generation(self):
@@ -276,13 +158,13 @@ class inputLDPMwindow:
             docGui = Gui.activeDocument()
             docGui.activeView().viewAxonometric()
 
-        
+
         # Read in inputs from input panel
         [elementType, meshName, geoName,\
             constitutiveEQ, paramLocation, numCPU, numIncrements,\
             geoType, dimensions,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
-            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2] = self.readInputs()
+            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2] = readInputs(self.form)
         self.form[5].progressBar.setValue(1) 
 
         # Generate geometry
@@ -297,13 +179,13 @@ class inputLDPMwindow:
 
 
         # Generate analysis objects
-        genAna = self.genAnalysis(elementType,constitutiveEQ)
+        genAna = genAnalysis(elementType,constitutiveEQ)
         self.form[5].progressBar.setValue(3) 
 
 
         # Generate surface mesh
         print("Generating surface mesh")
-        genSuf = self.genSurfMesh(elementType,geoName,meshName,minPar,maxPar)
+        genSuf = genSurfMesh(elementType,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
 

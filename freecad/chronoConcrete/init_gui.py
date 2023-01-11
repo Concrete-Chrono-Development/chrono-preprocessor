@@ -9,7 +9,7 @@ from freecad.chronoConcrete import ICONPATH
 from freecad.chronoConcrete import GUIPATH
 
 # Chrono Scripts to Import
-from freecad.chronoConcrete import inputLDPM
+from freecad.chronoConcrete.gui import inputLDPM
 
 
 
