@@ -5,8 +5,6 @@ def readInputs(form):
 
     # Generation Type
     elementType         = "LDPM"
-    meshName            = elementType + "mesh"
-    geoName             = elementType + "geo"
 
     # Basic Settings
     if form[0].inelasticQuasi.isChecked():
@@ -16,6 +14,7 @@ def readInputs(form):
     paramLocation       = form[0].paramLocation.text()
     numCPU              = form[0].numCPUbox.value()
     numIncrements       = form[0].numPIncBox.value()
+    placementAlg        = form[0].placementAlg.currentText()
 
     # Geometry Settings
     geoType             = form[1].geometryType.currentText()
@@ -56,7 +55,13 @@ def readInputs(form):
     wcRatio             = form[3].wcRatio.value()
     densityWater        = form[3].waterDensity.text()
     cementC             = form[3].cementContent.text()
-    densityCement       = form[3].cementDensity.text()
+    flyashC             = form[3].flyashContent.text()
+    silicaC             = form[3].silicaContent.text()
+    scmC                = form[3].scmContent.text()
+    cementDensity       = form[3].cementDensity.text()
+    flyashDensity       = form[3].flyashDensity.text()
+    silicaDensity       = form[3].silicaDensity.text()
+    scmDensity          = form[3].scmDensity.text()
     airFrac1            = form[3].airFrac.value()
     airFrac2            = form[3].airFracArb.value()
 
@@ -64,8 +69,9 @@ def readInputs(form):
     # ... Coming Soon ...
 
 
-    return elementType, meshName, geoName,\
-        constitutiveEQ, paramLocation, numCPU, numIncrements,\
+    return elementType, \
+        constitutiveEQ, paramLocation, numCPU, numIncrements,placementAlg,\
         geoType, dimensions,\
         minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
-        wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2
+        wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
+        cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2

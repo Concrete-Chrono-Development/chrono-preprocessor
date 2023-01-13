@@ -64,8 +64,8 @@ class inputLDPMwindow:
 
 
         # Run generation
-        QtCore.QObject.connect(self.form[5].pushButton, QtCore.SIGNAL("clicked()"), self.generation)
-
+        QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generation)
+        QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generation)
 
 
 
@@ -120,7 +120,10 @@ class inputLDPMwindow:
     def genGeometry(self,dimensions,geoType,geoName):
 
 
-
+        if all(float(i.strip(" mm")) > 0 for i in dimensions):
+            pass
+        else:
+            raise Exception("One or more geometry dimensions are less than or equal to zero. Please revise.")
 
 
 
@@ -131,7 +134,7 @@ class inputLDPMwindow:
             geo = App.ActiveDocument.addObject("Part::Box",geoName)
             geo.Label = geoName
             geo.Height = dimensions[0]
-            geo.Width = dimensions[1] 
+            geo.Width = dimensions[1]
             geo.Length = dimensions[2]
 
 
@@ -157,15 +160,30 @@ class inputLDPMwindow:
             App.newDocument("Unnamed")
             docGui = Gui.activeDocument()
             docGui.activeView().viewAxonometric()
-
+        Gui.runCommand('Std_PerspectiveCamera',1)
 
         # Read in inputs from input panel
-        [elementType, meshName, geoName,\
-            constitutiveEQ, paramLocation, numCPU, numIncrements,\
+        [elementType, \
+            constitutiveEQ, paramLocation, numCPU, numIncrements,placementAlg,\
             geoType, dimensions,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
-            wcRatio, densityWater, cementC, densityCement, airFrac1, airFrac2] = readInputs(self.form)
+            wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2] = readInputs(self.form)
         self.form[5].progressBar.setValue(1) 
+
+
+        geoName = elementType + "geo"
+        meshName = elementType + "mesh"
+        analysisName = elementType + "ana"
+
+        i = 0
+        while App.activeDocument().getObject(geoName) != None:
+            i = i+1
+            geoName = elementType + "geo" + str(i)
+            meshName = elementType + "mesh" + str(i)
+            analysisName = elementType + "ana" + str(i)
+
+
 
         # Generate geometry
         print("Generating geometry")
@@ -176,16 +194,16 @@ class inputLDPMwindow:
         docGui.activeView().viewAxonometric()
         Gui.SendMsgToActiveView("ViewFit")
         Gui.runCommand('Std_DrawStyle',6)
-
+        Gui.runCommand('Std_PerspectiveCamera',1)
 
         # Generate analysis objects
-        genAna = genAnalysis(elementType,constitutiveEQ)
+        genAna = genAnalysis(analysisName,constitutiveEQ)
         self.form[5].progressBar.setValue(3) 
 
 
         # Generate surface mesh
         print("Generating surface mesh")
-        genSuf = genSurfMesh(elementType,geoName,meshName,minPar,maxPar)
+        genSuf = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
 
@@ -233,8 +251,6 @@ class inputLDPMwindow:
 
 
 
-
-
         # Switch to FEM GUI
         Gui.Control.closeDialog()
         Gui.activateWorkbench("FemWorkbench")
@@ -242,6 +258,13 @@ class inputLDPMwindow:
         FemGui.setActiveAnalysis(App.activeDocument().getObject(self.elementType))
         Gui.Selection.clearSelection()
         Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.meshName)
+
+
+
+
+
+
+
 
 
         
@@ -262,8 +285,8 @@ class inputLDPM_Class():
 
     def GetResources(self):
         return {"Pixmap"  : os.path.join(ICONPATH, "ldpm.svg"), # the name of a svg file available in the resources
-                "MenuText": "LDPM Generation",
-                "ToolTip" : "Generation of a standard geometry LDPM"}
+                "MenuText": "LDPM/CSL Generation",
+                "ToolTip" : "Generation of an LDPM or CSL geometry"}
 
     def Activated(self):
 

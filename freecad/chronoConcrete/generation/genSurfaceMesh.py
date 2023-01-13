@@ -4,7 +4,7 @@ from femmesh.gmshtools import GmshTools as gmsh
 
 
 
-def genSurfMesh(elementType,geoName,meshName,minPar,maxPar):
+def genSurfMesh(analysisName,geoName,meshName,minPar,maxPar):
 
 
     # Set up Gmsh
@@ -14,8 +14,8 @@ def genSurfMesh(elementType,geoName,meshName,minPar,maxPar):
     App.ActiveDocument.getObject(meshName).ElementOrder = u"1st"
     App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(geoName)
     App.ActiveDocument.recompute()
-    App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(elementType))
-    App.ActiveDocument.getObject(elementType).addObject(App.ActiveDocument.getObject(meshName))
+    App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(analysisName))
+    App.ActiveDocument.getObject(analysisName).addObject(App.ActiveDocument.getObject(meshName))
 
     # Run Gmsh
     gmsh_mesh = gmsh(femmesh_obj)

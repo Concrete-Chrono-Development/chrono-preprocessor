@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset resource="../icons.qrc">
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
   </property>
   <property name="sizeGripEnabled" stdset="0">
@@ -1842,7 +1842,7 @@
        <string notr="true">HTC Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_Body_old.svg</normaloff>:/icons/PartDesign_Body_old.svg</iconset>
       </property>
      </item>
@@ -1851,7 +1851,7 @@
        <string notr="true">Fiber-Reinforcement Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
       </property>
      </item>
@@ -1860,7 +1860,7 @@
        <string notr="true">Rebar Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
       </property>
      </item>
@@ -1869,7 +1869,7 @@
        <string notr="true">Periodic Mesh Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_LinearPattern.svg</normaloff>:/icons/PartDesign_LinearPattern.svg</iconset>
       </property>
      </item>
@@ -1878,7 +1878,7 @@
        <string notr="true">Multi-Material Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
       </property>
      </item>
@@ -1887,7 +1887,7 @@
        <string notr="true">Cement-Scale Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
       </property>
      </item>
@@ -1896,7 +1896,7 @@
        <string notr="true">Other Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="icons.qrc">
+       <iconset resource="../icons.qrc">
         <normaloff>:/icons/PartDesign_Clone.svg</normaloff>:/icons/PartDesign_Clone.svg</iconset>
       </property>
      </item>
@@ -1909,7 +1909,7 @@
   <tabstop>PrimitiveTypeCB</tabstop>
  </tabstops>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="../icons.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -3,10 +3,10 @@ import ObjectsFem
 
 
 
-def genAnalysis(elementType,constitutiveEQ):
+def genAnalysis(analysisName,constitutiveEQ):
 
     # Analysis
-    analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,elementType)
+    analysis_object = ObjectsFem.makeAnalysis(App.ActiveDocument,analysisName)
 
     # Solver 
     solver_object = ObjectsFem.makeSolverCalculixCcxTools(App.ActiveDocument, "Project Chrono")
