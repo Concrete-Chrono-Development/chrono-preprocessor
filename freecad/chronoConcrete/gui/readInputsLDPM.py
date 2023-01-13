@@ -45,25 +45,25 @@ def readInputs(form):
         dimensions.append(form[1].prismPolygon.text())
 
     # Particle Settings
-    minPar              = form[2].minPar.value()
-    maxPar              = form[2].maxPar.value()        
-    fullerCoef          = form[2].fullerCoef.value()  
+    minPar              = float(form[2].minPar.value() or 0)
+    maxPar              = float(form[2].maxPar.value() or 0)      
+    fullerCoef          = float(form[2].fullerCoef.value() or 0)  
     sieveCurveDiameter  = form[2].sieveDiameters.text()        
     sieveCurvePassing   = form[2].sievePassing.text()   
 
     # Mix Design
-    wcRatio             = form[3].wcRatio.value()
-    densityWater        = form[3].waterDensity.text()
-    cementC             = form[3].cementContent.text()
-    flyashC             = form[3].flyashContent.text()
-    silicaC             = form[3].silicaContent.text()
-    scmC                = form[3].scmContent.text()
-    cementDensity       = form[3].cementDensity.text()
-    flyashDensity       = form[3].flyashDensity.text()
-    silicaDensity       = form[3].silicaDensity.text()
-    scmDensity          = form[3].scmDensity.text()
-    airFrac1            = form[3].airFrac.value()
-    airFrac2            = form[3].airFracArb.value()
+    wcRatio             = float(form[3].wcRatio.value() or 0)
+    densityWater        = float(form[3].waterDensity.text() or 0)
+    cementC             = float(form[3].cementContent.text() or 0)
+    flyashC             = float(form[3].flyashContent.text() or 0)
+    silicaC             = float(form[3].silicaContent.text() or 0)
+    scmC                = float(form[3].scmContent.text() or 0)
+    cementDensity       = float(form[3].cementDensity.text() or 0)
+    flyashDensity       = float(form[3].flyashDensity.text() or 0)
+    silicaDensity       = float(form[3].silicaDensity.text() or 0)
+    scmDensity          = float(form[3].scmDensity.text() or 0)
+    airFrac1            = float(form[3].airFrac.value() or 0)
+    airFrac2            = float(form[3].airFracArb.value() or 0)
 
     # Additional Parameters
     # ... Coming Soon ...

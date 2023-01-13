@@ -15,11 +15,12 @@ import ObjectsFem
 import FemGui
 from PySide import QtCore, QtGui
 
-from freecad.chronoConcrete.ldpmMeshing.particleGeneration import ParticleGen
 from freecad.chronoConcrete.gui.readInputsLDPM import readInputs
 
 from freecad.chronoConcrete.generation.genAnalysis import genAnalysis
+from freecad.chronoConcrete.generation.genGeometry import genGeometry
 from freecad.chronoConcrete.generation.genSurfaceMesh import genSurfMesh
+from freecad.chronoConcrete.generation.particleVol import particleVol
 
 class inputLDPMwindow:
     def __init__(self):
@@ -117,34 +118,6 @@ class inputLDPMwindow:
 
 
 
-    def genGeometry(self,dimensions,geoType,geoName):
-
-
-        if all(float(i.strip(" mm")) > 0 for i in dimensions):
-            pass
-        else:
-            raise Exception("One or more geometry dimensions are less than or equal to zero. Please revise.")
-
-
-
-
-        if geoType == "Box":
-
-            # Create a box and name it
-            geo = App.ActiveDocument.addObject("Part::Box",geoName)
-            geo.Label = geoName
-            geo.Height = dimensions[0]
-            geo.Width = dimensions[1]
-            geo.Length = dimensions[2]
-
-
-        App.ActiveDocument.recompute()
-
-
-
-
-
-
 
 
 
@@ -169,25 +142,32 @@ class inputLDPMwindow:
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2] = readInputs(self.form)
+        #if fillerC > 0:
+        #    airFrac = airFrac2
+        #else:
+        airFrac = airFrac1
+
+
+
         self.form[5].progressBar.setValue(1) 
 
 
         geoName = elementType + "geo"
         meshName = elementType + "mesh"
-        analysisName = elementType + "ana"
+        analysisName = elementType + "analysis"
 
         i = 0
         while App.activeDocument().getObject(geoName) != None:
             i = i+1
             geoName = elementType + "geo" + str(i)
             meshName = elementType + "mesh" + str(i)
-            analysisName = elementType + "ana" + str(i)
+            analysisName = elementType + "analysis" + str(i)
 
 
 
         # Generate geometry
         print("Generating geometry")
-        genGeo = self.genGeometry(dimensions,geoType,geoName)
+        genGeo = genGeometry(dimensions,geoType,geoName)
         self.form[5].progressBar.setValue(2) 
 
         # Set view
@@ -203,13 +183,20 @@ class inputLDPMwindow:
 
         # Generate surface mesh
         print("Generating surface mesh")
-        genSuf = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
+        [vertices,edges,faces,tets] = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
 
 
 
 
+
+
+        [aggVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+            vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
+
+
+        print([aggVolTotal,cdf,cdf1,kappa_i])
 
 
 
@@ -219,29 +206,6 @@ class inputLDPMwindow:
         vtk_object = ObjectsFem.makePostVtkResult(doc,base_result,name = "VTK Files")
 
 
-
-
-
-
-
-
-        gen = ParticleGen(maxPar,minPar,fullerCoef,wcRatio,\
-            cementC,volFracAir,q,maxIter,geoFile,aggOffsetCoeff,densityWater,\
-            densityCement,dataType,output,verbose,fibers,dFiber,lFiber,vFiber,\
-            fiberFile,multiMaterial,materialFile,maxGrainD,minGrainD,\
-            grainFullerCoef,maxBinderD,minBinderD,binderFullerCoef,maxITZD,minITZD,\
-            ITZFullerCoef,rebar,rebarFile1,dRebar1,rebarFile2,dRebar2,rebarFile3,dRebar3,edgeElements,\
-            surfaceExtLength,fiberOrientation,orientationStrength,sieveCurveDiameter,sieveCurvePassing,\
-            grainSieveCurveDiameter,grainSieveCurvePassing,binderSieveCurveDiameter,\
-            binderSieveCurvePassing,itzSieveCurveDiameter,itzSieveCurvePassing,materialRule,\
-            cementStructure,cementmaterialFile,cementStructureResolution,numberofPhases,\
-            maxPoresD,minPoresD,PoresFullerCoef,PoresSieveCurveDiameter,PoresSieveCurvePassing,\
-            maxClinkerD,minClinkerD,ClinkerFullerCoef,ClinkerSieveCurveDiameter,ClinkerSieveCurvePassing,\
-            maxCHD,minCHD,CHFullerCoef,CHSieveCurveDiameter,CHSieveCurvePassing,\
-            maxCSH_LDD,minCSH_LDD,CSH_LDFullerCoef,CSH_LDSieveCurveDiameter,CSH_LDSieveCurvePassing,\
-            maxCSH_HDD,minCSH_HDD,CSH_HDFullerCoef,CSH_HDSieveCurveDiameter,CSH_HDSieveCurvePassing,\
-            Mean_CSH_LD,Mean_CSH_HD,SDev_CSH_LD,SDev_CSH_HD,Alphac,SaturatedCSHDensity,\
-            caeFile,periodic,prismX,prismY,prismZ,randomField,cutFiber,outputUnits,numIncrements,numCPU)
 
 
 

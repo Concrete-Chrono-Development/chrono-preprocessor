@@ -1,5 +1,6 @@
 import FreeCAD as App
 import ObjectsFem
+import numpy as np
 from femmesh.gmshtools import GmshTools as gmsh
 
 
@@ -24,14 +25,28 @@ def genSurfMesh(analysisName,geoName,meshName,minPar,maxPar):
     App.ActiveDocument.recompute()
 
     femmesh = App.ActiveDocument.getObject(meshName).FemMesh
-    #femmesh.Nodes[1]  # the first node, for all nodes ues femmesh.Nodes
-    #femmesh.Volumes[0]  # the first volume, for all volumes use femmesh.Volumes
-    #femmesh.getElementNodes(149) # nodes of the first volume, for all volumes use a for loop
+
+
+    vertices = []
+    edges = []
+    faces = []
+    tets = []
+
+
+    for v in femmesh.Nodes:
+        vertices.append(femmesh.Nodes[v])
+    vertices = np.asarray(vertices)
 
     for v in femmesh.Edges:
-        print(v) # Note that this starts after edges so number is not 1
-        print(femmesh.getElementNodes(v))
+        edges.append(femmesh.getElementNodes(v))
+    edges = np.asarray(edges)
 
     for v in femmesh.Faces:
-        print(v) # Note that this starts after edges so number is not 1
-        print(femmesh.getElementNodes(v))
+        faces.append(femmesh.getElementNodes(v))
+    faces = np.asarray(faces)
+
+    for v in femmesh.Volumes:
+        tets.append(femmesh.getElementNodes(v))
+    tets = np.asarray(tets)
+
+    return vertices,edges,faces,tets
