@@ -13,10 +13,10 @@ def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater
 
     # Gets volume of geometry
     tetVolume = meshVolume(vertices,tets)
-
+    
 
     # Shift sieve curve if needed
-    if sieveCurveDiameter != []:
+    if sieveCurveDiameter != (0 or None or [] or ""):
         # Shifts sieve curve to appropriate range
         [newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max] = sieveCurve(minPar,maxPar,\
             sieveCurveDiameter,sieveCurvePassing)
@@ -26,13 +26,13 @@ def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater
 
 
 
-    # Calculates volume of aggregate needed
-    [aggVolTotal,cdf,cdf1,kappa_i] = aggVolume(tetVolume,wcRatio,cementC,\
+    # Calculates volume of particles needed
+    [parVolTotal,cdf,cdf1,kappa_i] = aggVolume(tetVolume,wcRatio,cementC,\
         volFracAir,fullerCoef,densityCement,densityWater,minPar,maxPar,\
         newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max)
 
 
-    return aggVolTotal,cdf,cdf1,kappa_i
+    return parVolTotal,cdf,cdf1,kappa_i
 
 
 
@@ -101,12 +101,12 @@ def aggVolume(tetVolume,wcRatio,cementC,volFracAir,fullerCoef,\
 
     volFracCement = cementC/densityCement
     volFracWater = wcRatio*cementC/densityWater
-    volFracAgg = (1-volFracCement-volFracWater-volFracAir)
+    volFracPar = (1-volFracCement-volFracWater-volFracAir)
 
 
     if newSieveCurveD == 0:
 
-        volFracAggSim = (1-(minPar/maxPar)**fullerCoef)*volFracAgg
+        volFracParSim = (1-(minPar/maxPar)**fullerCoef)*volFracPar
 
         cdf = 0
         cdf1 = 0
@@ -131,7 +131,7 @@ def aggVolume(tetVolume,wcRatio,cementC,volFracAir,fullerCoef,\
 
         # Calculate Volume Fraction
         w_sim = w_max-w_min
-        volFracAggSim = w_sim*volFracAgg
+        volFracParSim = w_sim*volFracPar
 
         # Get CDF
         cdf = [0]*100
@@ -145,9 +145,9 @@ def aggVolume(tetVolume,wcRatio,cementC,volFracAir,fullerCoef,\
         cdf = np.trim_zeros(cdf,trim='b')
         cdf1 = np.trim_zeros(cdf1,trim='b')
 
-    aggVolTotal = volFracAggSim*tetVolume
+    parVolTotal = volFracParSim*tetVolume
 
-    return aggVolTotal,cdf,cdf1,kappa_i
+    return parVolTotal,cdf,cdf1,kappa_i
 
 
 

@@ -40,7 +40,7 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 class ParticleGen:
-    def __init__(self, maxAggD,minAggD,fullerCoef,wcRatio,cementC,\
+    def __init__(self, maxPar,minPar,fullerCoef,wcRatio,cementC,\
         volFracAir,q,maxIter,geoFile,aggOffsetCoeff,densityWater,densityCement,\
         dataType,output,verbose,fibers,dFiber,lFiber,vFiber,fiberFile,\
         multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
@@ -70,7 +70,7 @@ class ParticleGen:
                 str(prismZ).replace('.', '') + 'mm.mesh'
 
         # Basic Calcs
-        aggOffset = aggOffsetCoeff*minAggD
+        aggOffset = aggOffsetCoeff*minPar
 
         
         if caeFile :
@@ -106,19 +106,19 @@ class ParticleGen:
             os.mkdir(Path('meshes/' + geoName))
 
         if periodic in ['on','On','Y','y','Yes','yes']:
-            periodicMesh = self.periodicMesher(prismX,prismY,prismZ,minAggD,\
-                maxAggD,geoName,geoFile)
+            periodicMesh = self.periodicMesher(prismX,prismY,prismZ,minPar,\
+                maxPar,geoName,geoFile)
 
 
         # Else mesh the concrete geometry
         else:
-            concreteMesh = self.meshConcreteGeometry(geoName,minAggD,2*minAggD,\
+            concreteMesh = self.meshConcreteGeometry(geoName,minPar,2*minPar,\
                 geoFile,geoExtension)
 
 
         if rebar in ['on','On','Y','y','Yes','yes']:
             # Mesh the rebar
-            rebarData = self.meshRebarGeometry(minAggD,maxAggD,rebar,rebarFile1,\
+            rebarData = self.meshRebarGeometry(minPar,maxPar,rebar,rebarFile1,\
                 dRebar1,rebarFile2,dRebar2,rebarFile3,dRebar3,geoName)
         else:
             pass
@@ -284,10 +284,10 @@ class ParticleGen:
                 self.nodesBinder[x,:] = self.node[0,:]
                 self.nodes[x+len(aggGrainsDiameterList)+len(itzDiameterList),:] = self.node[0,:]
 
-            aggDiameterList = np.concatenate((aggGrainsDiameterList, itzDiameterList, binderDiameterList))
+            parDiameterList = np.concatenate((aggGrainsDiameterList, itzDiameterList, binderDiameterList))
             materialList = np.concatenate((np.ones(len(aggGrainsDiameterList))*3,\
                 np.ones(len(itzDiameterList))*1, np.ones(len(binderDiameterList))*2))
-            minAggD = minBinderD
+            minPar = minBinderD
 
             placementTime = round(time.time() - start_time,2)   
             nParticles = len(aggGrainsDiameterList)+len(binderDiameterList)\
@@ -503,14 +503,14 @@ class ParticleGen:
                 self.nodesCSH_HD[x,:] = self.node[0,:]
                 self.nodes[x+len(PoresDiameterList)+len(ClinkerDiameterList)+len(CHDiameterList)+len(CSH_LDDiameterList),:] = self.node[0,:]
 
-            aggDiameterList = np.concatenate((PoresDiameterList, ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList))
+            parDiameterList = np.concatenate((PoresDiameterList, ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList))
             materialList = np.concatenate((np.ones(len(PoresDiameterList))*1,\
                 np.ones(len(ClinkerDiameterList))*2, np.ones(len(CHDiameterList))*3,\
                 np.ones(len(CSH_LDDiameterList))*4, np.ones(len(CSH_HDDiameterList))*5))
             print(materialList)
             print(materialList.shape)
-            minAggD = min(minPoresD,minClinkerD,minCHD,minCSH_LDD,minCSH_HDD)
-            print(minAggD)
+            minPar = min(minPoresD,minClinkerD,minCHD,minCSH_LDD,minCSH_HDD)
+            print(minPar)
 
             # Generates list of needed CSH_HD
             [maxCSH_HDNum,CSH_HDDiameterList] = self.aggList(volCSH_HD,\
@@ -533,7 +533,7 @@ class ParticleGen:
             if sieveCurveDiameter != []:
 
                 # Shifts sieve curve to appropriate range
-                [newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max] = self.sieveCurve(minAggD,maxAggD,\
+                [newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max] = self.sieveCurve(minPar,maxPar,\
                     sieveCurveDiameter,sieveCurvePassing)
 
             else:
@@ -541,16 +541,16 @@ class ParticleGen:
                 newSieveCurveD, newSieveCurveP, w_min, w_max, NewSet = 0, 0, 0, 0, 0
 
             # Calculates volume of aggregate needed
-            [aggVolTotal,cdf,cdf1,kappa_i] = self.aggVolume(tetVolume,wcRatio,cementC,\
-                volFracAir,fullerCoef,densityCement,densityWater,minAggD,maxAggD,\
+            [parVolTotal,cdf,cdf1,kappa_i] = self.aggVolume(tetVolume,wcRatio,cementC,\
+                volFracAir,fullerCoef,densityCement,densityWater,minPar,maxPar,\
                 newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max)
 
             # Generates list of needed aggreate
-            [maxAggNum,aggDiameterList] = self.aggList(aggVolTotal,minAggD,maxAggD,q,newSieveCurveD,\
+            [maxParNum,parDiameterList] = self.aggList(parVolTotal,minPar,maxPar,q,newSieveCurveD,\
                 cdf,kappa_i,NewSet)
 
             # Initialize empty particle nodes list outside geometry
-            self.nodes = (np.zeros((len(aggDiameterList),3))+2)*maxC
+            self.nodes = (np.zeros((len(parDiameterList),3))+2)*maxC
 
             # Calculate surface mesh max edge length
             maxEdgeLength1 = max(np.linalg.norm(self.vertices2D[self.triangles2D[:,1].astype(int)-1,0:3]-self.vertices2D[self.triangles2D[:,0].astype(int)-1,0:3], axis=1))
@@ -566,15 +566,15 @@ class ParticleGen:
             if numCPU > 1:
             
                 if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-                    print("%s Remaining." % (len(aggDiameterList)))
+                    print("%s Remaining." % (len(parDiameterList)))
 
                 for increment in range(numIncrements-1):
 
                     process_pool = multiprocessing.Pool(numCPU)
 
-                    outputMPI = process_pool.map(functools.partial(self.generateParticleMPI, trianglePoints,maxAggNum, minC, maxC, vertices, \
-                        self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minAggD,\
-                        maxAggD,aggOffset,verbose,aggDiameterList,maxEdgeLength), aggDiameterList[particlesPlaced:particlesPlaced+math.floor(len(aggDiameterList)/numIncrements)])
+                    outputMPI = process_pool.map(functools.partial(self.generateParticleMPI, trianglePoints,maxParNum, minC, maxC, vertices, \
+                        self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                        maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
 
                     nodeMPI = np.array(outputMPI)[:,0:3]
                     diameter = np.array(outputMPI)[:,3]
@@ -589,50 +589,50 @@ class ParticleGen:
                         self.nodes[particlesPlaced+x,:] = nodeMPI[x,:]
 
                         # Obtain extents for floating bin for node to test
-                        binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxAggD/2-aggOffset,\
-                            nodeMPI[x,1]-diameter[x]/2-maxAggD/2-aggOffset,nodeMPI[x,2]-\
-                            diameter[x]/2-maxAggD/2-aggOffset]))
-                        binMax = np.array(([nodeMPI[x,0]+diameter[x]/2+maxAggD/2+aggOffset,\
-                            nodeMPI[x,1]+diameter[x]/2+maxAggD/2+aggOffset,nodeMPI[x,2]+\
-                            diameter[x]/2+maxAggD/2+aggOffset]))
+                        binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxPar/2-aggOffset,\
+                            nodeMPI[x,1]-diameter[x]/2-maxPar/2-aggOffset,nodeMPI[x,2]-\
+                            diameter[x]/2-maxPar/2-aggOffset]))
+                        binMax = np.array(([nodeMPI[x,0]+diameter[x]/2+maxPar/2+aggOffset,\
+                            nodeMPI[x,1]+diameter[x]/2+maxPar/2+aggOffset,nodeMPI[x,2]+\
+                            diameter[x]/2+maxPar/2+aggOffset]))
 
                         # Check if particle overlapping any just added particles (ignore first one placed)
                         if x > 0:
 
                             overlap = self.overlapCheckMPI(nodeMPI[x,:],diameter[x],binMin,\
-                                binMax,minAggD,aggOffset,nodeMPI[0:x],diameter[0:x])
+                                binMax,minPar,aggOffset,nodeMPI[0:x],diameter[0:x])
 
                             if overlap == True:
 
                                 newMaxIter = self.generateParticle(particlesPlaced+x,trianglePoints,\
-                                    aggDiameterList[particlesPlaced+x],maxAggNum, minC, maxC, vertices, \
-                                    self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minAggD,\
-                                    maxAggD,aggOffset,'No',aggDiameterList,maxEdgeLength)
+                                    parDiameterList[particlesPlaced+x],maxParNum, minC, maxC, vertices, \
+                                    self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                                    maxPar,aggOffset,'No',parDiameterList,maxEdgeLength)
                                 
                                 self.nodes[particlesPlaced+x,:] = self.node[0,:]
 
                     if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
                         print("%s Remaining. Maximum attempts required in increment: %s" % \
-                            (len(aggDiameterList)-particlesPlaced, maxAttempts))
+                            (len(parDiameterList)-particlesPlaced, maxAttempts))
 
 
             # Generate particles for length of needed aggregate (not placed via MPI)
-            for x in range(particlesPlaced,len(aggDiameterList)):
+            for x in range(particlesPlaced,len(parDiameterList)):
 
                 # Generate particle
                 newMaxIter = self.generateParticle(x,trianglePoints,\
-                    aggDiameterList[x],maxAggNum, minC, maxC, vertices, \
-                    self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minAggD,\
-                    maxAggD,aggOffset,verbose,aggDiameterList,maxEdgeLength)
+                    parDiameterList[x],maxParNum, minC, maxC, vertices, \
+                    self.tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength)
                 
                 self.nodes[x,:] = self.node[0,:]
             
 
 
-            materialList = np.ones(len(aggDiameterList))
+            materialList = np.ones(len(parDiameterList))
 
             placementTime = round(time.time() - start_time,2)   
-            nParticles = len(aggDiameterList)
+            nParticles = len(parDiameterList)
 
             # Create empty lists if not multi-material or cementStructure
             aggGrainsDiameterList, itzDiameterList, binderDiameterList, PoresDiameterList,\
@@ -687,7 +687,7 @@ class ParticleGen:
                     
                     # Generate fiber
                     genFibers = self.generateFibers(vertices,tets,coord1,\
-                        coord2,coord3,coord4,maxIter,lFiber,maxC,maxAggD,\
+                        coord2,coord3,coord4,maxIter,lFiber,maxC,maxPar,\
                         fiberOrientation,orientationStrength,self.triangles,\
                         cutFiber)
                     self.p1Fibers[x,:] = self.p1Fiber
@@ -714,7 +714,7 @@ class ParticleGen:
         print('Beginning tesselation.')
 
         [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters] = \
-            self.tesselation(allNodes,allTets,aggDiameterList,minAggD,\
+            self.tesselation(allNodes,allTets,parDiameterList,minPar,\
             geoName)
 
         tetTessTime = round(time.time() - tetTessTimeStart,2)   
@@ -722,7 +722,7 @@ class ParticleGen:
         if edgeElements in ['on','On','Y','y','Yes','yes']:
 
             # If edge elements are turned on, perform edge computations
-            edgeData = self.edgeElementData(surfaceExtLength,allNodes,allTets,tetPoints,maxAggD,\
+            edgeData = self.edgeElementData(surfaceExtLength,allNodes,allTets,tetPoints,maxPar,\
                 vertices,tets,coord1,coord2,coord3,coord4,maxC)
 
         else:
@@ -801,9 +801,9 @@ class ParticleGen:
                 edgeData[:,14] = edgeData[:,14]*factor
             
             self.vertices2D = self.vertices2D*factor
-            aggDiameterList = aggDiameterList*factor
-            minAggD = minAggD*factor
-            maxAggD = maxAggD*factor
+            parDiameterList = parDiameterList*factor
+            minPar = minPar*factor
+            maxPar = maxPar*factor
             
             if fibers in ['on','On','Y','y','Yes','yes']:
                 self.p1Fibers = self.p1Fibers*factor
@@ -1006,7 +1006,7 @@ class ParticleGen:
             print('Writing Particle Data file.')
 
             # If data files requested, generate Particle Data File
-            mkParticleData = self.particleData(allNodes,allTets,aggDiameterList,minAggD,geoName)
+            mkParticleData = self.particleData(allNodes,allTets,parDiameterList,minPar,geoName)
 
             if randomField in ['on','On','Y','y','Yes','yes']:
                 
@@ -1042,7 +1042,7 @@ class ParticleGen:
             print('Writing visual files.')
 
             # If visuals requested, generate Particle VTK File
-            mkParticleFile = self.vtkParticles(self.nodes,aggDiameterList,\
+            mkParticleFile = self.vtkParticles(self.nodes,parDiameterList,\
                 materialList,geoName)
 
             # If visuals requested, generate Facet VTK File
@@ -1063,15 +1063,15 @@ class ParticleGen:
                 pass
 
         # Make sieve curve file
-        #mkSieveFile = self.sieveFile(geoName,multiMaterial,aggDiameterList,maxAggD,minAggD,aggGrainsDiameterList,\
+        #mkSieveFile = self.sieveFile(geoName,multiMaterial,parDiameterList,maxPar,minPar,aggGrainsDiameterList,\
         #itzDiameterList,binderDiameterList,cementStructure,PoresDiameterList,ClinkerDiameterList,CHDiameterList,\
         #CSH_LDDiameterList,CSH_HDDiameterList)
 
         writeTime = round(time.time() - writeTimeStart,2)
 
         # Generate Log file after run
-        mkLogFile = self.logFile(self.gmshTime,nParticles,placementTime,maxAggD,\
-            minAggD,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
+        mkLogFile = self.logFile(self.gmshTime,nParticles,placementTime,maxPar,\
+            minPar,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
             geoName,aggOffset,densityWater,densityCement,allTets,dataType,\
             tetTessTime,writeTime,geoFile,dFiber,lFiber,vFiber,fiberFile,\
             multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
@@ -1096,14 +1096,14 @@ class ParticleGen:
 
         # Leave commented out; used for study/debugging
         #matLog = self.materialLogFile(materialFile,itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,\
-        #       binderVolFracAct,aggVolFracAct,materialRule,minAggD)
+        #       binderVolFracAct,aggVolFracAct,materialRule,minPar)
 
 
 ####################################################################################################
 ## Main Class Functions                                                                           ##
 ####################################################################################################
 
-    def periodicMesher(self,prismX,prismY,prismZ,minAggD,maxAggD,geoName,geoFile):
+    def periodicMesher(self,prismX,prismY,prismZ,minPar,maxPar,geoName,geoFile):
 
         start_time_gmsh = time.time()
 
@@ -1112,8 +1112,8 @@ class ParticleGen:
             "w") as f:                                       
             f.write('SetFactory("OpenCASCADE");\n')
             f.write('Box(1) = {0, 0, 0, ' + str(prismX) + ', ' + str(prismY) + ', ' + str(prismZ) + '};\n')
-            f.write('MeshSize {:} = ' + str(maxAggD) + ';\n')
-            f.write('MeshSize {1} = ' + str(minAggD) + ';\n')
+            f.write('MeshSize {:} = ' + str(maxPar) + ';\n')
+            f.write('MeshSize {1} = ' + str(minPar) + ';\n')
             f.write('Periodic Surface {2} = {1} Translate {' + str(prismX) + ', 0, 0};\n')
             f.write('Periodic Surface {6} = {5} Translate {0, 0, ' + str(prismZ) + '};\n') 
             f.write('Periodic Surface {4} = {3} Translate {0, ' + str(prismY) + ', 0};\n')  
@@ -1122,8 +1122,8 @@ class ParticleGen:
 
         # Call the geo file for meshing
         print('----------------------------------------------------')
-        print('Starting Gmsh with element size ' + str(minAggD) + ' mm to ' + \
-            str(maxAggD) + ' mm.')
+        print('Starting Gmsh with element size ' + str(minPar) + ' mm to ' + \
+            str(maxPar) + ' mm.')
         gmshCommand = str(Path('lib/gmsh/gmsh')) + ' ' + str(Path('temp/' \
             + geoName + '.geo')) + ' -3 .mesh -format mesh -v 0'                                    
         os.system(gmshCommand)
@@ -1146,7 +1146,7 @@ class ParticleGen:
         print('----------------------------------------------------')
 
 
-    def meshConcreteGeometry(self, geoName,minAggD,maxAggD,geoFile,geoExtension):
+    def meshConcreteGeometry(self, geoName,minPar,maxPar,geoFile,geoExtension):
 
         start_time_gmsh = time.time()
 
@@ -1158,16 +1158,16 @@ class ParticleGen:
             
             # Geometry Input - 3D Meshing
             print('----------------------------------------------------')
-            print('Starting Gmsh with element size ' + str(minAggD) + ' mm to ' + \
-                str(2*minAggD) + ' mm.')
+            print('Starting Gmsh with element size ' + str(minPar) + ' mm to ' + \
+                str(2*minPar) + ' mm.')
             gmshCommand = str(Path('lib/gmsh/gmsh')) + ' ' + str(Path('geometry/' \
-                + geoFile)) + ' -3 -clmin ' + str(minAggD) + ' -clmax ' + str(2*minAggD) + \
+                + geoFile)) + ' -3 -clmin ' + str(minPar) + ' -clmax ' + str(2*minPar) + \
               ' -algo del3d -o ' + str(Path('temp/' + geoName)) + '.mesh -format mesh -v 0'                                    
             os.system(gmshCommand)
 
             # Geometry Input - 2D Meshing
             gmshCommand2D = str(Path('lib/gmsh/gmsh')) + ' ' + str(Path('geometry/' + geoFile)) + ' -2 \
-            -clmin ' + str(minAggD) + ' -clmax ' + str(2*minAggD) + \
+            -clmin ' + str(minPar) + ' -clmax ' + str(2*minPar) + \
               ' -algo del2d -o ' + str(Path('temp/' + geoName)) + '2D.mesh -format mesh -v 0'                                    
             os.system(gmshCommand2D)
             ParticleGen.gmshTime = round(time.time() - start_time_gmsh,2)
@@ -1209,7 +1209,7 @@ class ParticleGen:
             print('Now exitting...')
             exit()
 
-    def meshRebarGeometry(self,minAggD,maxAggD,rebar,rebarFile1,dRebar1,\
+    def meshRebarGeometry(self,minPar,maxPar,rebar,rebarFile1,dRebar1,\
         rebarFile2,dRebar2,rebarFile3,dRebar3,geoName):
 
         start_time_gmsh = time.time()
@@ -1254,11 +1254,11 @@ class ParticleGen:
                 
                 # Geometry Input - 2D Meshing
                 print('----------------------------------------------------')
-                print('Starting Gmsh for rebar with size ' + str(1.5*maxAggD) + ' mm to ' + \
-                    str(3*maxAggD) + ' mm.')
+                print('Starting Gmsh for rebar with size ' + str(1.5*maxPar) + ' mm to ' + \
+                    str(3*maxPar) + ' mm.')
 
                 gmshCommand2D = str(Path('lib/gmsh/gmsh')) + ' ' + str(Path('rebar/' + rebarFile[x])) + ' -1 \
-                -clmin ' + str(1.5*maxAggD) + ' -clmax ' + str(3*maxAggD) + \
+                -clmin ' + str(1.5*maxPar) + ' -clmax ' + str(3*maxPar) + \
                   ' -o ' + str(Path('meshes/' + geoName + '/' + geoName + '-' + rebarName[x])) + '.mesh -format mesh -v 0'                                    
                 
                 os.system(gmshCommand2D)
@@ -1723,22 +1723,22 @@ class ParticleGen:
 
 
     # Shift total sieve curve to coarse sieve curve
-    def sieveCurve(self,minAggD,maxAggD,sieveCurveDiameter,sieveCurvePassing):
+    def sieveCurve(self,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing):
         
         nblines = len(sieveCurveDiameter)
 
         for i in range(0,nblines):
-            if minAggD >= sieveCurveDiameter[i] and minAggD < sieveCurveDiameter[i+1]:      
+            if minPar >= sieveCurveDiameter[i] and minPar < sieveCurveDiameter[i+1]:      
                 minRange = i
 
         for i in range(0,nblines):
-            if maxAggD > sieveCurveDiameter[i] and maxAggD <= sieveCurveDiameter[i+1]:              
+            if maxPar > sieveCurveDiameter[i] and maxPar <= sieveCurveDiameter[i+1]:              
                 maxRange = i
 
         w_min = sieveCurvePassing[minRange]+(sieveCurvePassing[minRange+1]-sieveCurvePassing[minRange])/\
-            (sieveCurveDiameter[minRange+1]-sieveCurveDiameter[minRange])*(minAggD-sieveCurveDiameter[minRange])
+            (sieveCurveDiameter[minRange+1]-sieveCurveDiameter[minRange])*(minPar-sieveCurveDiameter[minRange])
         w_max = sieveCurvePassing[maxRange]+(sieveCurvePassing[maxRange+1]-sieveCurvePassing[maxRange])/\
-            (sieveCurveDiameter[maxRange+1]-sieveCurveDiameter[maxRange])*(maxAggD-sieveCurveDiameter[maxRange])
+            (sieveCurveDiameter[maxRange+1]-sieveCurveDiameter[maxRange])*(maxPar-sieveCurveDiameter[maxRange])
 
         NewSet = maxRange-minRange+1
 
@@ -1747,13 +1747,13 @@ class ParticleGen:
 
         for i in range(0,NewSet+1):
             if i == 0:
-                newSieveCurveD[i] = minAggD
+                newSieveCurveD[i] = minPar
                 newSieveCurveP[i] = 0
             elif NewSet > 1 and i > 0 and i < NewSet:
                 newSieveCurveD[i] = sieveCurveDiameter[minRange + i]
                 newSieveCurveP[i] = (sieveCurvePassing[minRange + i] - w_min)/(w_max - w_min)
             elif NewSet == i:
-                newSieveCurveD[i] = maxAggD
+                newSieveCurveD[i] = maxPar
                 newSieveCurveP[i] = 1
 
         newSieveCurveD = np.trim_zeros(newSieveCurveD,trim='b')
@@ -1763,7 +1763,7 @@ class ParticleGen:
 
 
     def aggVolume(self,tetVolume,wcRatio,cementC,volFracAir,fullerCoef,\
-        densityCement,densityWater,minAggD,maxAggD,newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max):
+        densityCement,densityWater,minPar,maxPar,newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max):
 
 
 
@@ -1774,7 +1774,7 @@ class ParticleGen:
 
         if newSieveCurveD == 0:
 
-            volFracAggSim = (1-(minAggD/maxAggD)**fullerCoef)*volFracAgg
+            volFracAggSim = (1-(minPar/maxPar)**fullerCoef)*volFracAgg
 
             cdf = 0
             cdf1 = 0
@@ -1813,17 +1813,17 @@ class ParticleGen:
             cdf = np.trim_zeros(cdf,trim='b')
             cdf1 = np.trim_zeros(cdf1,trim='b')
 
-        aggVolTotal = volFracAggSim*tetVolume
+        parVolTotal = volFracAggSim*tetVolume
 
-        return aggVolTotal,cdf,cdf1,kappa_i
+        return parVolTotal,cdf,cdf1,kappa_i
 
 
-    def aggList(self,aggVolTotal,minAggD,maxAggD,q,newSieveCurveD,cdf,kappa_i,NewSet):
+    def aggList(self,parVolTotal,minPar,maxPar,q,newSieveCurveD,cdf,kappa_i,NewSet):
 
-        smallAggVolume = 4/3*math.pi*(minAggD/2)**3
-        maxAggNum = np.ceil(aggVolTotal/smallAggVolume)
-        aggDiameter = np.zeros(int(maxAggNum))
-        aggVol = np.zeros(int(maxAggNum))
+        smallAggVolume = 4/3*math.pi*(minPar/2)**3
+        maxParNum = np.ceil(parVolTotal/smallAggVolume)
+        aggDiameter = np.zeros(int(maxParNum))
+        aggVol = np.zeros(int(maxParNum))
 
         i = 0
 
@@ -1832,32 +1832,32 @@ class ParticleGen:
 
             # Count particles individually
             if len(aggDiameter) <= 100:
-                while sum(aggVol) < aggVolTotal:
-                    aggDiameter[i] = minAggD*(1-np.random.rand(1)*(1-minAggD**q\
-                        /maxAggD**q))**(-1/q)
+                while sum(aggVol) < parVolTotal:
+                    aggDiameter[i] = minPar*(1-np.random.rand(1)*(1-minPar**q\
+                        /maxPar**q))**(-1/q)
                     aggVol[i] = 4/3*math.pi*(aggDiameter[i]/2)**3
                     i = i+1         
 
             # Count particles in bunches of 100
             elif len(aggDiameter) <= 1000:
-                while sum(aggVol) < aggVolTotal:
-                    aggDiameter[i:i+100] = minAggD*(1-np.random.rand(100)*\
-                        (1-minAggD**q/maxAggD**q))**(-1/q)
+                while sum(aggVol) < parVolTotal:
+                    aggDiameter[i:i+100] = minPar*(1-np.random.rand(100)*\
+                        (1-minPar**q/maxPar**q))**(-1/q)
                     aggVol[i:i+100] = 4/3*math.pi*(aggDiameter[i:i+100]/2)**3
                     i = i+100
 
             # Count particles in bunches of 1000
             else:
-                while sum(aggVol) < aggVolTotal:
-                    aggDiameter[i:i+1000] = minAggD*(1-np.random.rand(1000)*\
-                        (1-minAggD**q/maxAggD**q))**(-1/q)
+                while sum(aggVol) < parVolTotal:
+                    aggDiameter[i:i+1000] = minPar*(1-np.random.rand(1000)*\
+                        (1-minPar**q/maxPar**q))**(-1/q)
                     aggVol[i:i+1000] = 4/3*math.pi*(aggDiameter[i:i+1000]/2)**3
                     i = i+1000
 
         # Sieve Curve Case
         else:
 
-            while sum(aggVol) < aggVolTotal:
+            while sum(aggVol) < parVolTotal:
 
                 F = np.random.rand(1)
 
@@ -1873,19 +1873,19 @@ class ParticleGen:
         aggVol = np.trim_zeros(aggVol)
 
         # Remove accidental extra placed particles
-        while sum(aggVol) > aggVolTotal:
+        while sum(aggVol) > parVolTotal:
             aggDiameter = np.delete(aggDiameter, -1)
             aggVol = np.delete(aggVol, -1)
 
         # Sort particle diameters large-to-small
-        aggDiameterList = np.sort(aggDiameter)[::-1]
+        parDiameterList = np.sort(aggDiameter)[::-1]
 
-        return maxAggNum,aggDiameterList
+        return maxParNum,parDiameterList
 
 
-    def generateParticle(self,x,trianglePoints,aggDiameter,maxAggNum,minC,maxC,\
-        vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minAggD,maxAggD,\
-        aggOffset,verbose,aggDiameterList,maxEdgeLength):
+    def generateParticle(self,x,trianglePoints,aggDiameter,maxParNum,minC,maxC,\
+        vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
+        aggOffset,verbose,parDiameterList,maxEdgeLength):
         
         # Generate random numbers to use in generation
         randomN = np.random.rand(newMaxIter*3)
@@ -1921,17 +1921,17 @@ class ParticleGen:
 
 
             # Obtain extents for floating bin
-            binMin = np.array(([node[0,0]-aggDiameter/2-maxAggD/2-aggOffset,\
-                node[0,1]-aggDiameter/2-maxAggD/2-aggOffset,node[0,2]-\
-                aggDiameter/2-maxAggD/2-aggOffset]))
-            binMax = np.array(([node[0,0]+aggDiameter/2+maxAggD/2+aggOffset,\
-                node[0,1]+aggDiameter/2+maxAggD/2+aggOffset,node[0,2]+\
-                aggDiameter/2+maxAggD/2+aggOffset]))
+            binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-aggOffset,\
+                node[0,1]-aggDiameter/2-maxPar/2-aggOffset,node[0,2]-\
+                aggDiameter/2-maxPar/2-aggOffset]))
+            binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+aggOffset,\
+                node[0,1]+aggDiameter/2+maxPar/2+aggOffset,node[0,2]+\
+                aggDiameter/2+maxPar/2+aggOffset]))
 
 
             # Check if particle overlapping any existing particles or bad nodes
             overlap = self.overlapCheck(node,aggDiameter,trianglePoints,binMin,\
-                binMax,minAggD,maxEdgeLength,aggOffset,aggDiameterList)
+                binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
             if overlap[0] == False:
 
@@ -1954,13 +1954,13 @@ class ParticleGen:
 
         if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
             print("%s Remaining. Attempts required: %s" % \
-                (len(aggDiameterList)-x-1, int(i/3)))
+                (len(parDiameterList)-x-1, int(i/3)))
 
         return newMaxIter
 
-    def generateParticleMPI(self,trianglePoints,maxAggNum,minC,maxC,\
-        vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minAggD,maxAggD,\
-        aggOffset,verbose,aggDiameterList,maxEdgeLength,aggDiameter):
+    def generateParticleMPI(self,trianglePoints,maxParNum,minC,maxC,\
+        vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
+        aggOffset,verbose,parDiameterList,maxEdgeLength,aggDiameter):
         
         # Generate random numbers to use in generation
         randomN = np.random.rand(newMaxIter*3)
@@ -1996,17 +1996,17 @@ class ParticleGen:
 
 
             # Obtain extents for floating bin
-            binMin = np.array(([node[0,0]-aggDiameter/2-maxAggD/2-aggOffset,\
-                node[0,1]-aggDiameter/2-maxAggD/2-aggOffset,node[0,2]-\
-                aggDiameter/2-maxAggD/2-aggOffset]))
-            binMax = np.array(([node[0,0]+aggDiameter/2+maxAggD/2+aggOffset,\
-                node[0,1]+aggDiameter/2+maxAggD/2+aggOffset,node[0,2]+\
-                aggDiameter/2+maxAggD/2+aggOffset]))
+            binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-aggOffset,\
+                node[0,1]-aggDiameter/2-maxPar/2-aggOffset,node[0,2]-\
+                aggDiameter/2-maxPar/2-aggOffset]))
+            binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+aggOffset,\
+                node[0,1]+aggDiameter/2+maxPar/2+aggOffset,node[0,2]+\
+                aggDiameter/2+maxPar/2+aggOffset]))
 
 
             # Check if particle overlapping any existing particles or bad nodes
             overlap = self.overlapCheck(node,aggDiameter,trianglePoints,binMin,\
-                binMax,minAggD,maxEdgeLength,aggOffset,aggDiameterList)
+                binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
             if overlap[0] == False:
 
@@ -2032,9 +2032,9 @@ class ParticleGen:
         return np.append(node[0,:],[aggDiameter,newMaxIter,int(i/3)])
 
 
-    def generateSubParticle(self,x,trianglePoints,aggDiameter,maxAggNum,minC,\
-        maxC,vertices,tets,coord1,coord2,coord3,coord4,maxIter,minAggD,maxAggD,\
-        aggOffset,verbose,aggDiameterList,voxels,X_Size,Y_Size,Z_Size,\
+    def generateSubParticle(self,x,trianglePoints,aggDiameter,maxParNum,minC,\
+        maxC,vertices,tets,coord1,coord2,coord3,coord4,maxIter,minPar,maxPar,\
+        aggOffset,verbose,parDiameterList,voxels,X_Size,Y_Size,Z_Size,\
         resolution,aggGrainsDiameterList, binderDiameterList, itzDiameterList,\
         material,maxEdgeLength):
         
@@ -2076,17 +2076,17 @@ class ParticleGen:
                 node = node[np.newaxis,:]           
 
                 # Obtain extents for floating bin
-                binMin = np.array(([node[0,0]-aggDiameter/2-maxAggD/2-\
-                    aggOffset,node[0,1]-aggDiameter/2-maxAggD/2-aggOffset,\
-                    node[0,2]-aggDiameter/2-maxAggD/2-aggOffset]))
-                binMax = np.array(([node[0,0]+aggDiameter/2+maxAggD/2+\
-                    aggOffset,node[0,1]+aggDiameter/2+maxAggD/2+aggOffset,\
-                    node[0,2]+aggDiameter/2+maxAggD/2+aggOffset]))
+                binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-\
+                    aggOffset,node[0,1]-aggDiameter/2-maxPar/2-aggOffset,\
+                    node[0,2]-aggDiameter/2-maxPar/2-aggOffset]))
+                binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+\
+                    aggOffset,node[0,1]+aggDiameter/2+maxPar/2+aggOffset,\
+                    node[0,2]+aggDiameter/2+maxPar/2+aggOffset]))
 
 
                 # Check if particle overlapping any existing particles or bad nodes
                 overlap = self.overlapCheck(node,aggDiameter,trianglePoints,\
-                    binMin,binMax,minAggD,maxEdgeLength,aggOffset,np.concatenate((\
+                    binMin,binMax,minPar,maxEdgeLength,aggOffset,np.concatenate((\
                     aggGrainsDiameterList, itzDiameterList, binderDiameterList)))
 
 
@@ -2113,11 +2113,11 @@ class ParticleGen:
 
         if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
             print("%s %s Grains Remaining. Attempts required: %s" % (
-                len(aggDiameterList)-x, material, int(i/3)))
+                len(parDiameterList)-x, material, int(i/3)))
 
-    def generateSubParticleCement(self,x,trianglePoints,aggDiameter,maxAggNum,minC,\
-        maxC,vertices,tets,coord1,coord2,coord3,coord4,maxIter,minAggD,maxAggD,\
-        aggOffset,verbose,aggDiameterList,voxels,CementStructure_X_Size,CementStructure_Y_Size,\
+    def generateSubParticleCement(self,x,trianglePoints,aggDiameter,maxParNum,minC,\
+        maxC,vertices,tets,coord1,coord2,coord3,coord4,maxIter,minPar,maxPar,\
+        aggOffset,verbose,parDiameterList,voxels,CementStructure_X_Size,CementStructure_Y_Size,\
         CementStructure_Z_Size,cementStructureResolution,PoresDiameterList,ClinkerDiameterList,\
         CHDiameterList,CSH_LDDiameterList,CSH_HDDiameterList,material,maxEdgeLength):
         
@@ -2167,17 +2167,17 @@ class ParticleGen:
                 #print(node)          
 
                 # Obtain extents for floating bin
-                binMin = np.array(([node[0,0]-aggDiameter/2-maxAggD/2-\
-                    aggOffset,node[0,1]-aggDiameter/2-maxAggD/2-aggOffset,\
-                    node[0,2]-aggDiameter/2-maxAggD/2-aggOffset]))
-                binMax = np.array(([node[0,0]+aggDiameter/2+maxAggD/2+\
-                    aggOffset,node[0,1]+aggDiameter/2+maxAggD/2+aggOffset,\
-                    node[0,2]+aggDiameter/2+maxAggD/2+aggOffset]))
+                binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-\
+                    aggOffset,node[0,1]-aggDiameter/2-maxPar/2-aggOffset,\
+                    node[0,2]-aggDiameter/2-maxPar/2-aggOffset]))
+                binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+\
+                    aggOffset,node[0,1]+aggDiameter/2+maxPar/2+aggOffset,\
+                    node[0,2]+aggDiameter/2+maxPar/2+aggOffset]))
 
 
                 # Check if particle overlapping any existing particles or bad nodes
                 overlap = self.overlapCheck(node,aggDiameter,trianglePoints,\
-                    binMin,binMax,minAggD,maxEdgeLength,aggOffset,np.concatenate((\
+                    binMin,binMax,minPar,maxEdgeLength,aggOffset,np.concatenate((\
                     PoresDiameterList, ClinkerDiameterList, CHDiameterList,\
                     CSH_LDDiameterList,CSH_HDDiameterList)))
 
@@ -2203,9 +2203,9 @@ class ParticleGen:
 
         if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
             print("%s %s Grains Remaining. Attempts required: %s" % (
-                len(aggDiameterList)-x, material, int(i/3)))
+                len(parDiameterList)-x, material, int(i/3)))
 
-    def overlapCheckMPI(self,center,aggDiameter,binMin,binMax,minAggD,aggOffset,nodes,diameters):
+    def overlapCheckMPI(self,center,aggDiameter,binMin,binMax,minPar,aggOffset,nodes,diameters):
 
         # Store particle nodes that fall inside the bin
         binTestParticles = np.all([(nodes[:,0] > binMin[0]) , \
@@ -2232,7 +2232,7 @@ class ParticleGen:
 
 
     def overlapCheck(self,center,aggDiameter,trianglePoints,binMin,binMax,\
-        minAggD,maxEdgeLength,aggOffset,aggDiameterList):
+        minPar,maxEdgeLength,aggOffset,parDiameterList):
 
         # Store particle nodes that fall inside the bin
         binTestParticles = np.all([(self.nodes[:,0] > binMin[0]) , \
@@ -2240,7 +2240,7 @@ class ParticleGen:
             (self.nodes[:,1] < binMax[1]) , (self.nodes[:,2] > binMin[2]) , \
             (self.nodes[:,2] < binMax[2])],axis=0)
         existingNodes = self.nodes[binTestParticles,:]
-        existingAggD = aggDiameterList[binTestParticles]
+        existingAggD = parDiameterList[binTestParticles]
 
         # Compute distance between particles 
         if len(existingNodes>0):
@@ -2265,7 +2265,7 @@ class ParticleGen:
         # Compute distance between particle and edge nodes
         if len(existingSurf>0):
             surfNodalDistance = np.linalg.norm(center-existingSurf, axis=1)
-            aggSurfaceDist = surfNodalDistance - aggDiameter/2 - 1.1*minAggD/2
+            aggSurfaceDist = surfNodalDistance - aggDiameter/2 - 1.1*minPar/2
         else: 
             aggSurfaceDist = np.array(([1]))
 
@@ -2395,7 +2395,7 @@ class ParticleGen:
         return CTScanFiberData
         
     def generateFibers(self,vertices,tets,coord1,coord2,coord3,coord4,maxIter,\
-        lFiber,maxC,maxAggD,fiberOrientation,orientationStrength,triangles,\
+        lFiber,maxC,maxPar,fiberOrientation,orientationStrength,triangles,\
         cutFiber):
         
         # Generate random numbers to use in generation
@@ -2482,8 +2482,8 @@ class ParticleGen:
             p2Fiber = p1Fiber+orienFiber*lFiber
 
             # Obtain extents for floating bin
-            binMin = np.amin(np.vstack((p1Fiber,p2Fiber)), axis=0)-maxAggD-lFiber
-            binMax = np.amax(np.vstack((p1Fiber,p2Fiber)), axis=0)+maxAggD+lFiber
+            binMin = np.amin(np.vstack((p1Fiber,p2Fiber)), axis=0)-maxPar-lFiber
+            binMax = np.amax(np.vstack((p1Fiber,p2Fiber)), axis=0)+maxPar+lFiber
 
             # Check if fiber is inside the mesh    
             inside = False     
@@ -2535,8 +2535,8 @@ class ParticleGen:
                     p2Fiber = p1Fiber+fiberVector*t
 
                    # Obtain extents for floating bin
-                    binMin = np.amin(np.vstack((p1Fiber,p2Fiber)), axis=0)-maxAggD-np.linalg.norm(p1Fiber-p2Fiber)
-                    binMax = np.amax(np.vstack((p1Fiber,p2Fiber)), axis=0)+maxAggD+np.linalg.norm(p1Fiber-p2Fiber)
+                    binMin = np.amin(np.vstack((p1Fiber,p2Fiber)), axis=0)-maxPar-np.linalg.norm(p1Fiber-p2Fiber)
+                    binMax = np.amax(np.vstack((p1Fiber,p2Fiber)), axis=0)+maxPar+np.linalg.norm(p1Fiber-p2Fiber)
 
                     # Verfiy cut fiber is inside the mesh      
                     inside = False   
@@ -2758,7 +2758,7 @@ class ParticleGen:
             pass
 
 
-    def particleData(self,allNodes,allTets,aggDiameter,minAggD,geoName):
+    def particleData(self,allNodes,allTets,aggDiameter,minPar,geoName):
 
         # Create diameters list (including zero edge particle diameters)
         allDiameters = np.concatenate((np.array([0.0,]*\
@@ -2924,10 +2924,10 @@ class ParticleGen:
         return allNodes, allTets
  
 
-    def tesselation(self,allNodes,allTets,aggDiameter,minAggD,geoName):
+    def tesselation(self,allNodes,allTets,aggDiameter,minPar,geoName):
         
         # Create diameters list (including fictitious edge particle diameters)
-        allDiameters = np.concatenate((np.array([1.1*minAggD,]*\
+        allDiameters = np.concatenate((np.array([1.1*minPar,]*\
             int(len(allNodes)-len(aggDiameter))),aggDiameter))
 
         # Definition of Edge Points [Coordinates1,....,Coordinates6]
@@ -3176,7 +3176,7 @@ class ParticleGen:
             tetn1, tetn2, tetPoints, allDiameters
 
 
-    def edgeElementData(self,surfaceExtLength,allNodes,allTets,tetPoints,maxAggD,vertices,tets,\
+    def edgeElementData(self,surfaceExtLength,allNodes,allTets,tetPoints,maxPar,vertices,tets,\
             coord1,coord2,coord3,coord4,maxC):
 
         print('Generating edge elements...')
@@ -3262,8 +3262,8 @@ class ParticleGen:
             option1 = np.concatenate((case2Points[x,0:3],surfaceExtLength*(np.cross(c2v1[x,:],c2v2[x,:]))/np.array([np.linalg.norm(np.cross(c2v1[x,:],c2v2[x,:])),]*3).T+case2Points[x,0:3]))
         
             # Obtain extents for floating bin
-            binMin = option1[3:6]-maxAggD
-            binMax = option1[3:6]+maxAggD
+            binMin = option1[3:6]-maxPar
+            binMax = option1[3:6]+maxPar
 
             # Check if point is inside the mesh         
             inside = self.insideCheckPoint(vertices,tets,option1[3:6],\
@@ -4743,7 +4743,7 @@ Intersection [N]\n\
             np.save(Path('meshes/' + geoName + '/' + geoName \
                 + '-data-fiberfacet.dat'), dataList, allow_pickle=False)
             
-    def sieveFile(self,geoName,multiMaterial,aggDiameterList,maxAggD,minAggD,aggGrainsDiameterList,\
+    def sieveFile(self,geoName,multiMaterial,parDiameterList,maxPar,minPar,aggGrainsDiameterList,\
         itzDiameterList,binderDiameterList,cementStructure,PoresDiameterList,ClinkerDiameterList,CHDiameterList,\
         CSH_LDDiameterList,CSH_HDDiameterList):
         
@@ -4952,23 +4952,23 @@ Intersection [N]\n\
 
             # Generate sieve curve data file
             np.savetxt(Path('meshes/' + geoName + '/' + geoName \
-                + '-data-sieveCurve.dat'), aggDiameterList, fmt='%.10g', delimiter=' '\
+                + '-data-sieveCurve.dat'), parDiameterList, fmt='%.10g', delimiter=' '\
                 ,header='\
     Data Generated with LDPM Mesh Generation Tool\n\
     Diameter List (mm):')   
 
             # Calculations for sieve curve plotting
-            totalVol = sum(4/3*math.pi*(aggDiameterList/2)**3)
+            totalVol = sum(4/3*math.pi*(parDiameterList/2)**3)
 
-            passing = np.zeros(len(aggDiameterList))
+            passing = np.zeros(len(parDiameterList))
 
-            for x in range(len(aggDiameterList)):
-                passing[x] = sum(4/3*math.pi*(aggDiameterList[0:(len(aggDiameterList)-x)]/2)**3)/totalVol*100
+            for x in range(len(parDiameterList)):
+                passing[x] = sum(4/3*math.pi*(parDiameterList[0:(len(parDiameterList)-x)]/2)**3)/totalVol*100
             
 
             # Generate plot of sieve curve
             plt.close('all')
-            plt.plot(aggDiameterList, passing, label= "Simulated Data", color='k') 
+            plt.plot(parDiameterList, passing, label= "Simulated Data", color='k') 
 
             font = FontProperties()
             font.set_family('serif')
@@ -5172,8 +5172,8 @@ Intersection [N]\n\
         plt.savefig(Path('meshes/' + geoName + '/' + geoName \
             + '-materialVolume.png'), dpi=300)
         
-    def logFile(self,gmshTime,nParticles,placementTime,maxAggD,\
-            minAggD,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
+    def logFile(self,gmshTime,nParticles,placementTime,maxPar,\
+            minPar,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
             geoName,aggOffset,densityWater,densityCement,allTets,dataType,\
             tetTessTime,writeTime,geoFile,dFiber,lFiber,vFiber,fiberFile,\
             multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
@@ -5201,8 +5201,8 @@ Intersection [N]\n\
             f.write('geoName:                                 ' + geoName + '\n')  
             f.write('\n')
             f.write('CONCRETE PARAMETERS:\n')                   
-            f.write('maxAggD:                                 ' + str(maxAggD) + ' ['+ outputUnits + '] \n')  
-            f.write('minAggD:                                 ' + str(minAggD) + ' ['+ outputUnits + '] \n')  
+            f.write('maxPar:                                 ' + str(maxPar) + ' ['+ outputUnits + '] \n')  
+            f.write('minPar:                                 ' + str(minPar) + ' ['+ outputUnits + '] \n')  
             if sieveCurveDiameter == []:
                 f.write('fullerCoef:                              ' + str(fullerCoef) + ' [-] \n')
                 f.write('q:                                       ' + str(q) + ' [-] \n')  
@@ -5308,9 +5308,9 @@ Intersection [N]\n\
     # Section only used for study and debugging; leave as-is commented out.
 
     #def materialLogFile(self,materialFile,itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,\
-    #   binderVolFracAct,aggVolFracAct,materialRule,minAggD):
+    #   binderVolFracAct,aggVolFracAct,materialRule,minPar):
 
         # Generate material fraction log file
     #   with open(Path('meshes/' + materialFile + '-MaterialReport.log'),\
     #       "a") as f:                                       
-    #       f.write('Rule: ' + str(materialRule) + ' minAggD: ' + str(minAggD) + ' aggVolFracSim: ' + "{:.8f}".format(aggVolFracSim) + ' aggVolFracAct: ' + "{:.8f}".format(aggVolFracAct) + ' binderVolFracSim: ' + "{:.8f}".format(binderVolFracSim) + ' binderVolFracAct: ' + "{:.8f}".format(binderVolFracAct) + ' itzVolFracSim: ' + "{:.8f}".format(itzVolFracSim) + ' itzVolFracAct: ' + "{:.8f}".format(itzVolFracAct) + '\n')
+    #       f.write('Rule: ' + str(materialRule) + ' minPar: ' + str(minPar) + ' aggVolFracSim: ' + "{:.8f}".format(aggVolFracSim) + ' aggVolFracAct: ' + "{:.8f}".format(aggVolFracAct) + ' binderVolFracSim: ' + "{:.8f}".format(binderVolFracSim) + ' binderVolFracAct: ' + "{:.8f}".format(binderVolFracAct) + ' itzVolFracSim: ' + "{:.8f}".format(itzVolFracSim) + ' itzVolFracAct: ' + "{:.8f}".format(itzVolFracAct) + '\n')

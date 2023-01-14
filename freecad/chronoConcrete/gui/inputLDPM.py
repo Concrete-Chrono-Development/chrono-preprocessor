@@ -21,6 +21,8 @@ from freecad.chronoConcrete.generation.genAnalysis import genAnalysis
 from freecad.chronoConcrete.generation.genGeometry import genGeometry
 from freecad.chronoConcrete.generation.genSurfaceMesh import genSurfMesh
 from freecad.chronoConcrete.generation.particleVol import particleVol
+from freecad.chronoConcrete.generation.particleList import particleList
+
 
 class inputLDPMwindow:
     def __init__(self):
@@ -191,12 +193,23 @@ class inputLDPMwindow:
 
 
 
-
-        [aggVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+        # Calculate required volume of particles and sieve curve data
+        [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
 
-        print([aggVolTotal,cdf,cdf1,kappa_i])
+        # Calculate list of particle diameters for placement
+        [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
+            cdf,kappa_i,NewSet,fullerCoef)
+
+
+
+
+
+
+
+
+        print([maxParNum, parDiameterList])
 
 
 
