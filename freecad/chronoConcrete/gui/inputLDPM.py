@@ -1,7 +1,5 @@
 import os
 import FreeCADGui as Gui
-from freecad.chronoConcrete import ICONPATH
-from freecad.chronoConcrete import GUIPATH
 import FreeCAD as App
 import Part
 import Part,PartGui
@@ -10,42 +8,39 @@ import MeshPartGui, FreeCADGui
 import MeshPart
 import Mesh, Part, PartGui
 import MaterialEditor
-
 import ObjectsFem
 import FemGui
+
 from PySide import QtCore, QtGui
 
-from freecad.chronoConcrete.gui.readInputsLDPM import readInputs
+from freecad.chronoConcrete import ICONPATH
+from freecad.chronoConcrete import GUIPATH
 
-from freecad.chronoConcrete.generation.genAnalysis import genAnalysis
-from freecad.chronoConcrete.generation.genGeometry import genGeometry
-from freecad.chronoConcrete.generation.genSurfaceMesh import genSurfMesh
-from freecad.chronoConcrete.generation.particleVol import particleVol
-from freecad.chronoConcrete.generation.particleList import particleList
+from freecad.chronoConcrete.gui.readInputsLDPM          import readInputs
+from freecad.chronoConcrete.gui.ccloadUIfile            import ccloadUIfile
+from freecad.chronoConcrete.gui.ccloadUIicon            import ccloadUIicon
+
+from freecad.chronoConcrete.generation.genAnalysis      import genAnalysis
+from freecad.chronoConcrete.generation.genGeometry      import genGeometry
+from freecad.chronoConcrete.generation.genSurfaceMesh   import genSurfMesh
+from freecad.chronoConcrete.generation.particleVol      import particleVol
+from freecad.chronoConcrete.generation.particleList     import particleList
+from freecad.chronoConcrete.generation.surfMeshSize     import surfMeshSize
 
 
 class inputLDPMwindow:
     def __init__(self):
 
-        # Load Button Icon
-        #self.icon = os.path.join(ICONPATH, "ldpm.svg")
-
         # Load UI's for Side Panel
-        ui_file_A = os.path.join(GUIPATH, "ldpmMeshProps.ui")
-        ui_file_B = os.path.join(GUIPATH, "geometry.ui")
-        ui_file_C = os.path.join(GUIPATH, "ldpmParticles.ui")   
-        ui_file_D = os.path.join(GUIPATH, "ldpmMixDesign.ui")
-        ui_file_E = os.path.join(GUIPATH, "ldpmAdditionalPara.ui")
-        ui_file_F = os.path.join(GUIPATH, "generation.ui")
-        a = Gui.PySideUic.loadUi(ui_file_A)
-        b = Gui.PySideUic.loadUi(ui_file_B)
-        c = Gui.PySideUic.loadUi(ui_file_C)        
-        d = Gui.PySideUic.loadUi(ui_file_D)          
-        e = Gui.PySideUic.loadUi(ui_file_E)        
-        f = Gui.PySideUic.loadUi(ui_file_F)
+        a = ccloadUIfile("ldpmMeshProps.ui")
+        b = ccloadUIfile("geometry.ui")
+        c = ccloadUIfile("ldpmParticles.ui")        
+        d = ccloadUIfile("ldpmMixDesign.ui")          
+        e = ccloadUIfile("ldpmAdditionalPara.ui")       
+        f = ccloadUIfile("generation.ui")
+        self.form = [a, b, c, d, e, f]
 
         # Label, Load Icons, and Initialize Panels
-        self.form = [a, b, c, d, e, f]
         self.form[0].setWindowTitle("LDPM Meshing Settings")
         self.form[1].setWindowTitle("Geometry")
         self.form[2].setWindowTitle("Particles")        
@@ -53,12 +48,13 @@ class inputLDPMwindow:
         self.form[4].setWindowTitle("Additional Parameters")
         self.form[5].setWindowTitle("Model Generation") 
 
-        self.form[0].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_MaterialMechanicalNonlinear.svg"))))
-        self.form[1].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "PartDesign_AdditiveBox.svg"))))
-        self.form[2].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "Arch_Material_Group.svg"))))
-        self.form[3].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_ConstraintFlowVelocity.svg"))))
-        self.form[4].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "FEM_CreateNodesSet.svg"))))
-        self.form[5].setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, "ldpm.svg"))))
+        ccloadUIicon(self.form[0],"FEM_MaterialMechanicalNonlinear.svg")
+        ccloadUIicon(self.form[1],"PartDesign_AdditiveBox.svg")
+        ccloadUIicon(self.form[2],"Arch_Material_Group.svg")
+        ccloadUIicon(self.form[3],"FEM_ConstraintFlowVelocity.svg")
+        ccloadUIicon(self.form[4],"FEM_CreateNodesSet.svg")
+        ccloadUIicon(self.form[5],"ldpm.svg")
+
 
 
 
@@ -202,7 +198,8 @@ class inputLDPMwindow:
         [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
             cdf,kappa_i,NewSet,fullerCoef)
 
-
+        # Calculation of surface mesh size
+        maxEdgeLength = surfMeshSize(vertices,faces)
 
 
 
