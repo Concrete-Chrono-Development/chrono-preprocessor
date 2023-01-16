@@ -100,6 +100,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
           <widget class="QLineEdit" name="flyashContent">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -122,6 +125,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_11">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Fly Ash Content [tonne/mm3 Concrete]</string>
            </property>
@@ -133,6 +139,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
           <widget class="QLineEdit" name="silicaContent">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -155,6 +164,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_12">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Silica Fume Content [tonne/mm3 Concrete]</string>
            </property>
@@ -166,6 +178,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
           <widget class="QLineEdit" name="scmContent">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -188,6 +203,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_13">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Other SCMs Content [tonne/mm3 Concrete]</string>
            </property>
@@ -304,6 +322,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_12">
          <item>
           <widget class="QLineEdit" name="flyashDensity">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -326,6 +347,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_18">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Density of Fly Ash [tonne/mm3]</string>
            </property>
@@ -337,6 +361,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QLineEdit" name="silicaDensity">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -359,6 +386,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_19">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Density of Silica Fume [tonne/mm3]</string>
            </property>
@@ -370,6 +400,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_14">
          <item>
           <widget class="QLineEdit" name="scmDensity">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -392,6 +425,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_20">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Density of Other SCMs [tonne/mm3]</string>
            </property>
