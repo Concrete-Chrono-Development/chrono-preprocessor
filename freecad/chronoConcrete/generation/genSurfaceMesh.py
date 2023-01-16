@@ -48,5 +48,6 @@ def genSurfMesh(analysisName,geoName,meshName,minPar,maxPar):
     for v in femmesh.Volumes:
         tets.append(femmesh.getElementNodes(v))
     tets = np.asarray(tets)
+    tets = (tets).astype(int)
 
     return vertices,edges,faces,tets

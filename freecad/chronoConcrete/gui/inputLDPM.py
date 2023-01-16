@@ -11,21 +11,33 @@ import MaterialEditor
 import ObjectsFem
 import FemGui
 
+import numpy as np
+
 from PySide import QtCore, QtGui
 
-from freecad.chronoConcrete import ICONPATH
-from freecad.chronoConcrete import GUIPATH
+from freecad.chronoConcrete                                     import ICONPATH
+from freecad.chronoConcrete                                     import GUIPATH
 
-from freecad.chronoConcrete.gui.readInputsLDPM          import readInputs
-from freecad.chronoConcrete.gui.ccloadUIfile            import ccloadUIfile
-from freecad.chronoConcrete.gui.ccloadUIicon            import ccloadUIicon
+from freecad.chronoConcrete.gui.readInputsLDPM                  import readInputs
+from freecad.chronoConcrete.gui.ccloadUIfile                    import ccloadUIfile
+from freecad.chronoConcrete.gui.ccloadUIicon                    import ccloadUIicon
 
-from freecad.chronoConcrete.generation.genAnalysis      import genAnalysis
-from freecad.chronoConcrete.generation.genGeometry      import genGeometry
-from freecad.chronoConcrete.generation.genSurfaceMesh   import genSurfMesh
-from freecad.chronoConcrete.generation.particleVol      import particleVol
-from freecad.chronoConcrete.generation.particleList     import particleList
-from freecad.chronoConcrete.generation.surfMeshSize     import surfMeshSize
+from freecad.chronoConcrete.generation.genAnalysis              import genAnalysis
+from freecad.chronoConcrete.generation.genGeometry              import genGeometry
+from freecad.chronoConcrete.generation.genSurfaceMesh           import genSurfMesh
+from freecad.chronoConcrete.generation.particleVol              import particleVol
+from freecad.chronoConcrete.generation.particleList             import particleList
+from freecad.chronoConcrete.generation.particleFaces            import particleFaces
+from freecad.chronoConcrete.generation.surfMeshSize             import surfMeshSize
+from freecad.chronoConcrete.generation.surfMeshExtents          import surfMeshExtents
+from freecad.chronoConcrete.generation.genParticle              import generateParticle
+from freecad.chronoConcrete.generation.genParticleMPI           import generateParticleMPI
+from freecad.chronoConcrete.generation.particleInsideCheck      import insideCheck
+from freecad.chronoConcrete.generation.particleOverlapCheck     import overlapCheck
+from freecad.chronoConcrete.generation.particleOverlapCheckMPI  import overlapCheckMPI
+
+
+
 
 
 class inputLDPMwindow:
@@ -144,8 +156,9 @@ class inputLDPMwindow:
         #    airFrac = airFrac2
         #else:
         airFrac = airFrac1
-
-
+        maxIter = 50000
+        aggOffsetCoeff = 0.2                                    # Minimum distance between particles factor 
+        verbose = True
 
         self.form[5].progressBar.setValue(1) 
 
@@ -186,13 +199,17 @@ class inputLDPMwindow:
 
 
 
-
+        # Gets extents of geometry
+        [minC,maxC] = surfMeshExtents(vertices)
 
 
         # Calculate required volume of particles and sieve curve data
         [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
+        # Temporary to skip over sieve curve option
+        newSieveCurveD = 0
+        NewSet = 0
 
         # Calculate list of particle diameters for placement
         [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
@@ -201,12 +218,159 @@ class inputLDPMwindow:
         # Calculation of surface mesh size
         maxEdgeLength = surfMeshSize(vertices,faces)
 
+        # Generates points for all external triangles
+        facePoints = particleFaces(vertices,faces)
+
+        # Basic Calcs
+        aggOffset = aggOffsetCoeff*minPar
+
+        
+        
+        coord1 = vertices[tets[:,0]-1]
+        coord2 = vertices[tets[:,1]-1]
+        coord3 = vertices[tets[:,2]-1]
+        coord4 = vertices[tets[:,3]-1]
 
 
 
 
 
-        print([maxParNum, parDiameterList])
+
+
+        print([maxParNum, maxEdgeLength])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # Initialize empty particle nodes list outside geometry
+        nodes = (np.zeros((len(parDiameterList),3))+2)*maxC
+
+
+
+
+
+        # Initialize values
+        newMaxIter = 2
+        particlesPlaced = 0
+
+        if numCPU > 1:
+        
+            if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
+                print("%s Remaining." % (len(parDiameterList)))
+
+            for increment in range(numIncrements-1):
+
+                process_pool = multiprocessing.Pool(numCPU)
+
+                outputMPI = process_pool.map(functools.partial(generateParticleMPI, facePoints,maxParNum, minC, maxC, vertices, \
+                    tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
+
+                nodeMPI = np.array(outputMPI)[:,0:3]
+                diameter = np.array(outputMPI)[:,3]
+                newMaxIter = int(max(np.array(outputMPI)[:,4]))
+                maxAttempts = int(max(np.array(outputMPI)[:,5]))
+
+                particlesPlaced = particlesPlaced+len(np.array(outputMPI)[:,0:3])        
+
+                for x in range(len(nodeMPI)):
+
+                    # Store placed particles from this increment
+                    nodes[particlesPlaced+x,:] = nodeMPI[x,:]
+
+                    # Obtain extents for floating bin for node to test
+                    binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxPar/2-aggOffset,\
+                        nodeMPI[x,1]-diameter[x]/2-maxPar/2-aggOffset,nodeMPI[x,2]-\
+                        diameter[x]/2-maxPar/2-aggOffset]))
+                    binMax = np.array(([nodeMPI[x,0]+diameter[x]/2+maxPar/2+aggOffset,\
+                        nodeMPI[x,1]+diameter[x]/2+maxPar/2+aggOffset,nodeMPI[x,2]+\
+                        diameter[x]/2+maxPar/2+aggOffset]))
+
+                    # Check if particle overlapping any just added particles (ignore first one placed)
+                    if x > 0:
+
+                        overlap = overlapCheckMPI(nodeMPI[x,:],diameter[x],binMin,\
+                            binMax,minPar,aggOffset,nodeMPI[0:x],diameter[0:x])
+
+                        if overlap == True:
+
+                            newMaxIter = generateParticle(particlesPlaced+x,facePoints,\
+                                parDiameterList[particlesPlaced+x],maxParNum, minC, maxC, vertices, \
+                                tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                                maxPar,aggOffset,'No',parDiameterList,maxEdgeLength)
+                            
+                            nodes[particlesPlaced+x,:] = node[0,:]
+
+                if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
+                    print("%s Remaining. Maximum attempts required in increment: %s" % \
+                        (len(parDiameterList)-particlesPlaced, maxAttempts))
+
+
+        # Generate particles for length of needed aggregate (not placed via MPI)
+        for x in range(particlesPlaced,len(parDiameterList)):
+
+            # Generate particle
+            newMaxIter = generateParticle(x,facePoints,\
+                parDiameterList[x],maxParNum, minC, maxC, vertices, \
+                tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength)
+            
+            nodes[x,:] = node[0,:]
+
+
+
+
+        materialList = np.ones(len(parDiameterList))
+
+        placementTime = round(time.time() - start_time,2)   
+        nParticles = len(parDiameterList)
+
+        # Create empty lists if not multi-material or cementStructure
+        aggGrainsDiameterList, itzDiameterList, binderDiameterList, PoresDiameterList,\
+            ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
