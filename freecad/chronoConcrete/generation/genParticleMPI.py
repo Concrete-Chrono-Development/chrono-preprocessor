@@ -53,7 +53,7 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(vertices,node,aggDiameter,trianglePoints,binMin,\
+        overlap = overlapCheck(nodes,node,aggDiameter,trianglePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
@@ -73,7 +73,6 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
 
             # Indicate placed particle and break While Loop
             if inside == True and overlap[0] == False:
-                ParticleGen.node = node
                 break
 
 

@@ -12,6 +12,7 @@ import ObjectsFem
 import FemGui
 
 import numpy as np
+import time
 
 from PySide import QtCore, QtGui
 
@@ -133,6 +134,10 @@ class inputLDPMwindow:
 
     def generation(self):
 
+        # Initialize code start time to measure performance
+        start_time = time.time()
+
+
         # Store document
         docGui = Gui.activeDocument()
 
@@ -158,7 +163,7 @@ class inputLDPMwindow:
         airFrac = airFrac1
         maxIter = 50000
         aggOffsetCoeff = 0.2                                    # Minimum distance between particles factor 
-        verbose = True
+        verbose = "On"
 
         self.form[5].progressBar.setValue(1) 
 
@@ -308,7 +313,7 @@ class inputLDPMwindow:
                             newMaxIter = generateParticle(particlesPlaced+x,facePoints,\
                                 parDiameterList[particlesPlaced+x],maxParNum, minC, maxC, vertices, \
                                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                                maxPar,aggOffset,'No',parDiameterList,maxEdgeLength)
+                                maxPar,aggOffset,'No',parDiameterList,maxEdgeLength,nodes)
                             
                             nodes[particlesPlaced+x,:] = node[0,:]
 
@@ -316,16 +321,25 @@ class inputLDPMwindow:
                     print("%s Remaining. Maximum attempts required in increment: %s" % \
                         (len(parDiameterList)-particlesPlaced, maxAttempts))
 
-
+        print("Placing particles.")
         # Generate particles for length of needed aggregate (not placed via MPI)
         for x in range(particlesPlaced,len(parDiameterList)):
 
             # Generate particle
-            newMaxIter = generateParticle(x,facePoints,\
+            [newMaxIter,node,iterReq] = generateParticle(x,facePoints,\
                 parDiameterList[x],maxParNum, minC, maxC, vertices, \
                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength)
+                maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes)
             
+            #if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
+            #    print("%s Remaining. Attempts required: %s" % \
+            #        (len(parDiameterList)-x-1, int(iterReq/3)))
+
+
+            App.Console.PrintMessage("Value:\n")
+
+            self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
+
             nodes[x,:] = node[0,:]
 
 

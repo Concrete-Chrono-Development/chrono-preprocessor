@@ -11,7 +11,7 @@ from freecad.chronoConcrete.generation.particleInsideCheck     	import insideChe
 
 def generateParticle(x,facePoints,aggDiameter,maxParNum,minC,maxC,\
     vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
-    aggOffset,verbose,parDiameterList,maxEdgeLength):
+    aggOffset,verbose,parDiameterList,maxEdgeLength,nodes):
     
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)
@@ -56,7 +56,7 @@ def generateParticle(x,facePoints,aggDiameter,maxParNum,minC,maxC,\
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(vertices,node,aggDiameter,facePoints,binMin,\
+        overlap = overlapCheck(nodes,node,aggDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
@@ -75,11 +75,8 @@ def generateParticle(x,facePoints,aggDiameter,maxParNum,minC,maxC,\
 
             # Indicate placed particle and break While Loop
             if inside == True and overlap[0] == False:
-                ParticleGen.node = node
                 break
 
-    if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-        print("%s Remaining. Attempts required: %s" % \
-            (len(parDiameterList)-x-1, int(i/3)))
 
-    return newMaxIter
+    iterReq = i
+    return newMaxIter,node,iterReq

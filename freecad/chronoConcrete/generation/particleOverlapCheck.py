@@ -1,21 +1,22 @@
+import math
 import numpy as np
 
 
 
-def overlapCheck(vertices,center,aggDiameter,facePoints,binMin,binMax,\
+def overlapCheck(nodes,center,aggDiameter,facePoints,binMin,binMax,\
     minPar,maxEdgeLength,aggOffset,parDiameterList):
 
-    # Store particle vertices that fall inside the bin
-    binTestParticles = np.all([(vertices[:,0] > binMin[0]) , \
-        (vertices[:,0] < binMax[0]) , (vertices[:,1] > binMin[1]) , \
-        (vertices[:,1] < binMax[1]) , (vertices[:,2] > binMin[2]) , \
-        (vertices[:,2] < binMax[2])],axis=0)
-    existingvertices = vertices[binTestParticles,:]
+    # Store particle nodes that fall inside the bin
+    binTestParticles = np.all([(nodes[:,0] > binMin[0]) , \
+        (nodes[:,0] < binMax[0]) , (nodes[:,1] > binMin[1]) , \
+        (nodes[:,1] < binMax[1]) , (nodes[:,2] > binMin[2]) , \
+        (nodes[:,2] < binMax[2])],axis=0)
+    existingnodes = nodes[binTestParticles,:]
     existingAggD = parDiameterList[binTestParticles]
 
     # Compute distance between particles 
-    if len(existingvertices>0):
-        nodalDistance = np.linalg.norm(center-existingvertices, axis=1)
+    if len(existingnodes>0):
+        nodalDistance = np.linalg.norm(center-existingnodes, axis=1)
         aggOffsetDist = nodalDistance - aggDiameter/2 - existingAggD\
             /2 - aggOffset
     else: 
@@ -25,7 +26,7 @@ def overlapCheck(vertices,center,aggDiameter,facePoints,binMin,binMax,\
     if (aggOffsetDist<0).any():
         return True,"NA"
 
-    # Store edge vertices that fall inside the bin
+    # Store edge nodes that fall inside the bin
     binTestSurf = np.all([(facePoints[:,0] > binMin[0]) , \
         (facePoints[:,0] < binMax[0]) , (facePoints[:,1] > \
             binMin[1]) , (facePoints[:,1] < binMax[1]) ,\
@@ -33,7 +34,7 @@ def overlapCheck(vertices,center,aggDiameter,facePoints,binMin,binMax,\
             binMax[2])],axis=0)     
     existingSurf = facePoints[binTestSurf,:]
 
-    # Compute distance between particle and edge vertices
+    # Compute distance between particle and edge nodes
     if len(existingSurf>0):
         surfNodalDistance = np.linalg.norm(center-existingSurf, axis=1)
         aggSurfaceDist = surfNodalDistance - aggDiameter/2 - 1.1*minPar/2

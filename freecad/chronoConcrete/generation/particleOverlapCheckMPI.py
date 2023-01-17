@@ -2,19 +2,19 @@ import numpy as np
 
 
 
-def overlapCheckMPI(center,aggDiameter,binMin,binMax,minPar,aggOffset,vertices,diameters):
+def overlapCheckMPI(center,aggDiameter,binMin,binMax,minPar,aggOffset,nodes,diameters):
 
-    # Store particle vertices that fall inside the bin
-    binTestParticles = np.all([(vertices[:,0] > binMin[0]) , \
-        (vertices[:,0] < binMax[0]) , (vertices[:,1] > binMin[1]) , \
-        (vertices[:,1] < binMax[1]) , (vertices[:,2] > binMin[2]) , \
-        (vertices[:,2] < binMax[2])],axis=0)
-    existingvertices = vertices[binTestParticles,:]
+    # Store particle nodes that fall inside the bin
+    binTestParticles = np.all([(nodes[:,0] > binMin[0]) , \
+        (nodes[:,0] < binMax[0]) , (nodes[:,1] > binMin[1]) , \
+        (nodes[:,1] < binMax[1]) , (nodes[:,2] > binMin[2]) , \
+        (nodes[:,2] < binMax[2])],axis=0)
+    existingnodes = nodes[binTestParticles,:]
     existingAggD = diameters[binTestParticles]
 
     # Compute distance between particles 
-    if len(existingvertices>0):
-        nodalDistance = np.linalg.norm(center-existingvertices, axis=1)
+    if len(existingnodes>0):
+        nodalDistance = np.linalg.norm(center-existingnodes, axis=1)
         aggOffsetDist = nodalDistance - aggDiameter/2 - existingAggD\
             /2 - aggOffset
     else: 

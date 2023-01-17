@@ -17,5 +17,5 @@ setup(name='freecad.chronoConcrete',
       maintainer_email="mtroemner@gmail.com",
       url="TBD",
       description="template for a freecad extensions, installable with pip",
-      install_requires=['numpy','math'], 
+      install_requires=['numpy','math','time'], 
       include_package_data=True)
