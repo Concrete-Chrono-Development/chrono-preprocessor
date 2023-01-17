@@ -1,4 +1,9 @@
 import os
+import time
+import tempfile
+import numpy as np
+from pathlib import Path
+
 import FreeCADGui as Gui
 import FreeCAD as App
 import Part
@@ -11,13 +16,11 @@ import MaterialEditor
 import ObjectsFem
 import FemGui
 
-import numpy as np
-import time
-
 from PySide import QtCore, QtGui
 
 from freecad.chronoConcrete                                     import ICONPATH
 from freecad.chronoConcrete                                     import GUIPATH
+from freecad.chronoConcrete                                     import TETGENPATH
 
 from freecad.chronoConcrete.gui.readInputsLDPM                  import readInputs
 from freecad.chronoConcrete.gui.ccloadUIfile                    import ccloadUIfile
@@ -36,13 +39,15 @@ from freecad.chronoConcrete.generation.genParticleMPI           import generateP
 from freecad.chronoConcrete.generation.particleInsideCheck      import insideCheck
 from freecad.chronoConcrete.generation.particleOverlapCheck     import overlapCheck
 from freecad.chronoConcrete.generation.particleOverlapCheckMPI  import overlapCheckMPI
-
-
+from freecad.chronoConcrete.generation.readTetgen               import readTetgen
+from freecad.chronoConcrete.generation.genTetrahedralization    import genTetrahedralization
+from freecad.chronoConcrete.generation.genTesselation           import genTesselation
 
 
 
 class inputLDPMwindow:
     def __init__(self):
+
 
         # Load UI's for Side Panel
         a = ccloadUIfile("ldpmMeshProps.ui")
@@ -137,6 +142,9 @@ class inputLDPMwindow:
         # Initialize code start time to measure performance
         start_time = time.time()
 
+        # Make a temporary path location
+        tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
+        os.mkdir(tempPath)
 
         # Store document
         docGui = Gui.activeDocument()
@@ -166,7 +174,7 @@ class inputLDPMwindow:
         verbose = "On"
 
         self.form[5].progressBar.setValue(1) 
-
+        self.form[5].statusWindow.setText("Status: Generating objects.") 
 
         geoName = elementType + "geo"
         meshName = elementType + "mesh"
@@ -182,7 +190,7 @@ class inputLDPMwindow:
 
 
         # Generate geometry
-        print("Generating geometry")
+        self.form[5].statusWindow.setText("Status: Generating geometry.") 
         genGeo = genGeometry(dimensions,geoType,geoName)
         self.form[5].progressBar.setValue(2) 
 
@@ -192,13 +200,16 @@ class inputLDPMwindow:
         Gui.runCommand('Std_DrawStyle',6)
         Gui.runCommand('Std_PerspectiveCamera',1)
 
+
         # Generate analysis objects
+        self.form[5].statusWindow.setText("Status: Generating analysis objects.") 
         genAna = genAnalysis(analysisName,constitutiveEQ)
         self.form[5].progressBar.setValue(3) 
 
 
+
         # Generate surface mesh
-        print("Generating surface mesh")
+        self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
         [vertices,edges,faces,tets] = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
@@ -207,7 +218,7 @@ class inputLDPMwindow:
         # Gets extents of geometry
         [minC,maxC] = surfMeshExtents(vertices)
 
-
+        self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
         [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
@@ -216,6 +227,7 @@ class inputLDPMwindow:
         newSieveCurveD = 0
         NewSet = 0
 
+        self.form[5].statusWindow.setText("Status: Calculating list of particles.") 
         # Calculate list of particle diameters for placement
         [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
             cdf,kappa_i,NewSet,fullerCoef)
@@ -230,25 +242,11 @@ class inputLDPMwindow:
         aggOffset = aggOffsetCoeff*minPar
 
         
-        
+        # Store coordinates of tets in new format
         coord1 = vertices[tets[:,0]-1]
         coord2 = vertices[tets[:,1]-1]
         coord3 = vertices[tets[:,2]-1]
         coord4 = vertices[tets[:,3]-1]
-
-
-
-
-
-
-
-        print([maxParNum, maxEdgeLength])
-
-
-
-
-
-
 
 
 
@@ -264,7 +262,7 @@ class inputLDPMwindow:
 
 
 
-
+        self.form[5].statusWindow.setText("Status: Placing particles into geometry.") 
         # Initialize values
         newMaxIter = 2
         particlesPlaced = 0
@@ -317,11 +315,12 @@ class inputLDPMwindow:
                             
                             nodes[particlesPlaced+x,:] = node[0,:]
 
-                if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-                    print("%s Remaining. Maximum attempts required in increment: %s" % \
-                        (len(parDiameterList)-particlesPlaced, maxAttempts))
+                # Update progress bar every 2%
+                if x % np.rint(len(parDiameterList)/100) == 0:
+                    self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
 
-        print("Placing particles.")
+
+
         # Generate particles for length of needed aggregate (not placed via MPI)
         for x in range(particlesPlaced,len(parDiameterList)):
 
@@ -330,15 +329,11 @@ class inputLDPMwindow:
                 parDiameterList[x],maxParNum, minC, maxC, vertices, \
                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
                 maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes)
-            
-            #if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-            #    print("%s Remaining. Attempts required: %s" % \
-            #        (len(parDiameterList)-x-1, int(iterReq/3)))
 
 
-            App.Console.PrintMessage("Value:\n")
-
-            self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
+            # Update progress bar every 1% of placement
+            if x % np.rint(len(parDiameterList)/100) == 0:
+                self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
 
             nodes[x,:] = node[0,:]
 
@@ -363,18 +358,31 @@ class inputLDPMwindow:
 
 
 
+        # Add points visualization and information here
 
 
 
 
 
+        tetTessTimeStart = time.time()
+
+
+        self.form[5].statusWindow.setText("Status: Forming tetrahedralization.") 
+        tetGen = genTetrahedralization(nodes,facePoints,\
+            faces,geoName,verbose,tempPath)
+
+        [allNodes,allTets] = readTetgen(Path(tempPath + \
+            geoName +'.node'),Path(tempPath + geoName + '.ele'))
 
 
 
 
+        self.form[5].statusWindow.setText("Status: Forming tesselation.") 
+        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters] = \
+            genTesselation(allNodes,allTets,aggDiameterList,minAggD,\
+            geoName)
 
-
-
+        tetTessTime = round(time.time() - tetTessTimeStart,2)   
 
 
 

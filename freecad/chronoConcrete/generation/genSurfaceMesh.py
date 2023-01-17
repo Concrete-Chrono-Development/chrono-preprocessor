@@ -11,8 +11,12 @@ def genSurfMesh(analysisName,geoName,meshName,minPar,maxPar):
     # Set up Gmsh
     femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName)
     App.ActiveDocument.getObject(meshName).CharacteristicLengthMin = minPar
-    App.ActiveDocument.getObject(meshName).CharacteristicLengthMax = maxPar
+    App.ActiveDocument.getObject(meshName).CharacteristicLengthMax = 2*minPar
+    App.ActiveDocument.getObject(meshName).MeshSizeFromCurvature = 0
     App.ActiveDocument.getObject(meshName).ElementOrder = u"1st"
+    App.ActiveDocument.getObject(meshName).Algorithm2D = u"Delaunay"
+    App.ActiveDocument.getObject(meshName).Algorithm3D = u"Delaunay"
+    App.ActiveDocument.getObject(meshName).ElementDimension = u"3D"
     App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(geoName)
     App.ActiveDocument.recompute()
     App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(analysisName))
