@@ -15,6 +15,8 @@ import Mesh, Part, PartGui
 import MaterialEditor
 import ObjectsFem
 import FemGui
+import Fem
+import femmesh.femmesh2mesh
 
 from PySide import QtCore, QtGui
 
@@ -42,8 +44,10 @@ from freecad.chronoConcrete.generation.particleOverlapCheckMPI  import overlapCh
 from freecad.chronoConcrete.generation.readTetgen               import readTetgen
 from freecad.chronoConcrete.generation.genTetrahedralization    import genTetrahedralization
 from freecad.chronoConcrete.generation.genTesselation           import genTesselation
+from freecad.chronoConcrete.generation.genFacetData             import genFacetData
 
-
+from freecad.chronoConcrete.output.mkVtkParticles               import mkVtkParticles
+from freecad.chronoConcrete.output.mkVtkFacets                  import mkVtkFacets
 
 class inputLDPMwindow:
     def __init__(self):
@@ -333,7 +337,7 @@ class inputLDPMwindow:
 
             # Update progress bar every 1% of placement
             if x % np.rint(len(parDiameterList)/100) == 0:
-                self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
+                self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
             nodes[x,:] = node[0,:]
 
@@ -368,25 +372,71 @@ class inputLDPMwindow:
 
 
         self.form[5].statusWindow.setText("Status: Forming tetrahedralization.") 
-        tetGen = genTetrahedralization(nodes,facePoints,\
+        tetGen = genTetrahedralization(nodes,vertices,\
             faces,geoName,verbose,tempPath)
+        self.form[5].progressBar.setValue(89) 
 
-        [allNodes,allTets] = readTetgen(Path(tempPath + \
-            geoName +'.node'),Path(tempPath + geoName + '.ele'))
 
+
+        [allNodes,allTets] = readTetgen(Path(tempPath + geoName \
+        + '.node'),Path(tempPath + geoName + '.ele'))
+        self.form[5].progressBar.setValue(90) 
 
 
 
         self.form[5].statusWindow.setText("Status: Forming tesselation.") 
         [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters] = \
-            genTesselation(allNodes,allTets,aggDiameterList,minAggD,\
+            genTesselation(allNodes,allTets,parDiameterList,minPar,\
             geoName)
-
+        self.form[5].progressBar.setValue(95) 
         tetTessTime = round(time.time() - tetTessTimeStart,2)   
 
 
 
 
+        # Store values for unused features
+        edgeMaterialList = 0
+        materialRule = 0
+        multiMaterial = 'Off'
+        cementStructure = 'Off'
+
+
+
+
+        writeTimeStart = time.time()
+
+
+
+
+
+     
+        self.form[5].statusWindow.setText("Status: Generating facet data information.") 
+        [dataList,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetData(\
+            allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
+            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList)
+        self.form[5].progressBar.setValue(98) 
+
+
+
+
+
+
+
+        self.form[5].statusWindow.setText("Status: Writing external facet data file.") 
+        # Create file of external triangle facets for plotting of cells
+        #externalFacetsFile = externalFacetFile(dataList,vertices,faces,geoName)
+
+
+
+
+
+        # Initialize counter for number of facet materials switched
+        matSwitched = 0
+
+        itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct,\
+            PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
+            PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,\
+            matSwitched,materialRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
 
@@ -396,10 +446,100 @@ class inputLDPMwindow:
 
 
 
-        feminout.importVTKResults.export(ExportObjectList,FilePath)
+
+        print('Writing Mesh Data file.')
+
+        # If data files requested, generate Mesh File
+        #meshFile(geoName,allNodes,allTets)
+
+        print('Writing Facet Data file.')
+
+        # If data files requested, generate Facet File
+        #facetFile(geoName,dataList,allTets,dataType)
+
+        print('Writing Particle Data file.')
+
+        # If data files requested, generate Particle Data File
+        #particleData(allNodes,allTets,parDiameterList,minPar,geoName)
+
+
+        print('Writing visual files.')
+
+        # If visuals requested, generate Particle VTK File
+        mkVtkParticles(nodes,parDiameterList,materialList,geoName,tempPath)
+
+        # If visuals requested, generate Facet VTK File
+        mkVtkFacets(geoName,tetFacets,dataList,facetMaterial,multiMaterial,cementStructure,tempPath)
+
+
+
+        writeTime = round(time.time() - writeTimeStart,2)
+
+        # Generate Log file after run
+        #mkLogFile = logFile(gmshTime,nParticles,placementTime,maxPar,\
+        #    minPar,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
+        #    geoName,aggOffset,densityWater,densityCement,allTets,dataType,\
+        #    tetTessTime,writeTime,geoFile,dFiber,lFiber,vFiber,fiberFile,\
+        #    multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
+        #    maxBinderD,minBinderD,binderFullerCoef,maxITZD,minITZD,ITZFullerCoef,output,fibers,\
+        #    itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,\
+        #    aggVolFracAct,sieveCurveDiameter,sieveCurvePassing,matSwitched,materialRule,\
+        #    cementStructure,cementmaterialFile,maxPoresD,minPoresD,PoresFullerCoef,\
+        #    PoresSieveCurveDiameter,PoresSieveCurvePassing,maxClinkerD,minClinkerD,\
+        #    ClinkerFullerCoef,ClinkerSieveCurveDiameter,ClinkerSieveCurvePassing,\
+        #    maxCHD,minCHD,CHFullerCoef,CHSieveCurveDiameter,CHSieveCurvePassing,\
+        #    maxCSH_LDD,minCSH_LDD,CSH_LDFullerCoef,CSH_LDSieveCurveDiameter,CSH_LDSieveCurvePassing,\
+        #    maxCSH_HDD,minCSH_HDD,CSH_HDFullerCoef,CSH_HDSieveCurveDiameter,CSH_HDSieveCurvePassing,\
+        #    PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
+        #    PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,outputUnits)
+
+
+
+
+
+
+
+        # COPY FILES TO SELECTED DIRECTORY AND CLEANUP TEMPORARY DIRECTORY
+
+
+
+
+
+
+
+        
+        Fem.insert(str(Path(tempPath + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
+
+
+        out_mesh = femmesh.femmesh2mesh.femmesh_2_mesh(App.ActiveDocument.LDPMgeo_para_facet_000.FemMesh)
+
+        Mesh.show(Mesh.Mesh(out_mesh))
+
+
+        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').Lighting = u"Two side"
+
+        App.ActiveDocument.LDPMgeo_para_facet_000.ViewObject.hide()
+
+        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').ShapeColor = (0.36,0.36,0.36)
+
+        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').LineColor = (0.00,0.00,0.00)
+
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
+
+        App.ActiveDocument.removeObject('LDPMgeo_para_facet_000')
+
+
+        Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
+        Gui.runCommand('Std_ToggleVisibility',0)
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject('Mesh').Label = "LDPMfacets"
+
+
+        #feminout.importVTKResults.export(ExportObjectList,FilePath)
 
         # Make object to store VTK files
-        vtk_object = ObjectsFem.makePostVtkResult(doc,base_result,name = "VTK Files")
+        #vtk_object = ObjectsFem.makePostVtkResult(doc,base_result,name = "VTK Files")
 
 
 
@@ -409,15 +549,16 @@ class inputLDPMwindow:
 
 
 
+        self.form[5].progressBar.setValue(100) 
 
 
         # Switch to FEM GUI
         Gui.Control.closeDialog()
-        Gui.activateWorkbench("FemWorkbench")
-        Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.elementType)
-        FemGui.setActiveAnalysis(App.activeDocument().getObject(self.elementType))
-        Gui.Selection.clearSelection()
-        Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.meshName)
+        #Gui.activateWorkbench("FemWorkbench")
+        #Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.elementType)
+        #FemGui.setActiveAnalysis(App.activeDocument().getObject(self.elementType))
+        #Gui.Selection.clearSelection()
+        #Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.meshName)
 
 
 

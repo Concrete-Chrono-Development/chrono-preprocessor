@@ -6,11 +6,11 @@ import numpy as np
 
 
 
-def genTesselation(allNodes,allTets,aggDiameter,minAggD,geoName):
+def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     
     # Create diameters list (including fictitious edge particle diameters)
-    allDiameters = np.concatenate((np.array([1.1*minAggD,]*\
-        int(len(allNodes)-len(aggDiameter))),aggDiameter))
+    allDiameters = np.concatenate((np.array([1.1*minPar,]*\
+        int(len(allNodes)-len(parDiameter))),parDiameter))
 
     # Definition of Edge Points [Coordinates1,....,Coordinates6]
     edges1 = [allTets[:,0],allTets[:,1]]

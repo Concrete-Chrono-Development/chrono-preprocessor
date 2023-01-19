@@ -5,6 +5,7 @@ import numpy as np
 
 
 # Pulls the coordinates of each external triangle in the mesh 
+# NOTE THIS WILL PRODUCE DUPLICATE NODES SO DO NOT USE ANYWHERE WHERE THAT WOULD BE AN ISSUE!!!
 def particleFaces(vertices,faces):
 
     faces = faces.astype(int)

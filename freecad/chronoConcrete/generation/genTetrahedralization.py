@@ -9,47 +9,55 @@ from freecad.chronoConcrete import TETGENPATH
 
 def genTetrahedralization(nodes,vertices2D,triangles2D,geoName,verbose,tempPath):
     
-    
-    
+
 
     # Prepare file of internal nodes and external nodes/facets for Tetgen
     nodeRange = np.arange(len(nodes))+1
     nodeList = np.vstack((nodeRange,nodes.T)).T
     
-    
 
+
+    # Make external triangles file for Tetgen
+    with open(Path(tempPath + geoName + '2D.mesh'),"w") as f:                                       
+        f.write('MeshVersionFormatted 2\n')   
+        f.write('Dimension\n')   
+        f.write('3\n')   
+        f.write('Vertices\n')   
+        f.write(str(len(vertices2D)) + '\n')                                   
+        for x in range(0,len(vertices2D)):
+                f.write(str(vertices2D[x,0]) + '    ' \
+                    + str(vertices2D[x,1]) + '    '  + str(vertices2D[x,2]) \
+                    + '    0\n')
+        f.write('Triangles\n')
+        f.write(str(len(triangles2D)) + '\n')  
+        for x in range(0,len(triangles2D)):
+                f.write(str(triangles2D[x,0]) + '    ' \
+                    + str(triangles2D[x,1]) + '    '  + str(triangles2D[x,2]) \
+                    + '\n')
+        f.write('End\n')
+
+    
+    # Make internal node file for Tetgen
     with open(Path(tempPath + geoName + '2D.a.node'),"w") as f:                                       
         f.write(str(len(nodes)) + ' 3 0 0\n ')                                   
         f.write("\n ".join(" ".join(map(str, x)) for x in nodeList))
 
-    print('Starting Tetgen for tetrahedralization construction.')
-    
-    if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-        tetgenCommand = str(Path(TETGENPATH + '/tetgen')) + ' -pYiO0/1S0k ' \
-            + str(Path(tempPath + geoName + '2D.mesh'))
-    else:
-        tetgenCommand = str(Path(TETGENPATH + '/tetgen')) + ' -pYiO0/1S0kQ ' \
-            + str(Path(tempPath + geoName + '2D.mesh'))
 
+
+
+    # Run Tetgen with appropriate switches
+    tetgenCommand = str(Path(TETGENPATH + '/tetgen')) + ' -pYiO0/1S0kQ ' \
+        + str(Path(tempPath + geoName + '2D.mesh'))
     os.system(tetgenCommand)
 
+    # Check if Tetgen ran by trying to rename the output VTK
     try:
         os.rename(Path(tempPath + geoName + '2D.1.vtk'),Path(tempPath + geoName \
-            + '-para-mesh.000.vtk'))
+            + '-para-mesh.vtk'))
     except:
         print("Tetgen failed during tetrahedralization.")
         print("If this issue persists, you may need to use another geometry or particle distribution.")
         
-
-
-
-
-    os.remove(Path(tempPath + geoName + '.mesh'))
-    os.remove(Path(tempPath + geoName + '2D.mesh'))
-    try:
-        os.remove(Path(tempPath + geoName + '2D.stl'))
-    except:
-        pass
     try:
         os.remove(Path(tempPath + geoName + '2D.1.edge'))
     except:
@@ -62,13 +70,8 @@ def genTetrahedralization(nodes,vertices2D,triangles2D,geoName,verbose,tempPath)
         os.remove(Path(tempPath + geoName + '2D.a.node'))
     except:
         pass
+
     os.rename(Path(tempPath + geoName + '2D.1.ele'),Path(tempPath + geoName \
         + '.ele'))
     os.rename(Path(tempPath + geoName + '2D.1.node'),Path(tempPath + geoName \
         + '.node')) 
-    os.replace(Path(tempPath + geoName + '-para-mesh.000.vtk'), \
-        Path('meshes/' + geoName + '/' + geoName + '-para-mesh.000.vtk'))
-    os.replace(Path(tempPath + geoName + '.ele'), Path('meshes/' + geoName \
-        + '/' + geoName + '.ele'))
-    os.replace(Path(tempPath + geoName + '.node'), Path('meshes/' + geoName \
-        + '/' + geoName + '.node'))
