@@ -64,7 +64,7 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 #sys.executable = 'C:/Users/mtroe/anaconda3/python.exe'
-multiprocessing.set_executable('C:/Users/mtroe/anaconda3/pythonw.exe')
+#multiprocessing.set_executable('C:/Users/mtroe/anaconda3/pythonw.exe')
 
 
 class inputLDPMwindow:
