@@ -3,6 +3,7 @@ import numpy as np
 
 
 def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater,\
+    flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,\
 	vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing):
 
     # Convert density to Kg/m3
@@ -28,7 +29,9 @@ def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater
 
     # Calculates volume of particles needed
     [parVolTotal,cdf,cdf1,kappa_i] = aggVolume(tetVolume,wcRatio,cementC,\
-        volFracAir,fullerCoef,densityCement,densityWater,minPar,maxPar,\
+        volFracAir,fullerCoef,flyashC,silicaC,scmC,flyashDensity,\
+        silicaDensity,scmDensity,\
+        densityCement,densityWater,minPar,maxPar,\
         newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max)
 
 
@@ -95,13 +98,17 @@ def sieveCurve(minPar,maxPar,sieveCurveDiameter,sieveCurvePassing):
 
 
 def aggVolume(tetVolume,wcRatio,cementC,volFracAir,fullerCoef,\
+    flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,\
     densityCement,densityWater,minPar,maxPar,newSieveCurveD,newSieveCurveP,NewSet,w_min,w_max):
 
 
 
     volFracCement = cementC/densityCement
+    volFracFly = flyashC/flyashDensity
+    volFracSilica = silicaC/silicaDensity
+    volFracSCM = scmC/scmDensity
     volFracWater = wcRatio*cementC/densityWater
-    volFracPar = (1-volFracCement-volFracWater-volFracAir)
+    volFracPar = (1-volFracCement-volFracFly-volFracSilica-volFracSCM-volFracWater-volFracAir)
 
 
     if newSieveCurveD == 0:

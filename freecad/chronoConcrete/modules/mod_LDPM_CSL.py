@@ -97,14 +97,14 @@ class inputLDPMwindow:
 
 
 
-        # Connect Open File Button
+        # Connect Open File Buttons
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
-
+        QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generation)
         QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generation)
-
+        QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.generation)
 
 
 
@@ -127,6 +127,27 @@ class inputLDPMwindow:
             OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file parameter file", path,             "*.para") #PySide
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         if OpenName == "":                                                            # if the name file are not selected then Abord process
+            App.Console.PrintMessage("Process aborted"+"\n")
+        else:
+            App.Console.PrintMessage("Read "+OpenName+"\n")                           # text displayed to Report view (Menu > View > Report view checked)
+
+
+
+
+    def openDir(self):
+
+        path = App.ConfigGet("UserHomePath")
+
+        OpenName = ""
+        try:
+            OpenName = QtGui.QFileDialog.getExistingDirectory(None, "Open Directory",path,QtGui.QFileDialog.Option.ShowDirsOnly) 
+         
+        except Exception:
+            OpenName, Filter = QtGui.QFileDialog.getExistingDirectory(None, "Open Directory",path,QtGui.QFileDialog.Option.ShowDirsOnly) 
+
+
+
+        if OpenName == "":                                                            # if not selected then Abort process
             App.Console.PrintMessage("Process aborted"+"\n")
         else:
             App.Console.PrintMessage("Read "+OpenName+"\n")                           # text displayed to Report view (Menu > View > Report view checked)
@@ -155,9 +176,6 @@ class inputLDPMwindow:
 
 
 
-
-
-
     def generation(self):
 
         # Initialize code start time to measure performance
@@ -181,16 +199,18 @@ class inputLDPMwindow:
 
         # Read in inputs from input panel
         [elementType, \
-            constitutiveEQ, paramLocation, numCPU, numIncrements,placementAlg,\
+            constitutiveEQ, paramLocation, numCPU, numIncrements,maxIter,placementAlg,\
             geoType, dimensions,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
-            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2] = readInputs(self.form)
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
+            outputDir] = readInputs(self.form)
+
+
         #if fillerC > 0:
         #    airFrac = airFrac2
         #else:
         airFrac = airFrac1
-        maxIter = 50000
         aggOffsetCoeff = 0.2                                    # Minimum distance between particles factor 
         verbose = "On"
 
@@ -244,6 +264,7 @@ class inputLDPMwindow:
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
         [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+            flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,\
             vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
         # Temporary to skip over sieve curve option
@@ -295,9 +316,6 @@ class inputLDPMwindow:
 
 
 
-
-        numCPU = 1
-        numIncrements = 10
 
         if numCPU > 1:
         

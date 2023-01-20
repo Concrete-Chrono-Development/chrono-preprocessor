@@ -14,6 +14,7 @@ def readInputs(form):
     paramLocation       = form[0].paramLocation.text()
     numCPU              = form[0].numCPUbox.value()
     numIncrements       = form[0].numPIncBox.value()
+    maxIter             = form[0].numIncBox.value()
     placementAlg        = form[0].placementAlg.currentText()
 
     # Geometry Settings
@@ -68,10 +69,13 @@ def readInputs(form):
     # Additional Parameters
     # ... Coming Soon ...
 
+    # Generation Data
+    outputDir           = form[5].outputDir.text()
 
     return elementType, \
-        constitutiveEQ, paramLocation, numCPU, numIncrements,placementAlg,\
+        constitutiveEQ, paramLocation, numCPU, numIncrements,maxIter,placementAlg,\
         geoType, dimensions,\
         minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
-        cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2
+        cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
+        outputDir
