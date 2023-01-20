@@ -30,13 +30,13 @@ Qt Designer normally ships as a part of Qt Creator. This is Qt's official editor
 
 We recommend pulling the GitHub directly into the FreeCAD workbench directory. Otherwise if you pull to another location then you will need to copy the pulled files to the appropriate directory.&#x20;
 
-The top-most directory (to be named chronoConcrete) should be placed here:
+The top-most directory (to be named chronoConcrete) should be placed here. Note that a "Mod" directory may not exist, in which case you will need to create it.
 
 ```
 C:\Users\<username>\AppData\Roaming\FreeCAD\Mod
 ```
 
-Thus if correctly pulled, complete the readme should be located here:
+Thus if correctly pulled, the readme should be located here:
 
 ```
 C:\Users\<username>\AppData\Roaming\FreeCAD\Mod\chronoConcrete\README.md
