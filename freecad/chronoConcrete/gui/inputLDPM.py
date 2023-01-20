@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import tempfile
 import numpy as np
@@ -24,7 +25,7 @@ from freecad.chronoConcrete                                     import ICONPATH
 from freecad.chronoConcrete                                     import GUIPATH
 from freecad.chronoConcrete                                     import TETGENPATH
 
-from freecad.chronoConcrete.gui.readInputsLDPM                  import readInputs
+
 from freecad.chronoConcrete.gui.ccloadUIfile                    import ccloadUIfile
 from freecad.chronoConcrete.gui.ccloadUIicon                    import ccloadUIicon
 
@@ -46,12 +47,21 @@ from freecad.chronoConcrete.generation.genTetrahedralization    import genTetrah
 from freecad.chronoConcrete.generation.genTesselation           import genTesselation
 from freecad.chronoConcrete.generation.genFacetData             import genFacetData
 
+from freecad.chronoConcrete.input.readInputsLDPM                import readInputs
+
 from freecad.chronoConcrete.output.mkVtkParticles               import mkVtkParticles
 from freecad.chronoConcrete.output.mkVtkFacets                  import mkVtkFacets
 
+
+# Increase system check interval to improve performance
+sys.setcheckinterval(1000)
+
+# Turn off error for divide by zero and invalid operations
+np.seterr(divide='ignore', invalid='ignore')
+
+
 class inputLDPMwindow:
     def __init__(self):
-
 
         # Load UI's for Side Panel
         a = ccloadUIfile("ldpmMeshProps.ui")
@@ -80,11 +90,11 @@ class inputLDPMwindow:
 
 
 
-        # Connect Buttons
+        # Connect Open File Button
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
 
 
-        # Run generation
+        # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generation)
         QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generation)
 
@@ -207,6 +217,7 @@ class inputLDPMwindow:
 
         # Generate analysis objects
         self.form[5].statusWindow.setText("Status: Generating analysis objects.") 
+        time.sleep(2)
         genAna = genAnalysis(analysisName,constitutiveEQ)
         self.form[5].progressBar.setValue(3) 
 
@@ -214,6 +225,7 @@ class inputLDPMwindow:
 
         # Generate surface mesh
         self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
+        time.sleep(2)
         [vertices,edges,faces,tets] = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
@@ -339,6 +351,9 @@ class inputLDPMwindow:
             if x % np.rint(len(parDiameterList)/100) == 0:
                 self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
+            if x % np.rint(len(parDiameterList)/1000) == 0:
+                self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+
             nodes[x,:] = node[0,:]
 
 
@@ -441,9 +456,8 @@ class inputLDPMwindow:
 
 
 
-
-
-
+        App.activeDocument().addObject('App::DocumentObjectGroup','Group001')
+        App.activeDocument().Group001.Label = 'Data Files'
 
 
 
@@ -505,7 +519,8 @@ class inputLDPMwindow:
 
 
 
-
+        Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
+        Gui.runCommand('Std_ToggleVisibility',0)
 
         
         Fem.insert(str(Path(tempPath + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
@@ -524,13 +539,12 @@ class inputLDPMwindow:
 
         Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').LineColor = (0.00,0.00,0.00)
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
+        #Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
 
         App.ActiveDocument.removeObject('LDPMgeo_para_facet_000')
 
 
-        Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
-        Gui.runCommand('Std_ToggleVisibility',0)
+
 
 
         App.getDocument(App.ActiveDocument.Name).getObject('Mesh').Label = "LDPMfacets"

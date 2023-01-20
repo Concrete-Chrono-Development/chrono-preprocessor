@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowIcon">
-   <iconset resource="PartDesign.qrc">
+   <iconset resource="../icons.qrc">
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
   </property>
   <property name="sizeGripEnabled" stdset="0">
@@ -887,7 +887,7 @@
   <tabstop>prismHeight</tabstop>
  </tabstops>
  <resources>
-  <include location="PartDesign.qrc"/>
+  <include location="../icons.qrc"/>
  </resources>
  <connections>
   <connection>
