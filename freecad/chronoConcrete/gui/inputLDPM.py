@@ -4,6 +4,9 @@ import time
 import tempfile
 import numpy as np
 from pathlib import Path
+import multiprocessing
+import functools
+import math
 
 import FreeCADGui as Gui
 import FreeCAD as App
@@ -53,11 +56,15 @@ from freecad.chronoConcrete.output.mkVtkParticles               import mkVtkPart
 from freecad.chronoConcrete.output.mkVtkFacets                  import mkVtkFacets
 
 
-# Increase system check interval to improve performance
-sys.setcheckinterval(1000)
+
 
 # Turn off error for divide by zero and invalid operations
 np.seterr(divide='ignore', invalid='ignore')
+
+
+
+#sys.executable = 'C:/Users/mtroe/anaconda3/python.exe'
+multiprocessing.set_executable('C:/Users/mtroe/anaconda3/pythonw.exe')
 
 
 class inputLDPMwindow:
@@ -283,10 +290,19 @@ class inputLDPMwindow:
         newMaxIter = 2
         particlesPlaced = 0
 
+
+
+
+
+
+
+        numCPU = 1
+        numIncrements = 10
+
         if numCPU > 1:
         
-            if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-                print("%s Remaining." % (len(parDiameterList)))
+            #if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
+            #    print("%s Remaining." % (len(parDiameterList)))
 
             for increment in range(numIncrements-1):
 
@@ -294,7 +310,7 @@ class inputLDPMwindow:
 
                 outputMPI = process_pool.map(functools.partial(generateParticleMPI, facePoints,maxParNum, minC, maxC, vertices, \
                     tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
+                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
 
                 nodeMPI = np.array(outputMPI)[:,0:3]
                 diameter = np.array(outputMPI)[:,3]
@@ -324,7 +340,7 @@ class inputLDPMwindow:
 
                         if overlap == True:
 
-                            newMaxIter = generateParticle(particlesPlaced+x,facePoints,\
+                            [newMaxIter,node,iterReq] = generateParticle(particlesPlaced+x,facePoints,\
                                 parDiameterList[particlesPlaced+x],maxParNum, minC, maxC, vertices, \
                                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
                                 maxPar,aggOffset,'No',parDiameterList,maxEdgeLength,nodes)
@@ -539,7 +555,7 @@ class inputLDPMwindow:
 
         Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').LineColor = (0.00,0.00,0.00)
 
-        #Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
 
         App.ActiveDocument.removeObject('LDPMgeo_para_facet_000')
 

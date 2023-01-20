@@ -9,7 +9,7 @@ from freecad.chronoConcrete.generation.particleInsideCheck     	import insideChe
 
 
 
-def generateParticle(x,facePoints,aggDiameter,maxParNum,minC,maxC,\
+def generateParticle(x,facePoints,parDiameter,maxParNum,minC,maxC,\
     vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
     aggOffset,verbose,parDiameterList,maxEdgeLength,nodes):
     
@@ -47,26 +47,27 @@ def generateParticle(x,facePoints,aggDiameter,maxParNum,minC,maxC,\
 
 
         # Obtain extents for floating bin
-        binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-aggOffset,\
-            node[0,1]-aggDiameter/2-maxPar/2-aggOffset,node[0,2]-\
-            aggDiameter/2-maxPar/2-aggOffset]))
-        binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+aggOffset,\
-            node[0,1]+aggDiameter/2+maxPar/2+aggOffset,node[0,2]+\
-            aggDiameter/2+maxPar/2+aggOffset]))
+        binMin = np.array(([node[0,0]-parDiameter/2-maxPar/2-aggOffset,\
+            node[0,1]-parDiameter/2-maxPar/2-aggOffset,node[0,2]-\
+            parDiameter/2-maxPar/2-aggOffset]))
+        binMax = np.array(([node[0,0]+parDiameter/2+maxPar/2+aggOffset,\
+            node[0,1]+parDiameter/2+maxPar/2+aggOffset,node[0,2]+\
+            parDiameter/2+maxPar/2+aggOffset]))
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(nodes,node,aggDiameter,facePoints,binMin,\
+        overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
 
             # Temporarily set this and other instances to check regardless if critical
+            # WILL BE FIXED IN FUTURE
             if overlap[1] == True or overlap[1] == False:
 
                 # Check if particle is inside the mesh if critically close          
                 inside = insideCheck(vertices,\
-                tets,node,aggDiameter,binMin,binMax,coord1,coord2,coord3,\
+                tets,node,parDiameter,binMin,binMax,coord1,coord2,coord3,\
                 coord4,maxC)
 
             else:

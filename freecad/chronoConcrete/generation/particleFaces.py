@@ -15,5 +15,9 @@ def particleFaces(vertices,faces):
     coord3 = vertices[faces[:,2]-1] 
 
     facePoints = np.concatenate((coord1,coord2,coord3))
+     
+
+
+    facePoints = np.unique(facePoints, axis=0)
 
     return facePoints

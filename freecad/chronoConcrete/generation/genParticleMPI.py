@@ -8,7 +8,7 @@ from freecad.chronoConcrete.generation.particleInsideCheck     	import insideChe
 
 def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
     vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
-    aggOffset,verbose,parDiameterList,maxEdgeLength,aggDiameter):
+    aggOffset,verbose,parDiameterList,maxEdgeLength,nodes,parDiameter):
     
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)
@@ -44,27 +44,29 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
 
 
         # Obtain extents for floating bin
-        binMin = np.array(([node[0,0]-aggDiameter/2-maxPar/2-aggOffset,\
-            node[0,1]-aggDiameter/2-maxPar/2-aggOffset,node[0,2]-\
-            aggDiameter/2-maxPar/2-aggOffset]))
-        binMax = np.array(([node[0,0]+aggDiameter/2+maxPar/2+aggOffset,\
-            node[0,1]+aggDiameter/2+maxPar/2+aggOffset,node[0,2]+\
-            aggDiameter/2+maxPar/2+aggOffset]))
+        binMin = np.array(([node[0,0]-parDiameter/2-maxPar/2-aggOffset,\
+            node[0,1]-parDiameter/2-maxPar/2-aggOffset,node[0,2]-\
+            parDiameter/2-maxPar/2-aggOffset]))
+        binMax = np.array(([node[0,0]+parDiameter/2+maxPar/2+aggOffset,\
+            node[0,1]+parDiameter/2+maxPar/2+aggOffset,node[0,2]+\
+            parDiameter/2+maxPar/2+aggOffset]))
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(nodes,node,aggDiameter,trianglePoints,binMin,\
+        overlap = overlapCheck(nodes,node,parDiameter,trianglePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
 
             
+            # Temporarily set this and other instances to check regardless if critical
+            # WILL BE FIXED IN FUTURE
             if overlap[1] == True or overlap[1] == False:
 
 
                 # Check if particle is inside the mesh if critically close          
                 inside = insideCheck(vertices,\
-                tets,node,aggDiameter,binMin,binMax,coord1,coord2,coord3,\
+                tets,node,parDiameter,binMin,binMax,coord1,coord2,coord3,\
                 coord4,maxC)
 
             else:
@@ -76,4 +78,4 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
                 break
 
 
-    return np.append(node[0,:],[aggDiameter,newMaxIter,int(i/3)])
+    return np.append(node[0,:],[parDiameter,newMaxIter,int(i/3)])
