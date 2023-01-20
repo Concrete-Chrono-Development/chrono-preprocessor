@@ -630,4 +630,4 @@ class inputLDPM_Class():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand("inputLDPM", inputLDPM_Class())
+Gui.addCommand("mod_LDPM_CSL", inputLDPM_Class())
