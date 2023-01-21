@@ -94,7 +94,8 @@ class inputLDPMwindow:
         ccloadUIicon(self.form[4],"FEM_CreateNodesSet.svg")
         ccloadUIicon(self.form[5],"ldpm.svg")
 
-
+        # Set initial output directory
+        self.form[5].outputDir.setText(App.ConfigGet("UserHomePath"))
 
 
         # Connect Open File Buttons
@@ -145,38 +146,21 @@ class inputLDPMwindow:
         except Exception:
             OpenName, Filter = QtGui.QFileDialog.getExistingDirectory(None, "Open Directory",path,QtGui.QFileDialog.Option.ShowDirsOnly) 
 
-
+        
 
         if OpenName == "":                                                            # if not selected then Abort process
             App.Console.PrintMessage("Process aborted"+"\n")
         else:
-            App.Console.PrintMessage("Read "+OpenName+"\n")                           # text displayed to Report view (Menu > View > Report view checked)
-            try:                                                                      # detect error to read file
-                file = open(OpenName, "r")                                            # open the file selected to read (r)  # (rb is binary)
-                try:                                                                  # detect error ...
-                    # here your code
-                    print("here your code")
-                    op = OpenName.split("/")                                          # decode the path
-                    op2 = op[-1].split(".")                                           # decode the file name 
-                    nomF = op2[0]                                                     # the file name are isolated
+            self.form[5].outputDir.setText(OpenName)
 
-                    App.Console.PrintMessage(str(nomF)+"\n")                          # the file name are displayed
-
-                    for ligne in file:                                                # read the file
-                        X  = ligne.rstrip('\n\r') #.split()                           # decode the line
-                        print(X)                                                      # print the line in report view other method 
-                                                                                      # (Menu > Edit > preferences... > Output window > Redirect internal Python output (and errors) to report view checked) 
-                except Exception:                                                     # if error detected to read
-                    App.Console.PrintError("Error read file "+"\n")                   # detect error ... display the text in red (PrintError)
-                finally:                                                              # if error detected to read ... or not error the file is closed
-                    file.close()                                                      # if error detected to read ... or not error the file is closed
-            except Exception:                                                         # if one error detected to read file
-                App.Console.PrintError("Error in Open the file "+OpenName+"\n")       # if one error detected ... display the text in red (PrintError)
+        return OpenName
 
 
 
 
     def generation(self):
+
+        outDir =  self.form[5].outputDir.text()
 
         # Initialize code start time to measure performance
         start_time = time.time()
@@ -365,10 +349,9 @@ class inputLDPMwindow:
                             
                             nodes[particlesPlaced+x,:] = node[0,:]
 
-                # Update progress bar every 2%
-                if x % np.rint(len(parDiameterList)/100) == 0:
-                    self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
 
+                self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
+                self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
 
         # Generate particles for length of needed aggregate (not placed via MPI)
@@ -546,8 +529,7 @@ class inputLDPMwindow:
 
 
 
-
-        # COPY FILES TO SELECTED DIRECTORY AND CLEANUP TEMPORARY DIRECTORY
+ 
 
 
 
@@ -611,9 +593,14 @@ class inputLDPMwindow:
 
 
 
-
-
-
+        # Move files to selected output directory
+        outName = '/' + geoName + geoType
+        i = 0
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = geoName + str(i)
+            
+        os.rename(Path(tempPath),Path(outDir + outName))
 
 
         
