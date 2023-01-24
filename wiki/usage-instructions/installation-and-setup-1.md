@@ -26,21 +26,38 @@ Qt Designer normally ships as a part of Qt Creator. This is Qt's official editor
 
 <details>
 
-<summary>Step 3: Pull GitHub</summary>
+<summary>Step 3: Install Git Client</summary>
 
-We recommend pulling the GitHub directly into the FreeCAD workbench directory. Otherwise if you pull to another location then you will need to copy the pulled files to the appropriate directory.&#x20;
+Any Git client can be used to push and pull from the GitHub. We recommedn using SourceTree and these instructions will assume you are using that installation. You can download SourceTree for free here:
 
-The top-most directory (to be named chronoConcrete) should be placed here. Note that a "Mod" directory may not exist, in which case you will need to create it.
-
-```
-C:\Users\<username>\AppData\Roaming\FreeCAD\Mod
-```
-
-Thus if correctly pulled, the readme should be located here:
-
-```
-C:\Users\<username>\AppData\Roaming\FreeCAD\Mod\chronoConcrete\README.md
-```
+[https://www.sourcetreeapp.com/](https://www.sourcetreeapp.com/)
 
 </details>
 
+<details>
+
+<summary>Step 4: Pull GitHub</summary>
+
+We recommend pulling the GitHub directly into the FreeCAD workbench directory. Otherwise if you pull to another location then you will need to copy the pulled files to the appropriate directory.
+
+* Open Sourcetree
+* Select **File** > **Clone / New...**
+* Select "**Remote**" and "**Add an account...**"
+* For "Hosting Service" select "**GitHub**". For "Authentication" select "**OAuth**"
+* Click on "**Refresh OAuth Token**" and login to GitHub and allow Sourcetree in the browser window that opens
+* Click **Ok** in Sourcetree. Then "**chrono-preprocessor**" should populate on the right side of the window. If it doesn't, you may need to click refresh.
+* Select "**chrono-preprocessor**" and click "**Clone**"
+* When filling out the clone window, it should look like the image below, but with the appropriate username filled out instead of "**\<usr>**"
+* Click "**Clone**"
+
+</details>
+
+<figure><img src="../../.gitbook/assets/clone.png" alt=""><figcaption></figcaption></figure>
+
+<details>
+
+<summary>Step 5: Test Installation</summary>
+
+Verify that everything is installed properly by opening FreeCAD and check if the Chrono Workbench is available in the list of installed workbenches.
+
+</details>
