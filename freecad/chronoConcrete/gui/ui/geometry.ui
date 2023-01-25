@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PartGui::DlgPrimitives</class>
- <widget class="QWidget" name="PartGui::DlgPrimitives">
+ <class>PartGui::DlgPrimitives2</class>
+ <widget class="QWidget" name="PartGui::DlgPrimitives2">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -84,6 +84,15 @@
       <property name="icon">
        <iconset>
         <normaloff>:/icons/parametric/Part_Prism_Parametric.svg</normaloff>:/icons/parametric/Part_Prism_Parametric.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Custom</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/parametric/Part_Spiral.svg</normaloff>:/icons/parametric/Part_Spiral.svg</iconset>
       </property>
      </item>
     </widget>
@@ -833,6 +842,41 @@
              </size>
             </property>
            </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Select Object</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Deselect Object</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QTextEdit" name="textEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
