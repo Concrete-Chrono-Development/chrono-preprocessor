@@ -95,8 +95,7 @@ class inputLDPMwindow:
         ccloadUIicon(self.form[5],"ldpm.svg")
 
         # Set initial output directory
-        self.form[5].outputDir.setText(App.ConfigGet("UserHomePath"))
-
+        self.form[5].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
         # Connect Open File Buttons
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
@@ -137,7 +136,7 @@ class inputLDPMwindow:
 
     def openDir(self):
 
-        path = App.ConfigGet("UserHomePath")
+        path = App.ConfigGet('UserHomePath')
 
         OpenName = ""
         try:
@@ -160,7 +159,12 @@ class inputLDPMwindow:
 
     def generation(self):
 
+        # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
+        try:
+            os.mkdir(outDir)
+        except:
+            pass
 
         # Initialize code start time to measure performance
         start_time = time.time()
@@ -368,12 +372,14 @@ class inputLDPMwindow:
             if x % np.rint(len(parDiameterList)/100) == 0:
                 self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
+            # Update number particles placed every 0.1%
             if x % np.rint(len(parDiameterList)/1000) == 0:
                 self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
             nodes[x,:] = node[0,:]
 
 
+        self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
 
 
         materialList = np.ones(len(parDiameterList))
@@ -594,11 +600,11 @@ class inputLDPMwindow:
 
 
         # Move files to selected output directory
-        outName = '/' + geoName + geoType
+        outName = '/' + geoName + geoType + str(i).zfill(3)
         i = 0
         while os.path.isdir(Path(outDir + outName)):
             i = i+1
-            outName = geoName + str(i)
+            outName = '/' + geoName + geoType + str(i).zfill(3)
             
         os.rename(Path(tempPath),Path(outDir + outName))
 
