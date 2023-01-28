@@ -47,7 +47,7 @@ def overlapCheck(nodes,center,aggDiameter,facePoints,binMin,binMax,\
 
     # Otherwise return false and check if critically close to surface
     if len(existingSurf>0):
-        if (surfNodalDistance<math.sqrt((maxEdgeLength/2)**2+(aggDiameter/2)**2)).any():
+        if (surfNodalDistance<=math.sqrt((maxEdgeLength*math.sqrt(3)/3)**2+(aggDiameter/2)**2)).any():
             return False,True
 
     return False,False

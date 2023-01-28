@@ -59,10 +59,10 @@ def generateParticle(x,facePoints,parDiameter,maxParNum,minC,maxC,\
         overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
+        # If does not overlap an existing particle
         if overlap[0] == False:
-
-            # Temporarily set this and other instances to check regardless if critical
-            # WILL BE FIXED IN FUTURE
+            
+            # If critically close to the surface
             if overlap[1] == True:
 
                 # Check if particle is inside the mesh if critically close          
