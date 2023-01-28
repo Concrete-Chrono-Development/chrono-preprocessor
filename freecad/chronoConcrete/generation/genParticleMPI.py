@@ -57,11 +57,9 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
-
             
-            # Temporarily set this and other instances to check regardless if critical
-            # WILL BE FIXED IN FUTURE
-            if overlap[1] == True or overlap[1] == False:
+            # If critically close to the surface:
+            if overlap[1] == True:
 
 
                 # Check if particle is inside the mesh if critically close          

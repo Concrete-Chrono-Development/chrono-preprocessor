@@ -232,7 +232,6 @@ class inputLDPMwindow:
 
         # Generate analysis objects
         self.form[5].statusWindow.setText("Status: Generating analysis objects.") 
-        time.sleep(2)
         genAna = genAnalysis(analysisName,constitutiveEQ)
         self.form[5].progressBar.setValue(3) 
 
@@ -240,7 +239,6 @@ class inputLDPMwindow:
 
         # Generate surface mesh
         self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
-        time.sleep(2)
         [vertices,edges,faces,tets] = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
