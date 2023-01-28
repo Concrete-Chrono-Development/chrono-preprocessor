@@ -63,7 +63,7 @@ def generateParticle(x,facePoints,parDiameter,maxParNum,minC,maxC,\
 
             # Temporarily set this and other instances to check regardless if critical
             # WILL BE FIXED IN FUTURE
-            if overlap[1] == True or overlap[1] == False:
+            if overlap[1] == True:
 
                 # Check if particle is inside the mesh if critically close          
                 inside = insideCheck(vertices,\
