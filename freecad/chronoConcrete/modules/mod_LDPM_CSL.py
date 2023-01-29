@@ -301,7 +301,8 @@ class inputLDPMwindow:
 
 
 
-
+        #numCPU = 6
+        #numIncrements = 10
 
         if numCPU > 1:
         
@@ -568,6 +569,10 @@ class inputLDPMwindow:
 
 
         App.getDocument(App.ActiveDocument.Name).getObject('Mesh').Label = "LDPMfacets"
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject("Group001").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Mesh"))
+
 
 
         #feminout.importVTKResults.export(ExportObjectList,FilePath)
