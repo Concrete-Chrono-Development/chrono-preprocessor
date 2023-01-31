@@ -21,6 +21,7 @@ import ObjectsFem
 import FemGui
 import Fem
 import femmesh.femmesh2mesh
+import Spreadsheet
 
 from PySide import QtCore, QtGui
 
@@ -571,9 +572,126 @@ class inputLDPMwindow:
         App.getDocument(App.ActiveDocument.Name).getObject('Mesh').Label = "LDPMfacets"
 
 
+        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
+
+
         App.getDocument(App.ActiveDocument.Name).getObject("Group001").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Mesh"))
 
 
+
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject(constitutiveEQ).addProperty("App::PropertyFloat","Alpha","LDPM Parameters","Alpha coupling value").Alpha=0.25
+        App.getDocument(App.ActiveDocument.Name).getObject(constitutiveEQ).removeProperty("References")
+
+
+
+
+
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyString","Integrator","Simulation","Integrator Type").Integrator='Explicit'
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyEnumeration","mode")
+        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").mode=['parameters','tripod','spheres and cones','vertexes']
+
+
+
+
+
+
+
+
+        #sheet = App.activeDocument().addObject('Spreadsheet::Sheet','LDPMparameters')
+
+
+        #App.getDocument(App.ActiveDocument.Name).getObject("LDPMparameters").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
+
+
+        #App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyString","Integrator","Simulation Parameters","Integrator Type").Integrator='Explicit'
+
+
+        #sheet.set('A1','Density')
+        #sheet.set('A2','Elastic Modulus')
+        #sheet.set('A3','Poisson`s Ratio')
+        #sheet.set('A4','Tensile Strength')
+        #sheet.set('A5','Tensile Characteristic Length')
+        #sheet.set('A6','Shear Strength Ratio')
+        #sheet.set('A7','Softening Exponent')
+        #sheet.set('A8','Compressive Yielding Strength')
+        #sheet.set('A9','Initial Hardening Modulus Ratio')
+        #sheet.set('A10','Transitional Strain Ratio')
+        #sheet.set('A11','Deviatoric Strain Threshold Ratio')
+        #sheet.set('A12','Deviatoric Damage Parameter')
+        #sheet.set('A13','Initial Friction')
+        #sheet.set('A14','Asymptotic Friction')
+        #sheet.set('A15','Transitional Stress')
+        #sheet.set('A16','Densification Ratio')
+        #sheet.set('A17','Volumetric Deviatoric Coupling')
+        #sheet.set('A18','Tensile Unloading')
+        #sheet.set('A19','Shear Unloading')
+        #sheet.set('A20','Compressive Unloading')
+        #sheet.set('A21','Shear Softening')
+        #sheet.set('A22','Final Hardening Modulus Ratio')
+
+
+
+        #sheet.set('B1','')
+        #sheet.set('B2','')
+        #sheet.set('B3','')
+        ###sheet.set('B4','')
+        #sh#eet.set('B5','')
+        #sh##eet.set('B6','')
+        ##she#et.set('B7','')
+        #sheet.set('B8','')
+        #sheet.set('B9','')
+        #sheet.set('B10','')
+        #sheet.set('B11','')
+        #sheet.set('B12','')
+        #sheet.set('B13','')
+        #sheet.set('B14','')
+        #sheet.set('B15','')
+        #sheet.set('B16','')
+        #sheet.set('B17','')
+        #sheet.set('B18','')
+        #sheet.set('B19','')
+        #sheet.set('B20','')
+        #sheet.set('B21','')
+        #sheet.set('B22','')
+
+
+
+
+
+
+
+        #sheet.recompute()
+
+
+
+
+        #sheet = App.activeDocument().addObject('Spreadsheet::Sheet','LDPMsimulation')
+
+
+        #App.getDocument(App.ActiveDocument.Name).getObject("LDPMsimulation").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
+
+
+
+
+        #sheet.set('A1','Integrator')
+        #sheet.set('A2','Increment Size')
+        #sheet.set('A3','Duration')
+
+
+        #sheet.set('B1','')
+        #sheet.set('B2','')
+        #sheet.set('B3','')
+
+
+        #sheet.set('C1','-')
+        #sheet.set('C2','Seconds')
+        #sheet.set('C3','Seconds')
 
         #feminout.importVTKResults.export(ExportObjectList,FilePath)
 
