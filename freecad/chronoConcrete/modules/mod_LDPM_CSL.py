@@ -72,16 +72,16 @@ class inputLDPMwindow:
     def __init__(self):
 
         # Load UI's for Side Panel
-        a = ccloadUIfile("ldpmMeshProps.ui")
-        b = ccloadUIfile("geometry.ui")
-        c = ccloadUIfile("ldpmParticles.ui")        
-        d = ccloadUIfile("ldpmMixDesign.ui")          
-        e = ccloadUIfile("ldpmAdditionalPara.ui")       
-        f = ccloadUIfile("generation.ui")
+        a = ccloadUIfile("LDPM_CSL_meshProps.ui")
+        b = ccloadUIfile("LDPM_CSL_geometry.ui")
+        c = ccloadUIfile("LDPM_CSL_particles.ui")        
+        d = ccloadUIfile("LDPM_CSL_mixDesign.ui")          
+        e = ccloadUIfile("LDPM_CSL_additionalPara.ui")       
+        f = ccloadUIfile("LDPM_CSL_generation.ui")
         self.form = [a, b, c, d, e, f]
 
         # Label, Load Icons, and Initialize Panels
-        self.form[0].setWindowTitle("LDPM Meshing Settings")
+        self.form[0].setWindowTitle("Meshing Settings")
         self.form[1].setWindowTitle("Geometry")
         self.form[2].setWindowTitle("Particles")        
         self.form[3].setWindowTitle("Mix Design")
@@ -110,7 +110,8 @@ class inputLDPMwindow:
 
 
     def getStandardButtons(self):
-        # only show a close button
+
+        # Only show a close button
         # def accept() in no longer needed, since there is no OK button
         return int(QtGui.QDialogButtonBox.Close)
 
@@ -209,6 +210,7 @@ class inputLDPMwindow:
         geoName = elementType + "geo"
         meshName = elementType + "mesh"
         analysisName = elementType + "analysis"
+        materialName = elementType + "material"
 
         i = 0
         while App.activeDocument().getObject(geoName) != None:
@@ -216,6 +218,7 @@ class inputLDPMwindow:
             geoName = elementType + "geo" + str(i)
             meshName = elementType + "mesh" + str(i)
             analysisName = elementType + "analysis" + str(i)
+            materialName = elementType + "material" + str(i)
 
 
 
@@ -233,7 +236,7 @@ class inputLDPMwindow:
 
         # Generate analysis objects
         self.form[5].statusWindow.setText("Status: Generating analysis objects.") 
-        genAna = genAnalysis(analysisName,constitutiveEQ)
+        genAna = genAnalysis(analysisName,materialName)
         self.form[5].progressBar.setValue(3) 
 
 
@@ -293,7 +296,7 @@ class inputLDPMwindow:
 
 
 
-        self.form[5].statusWindow.setText("Status: Placing particles into geometry.") 
+        self.form[5].statusWindow.setText('Status: Placing particles into geometry. (' + str(0) + '/' + str(len(parDiameterList)) + ')') 
         # Initialize values
         newMaxIter = 2
         particlesPlaced = 0
@@ -367,17 +370,23 @@ class inputLDPMwindow:
                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
                 maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes)
 
-
+            # NEED TO FIX THIS, DOESN'T ALWAYS PRINT
             # Update progress bar every 1% of placement
             if x % np.rint(len(parDiameterList)/100) == 0:
                 self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
-            # Update number particles placed every 0.1%
-            if x % np.rint(len(parDiameterList)/1000) == 0:
-                self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+            # NEED TO FIX THIS, DOESN'T ALWAYS PRINT
+            
+            if len(parDiameterList)<=1000:
+                # Update number particles placed every 1%
+                if x % np.rint(len(parDiameterList)/100) == 0:
+                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+            else:
+                # Update number particles placed every 0.1%
+                if x % np.rint(len(parDiameterList)/1000) == 0:
+                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
             nodes[x,:] = node[0,:]
-
 
         self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
 
@@ -479,9 +488,15 @@ class inputLDPMwindow:
 
 
 
-        App.activeDocument().addObject('App::DocumentObjectGroup','Group001')
-        App.activeDocument().Group001.Label = 'Data Files'
+        App.activeDocument().addObject('App::DocumentObjectGroup','dataFiles')
+        App.activeDocument().dataFiles.Label = 'Data Files'
 
+        App.activeDocument().addObject('App::DocumentObjectGroup','visualFiles')
+        App.activeDocument().visualFiles.Label = 'Visualization Files'
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("dataFiles"))
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("visualFiles"))
 
 
         print('Writing Mesh Data file.')
@@ -534,9 +549,19 @@ class inputLDPMwindow:
 
 
 
+        # Move files to selected output directory
+        print('Moving files.')
 
+
+        outName = '/' + geoName + geoType + str(i).zfill(3)
+        i = 0
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = '/' + geoName + geoType + str(i).zfill(3)
+            
+        os.rename(Path(tempPath),Path(outDir + outName))
+        os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
  
-
 
 
 
@@ -544,45 +569,52 @@ class inputLDPMwindow:
         Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
         Gui.runCommand('Std_ToggleVisibility',0)
 
+
+
+
+
+
         
-        Fem.insert(str(Path(tempPath + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
+        #Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk')),App.ActiveDocument.Name)
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)
 
+        object1 = App.ActiveDocument.addObject("App::FeaturePython", "LDPMgeo_para_particles_000")                                     # create your object
+        object1.ViewObject.Proxy = IconViewProviderToFile( object1, 'C:/Users/mtroe/AppData/Roaming/FreeCAD/Mod/chronoConcrete/freecad/chronoConcrete/gui/icons/freeCADIco.png')
 
-        out_mesh = femmesh.femmesh2mesh.femmesh_2_mesh(App.ActiveDocument.LDPMgeo_para_facet_000.FemMesh)
 
-        Mesh.show(Mesh.Mesh(out_mesh))
 
+        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000').Label = 'LDPMparticlesVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000'))
+        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000').addProperty("App::PropertyFile",'File_Location','Paraview VTK File','Location of Paraview VTK file').File_Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').Lighting = u"Two side"
 
-        App.ActiveDocument.LDPMgeo_para_facet_000.ViewObject.hide()
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').ShapeColor = (0.36,0.36,0.36)
+        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').Label = 'LDPMmeshVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000'))
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('Mesh').LineColor = (0.00,0.00,0.00)
+        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').Label = 'LDPMfacetsVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000'))
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo').Transparency = 20
 
-        App.ActiveDocument.removeObject('LDPMgeo_para_facet_000')
 
 
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').DisplayMode = u"Wireframe"
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').BackfaceCulling = False
 
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').ShapeColor = (0.36,0.36,0.36)
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject('Mesh').Label = "LDPMfacets"
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject("Group001").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Mesh"))
 
 
 
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject(constitutiveEQ).addProperty("App::PropertyFloat","Alpha","LDPM Parameters","Alpha coupling value").Alpha=0.25
-        App.getDocument(App.ActiveDocument.Name).getObject(constitutiveEQ).removeProperty("References")
 
 
 
@@ -590,113 +622,89 @@ class inputLDPMwindow:
 
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyString","Integrator","Simulation","Integrator Type").Integrator='Explicit'
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyEnumeration","mode")
-        App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").mode=['parameters','tripod','spheres and cones','vertexes']
 
 
 
+        # Store material properties
+        if elementType == 'LDPM':
+            
+            materialProps = [\
+                "Density",\
+                "Elastic_Modulus",\
+                "Poissons_Ratio",\
+                "Tensile_Strength",\
+                "Tensile_Characteristic_Length",\
+                "Shear_Strength_Ratio",\
+                "Softening_Exponent",\
+                "Compressive_Yielding_Strength",\
+                "Initial_Hardening_Modulus_Ratio",\
+                "Transitional_Strain_Ratio",\
+                "Deviatoric_Strain_Threshold_Ratio",\
+                "Deviatoric_Damage_Parameter",\
+                "Initial_Friction",\
+                "Asymptotic_Friction",\
+                "Transitional_Stress",\
+                "Densification_Ratio",\
+                "Volumetric_Deviatoric_Coupling",\
+                "Tensile_Unloading",\
+                "Shear_Unloading",\
+                "Compressive_Unloading",\
+                "Shear_Softening",\
+                "Final_Hardening_Modulus_Ratio",\
+                ]
 
+            materialPropDesc = [\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                "Description coming soon...",\
+                ]
 
 
+        # Remove unused material properties
+        App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
 
+        # Add appropriate material properties
+        for x in range(len(materialProps)):
+            App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
 
-        #sheet = App.activeDocument().addObject('Spreadsheet::Sheet','LDPMparameters')
 
+       
 
-        #App.getDocument(App.ActiveDocument.Name).getObject("LDPMparameters").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
 
 
-        #App.getDocument(App.ActiveDocument.Name).getObject("LDPManalysis").addProperty("App::PropertyString","Integrator","Simulation Parameters","Integrator Type").Integrator='Explicit'
+        
 
+        # Hide un-needed simulation properties
+        
 
-        #sheet.set('A1','Density')
-        #sheet.set('A2','Elastic Modulus')
-        #sheet.set('A3','Poisson`s Ratio')
-        #sheet.set('A4','Tensile Strength')
-        #sheet.set('A5','Tensile Characteristic Length')
-        #sheet.set('A6','Shear Strength Ratio')
-        #sheet.set('A7','Softening Exponent')
-        #sheet.set('A8','Compressive Yielding Strength')
-        #sheet.set('A9','Initial Hardening Modulus Ratio')
-        #sheet.set('A10','Transitional Strain Ratio')
-        #sheet.set('A11','Deviatoric Strain Threshold Ratio')
-        #sheet.set('A12','Deviatoric Damage Parameter')
-        #sheet.set('A13','Initial Friction')
-        #sheet.set('A14','Asymptotic Friction')
-        #sheet.set('A15','Transitional Stress')
-        #sheet.set('A16','Densification Ratio')
-        #sheet.set('A17','Volumetric Deviatoric Coupling')
-        #sheet.set('A18','Tensile Unloading')
-        #sheet.set('A19','Shear Unloading')
-        #sheet.set('A20','Compressive Unloading')
-        #sheet.set('A21','Shear Softening')
-        #sheet.set('A22','Final Hardening Modulus Ratio')
+        # Add appropriate simulation properties
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","Solver","Simulation","Solver software").Solver=['Project Chrono']
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","Integrator","Simulation","Integrator type").Integrator=['Explicit','Implicit']
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyFloat","Duration","Simulation","Simulation duration")
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyString","Timestep","Simulation","")
 
 
-
-        #sheet.set('B1','')
-        #sheet.set('B2','')
-        #sheet.set('B3','')
-        ###sheet.set('B4','')
-        #sh#eet.set('B5','')
-        #sh##eet.set('B6','')
-        ##she#et.set('B7','')
-        #sheet.set('B8','')
-        #sheet.set('B9','')
-        #sheet.set('B10','')
-        #sheet.set('B11','')
-        #sheet.set('B12','')
-        #sheet.set('B13','')
-        #sheet.set('B14','')
-        #sheet.set('B15','')
-        #sheet.set('B16','')
-        #sheet.set('B17','')
-        #sheet.set('B18','')
-        #sheet.set('B19','')
-        #sheet.set('B20','')
-        #sheet.set('B21','')
-        #sheet.set('B22','')
-
-
-
-
-
-
-
-        #sheet.recompute()
-
-
-
-
-        #sheet = App.activeDocument().addObject('Spreadsheet::Sheet','LDPMsimulation')
-
-
-        #App.getDocument(App.ActiveDocument.Name).getObject("LDPMsimulation").addObject(App.getDocument(App.ActiveDocument.Name).getObject("Group001"))
-
-
-
-
-        #sheet.set('A1','Integrator')
-        #sheet.set('A2','Increment Size')
-        #sheet.set('A3','Duration')
-
-
-        #sheet.set('B1','')
-        #sheet.set('B2','')
-        #sheet.set('B3','')
-
-
-        #sheet.set('C1','-')
-        #sheet.set('C2','Seconds')
-        #sheet.set('C3','Seconds')
-
-        #feminout.importVTKResults.export(ExportObjectList,FilePath)
-
-        # Make object to store VTK files
-        #vtk_object = ObjectsFem.makePostVtkResult(doc,base_result,name = "VTK Files")
 
 
 
@@ -709,25 +717,24 @@ class inputLDPMwindow:
         self.form[5].progressBar.setValue(100) 
 
 
+
+
+
+
         # Switch to FEM GUI
+        App.ActiveDocument.recompute()
+
+
+
         Gui.Control.closeDialog()
-        #Gui.activateWorkbench("FemWorkbench")
-        #Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.elementType)
-        #FemGui.setActiveAnalysis(App.activeDocument().getObject(self.elementType))
-        #Gui.Selection.clearSelection()
-        #Gui.Selection.addSelection(App.activeDocument().getObject(self.elementType),self.meshName)
+        Gui.activateWorkbench("FemWorkbench")
+        FemGui.setActiveAnalysis(App.activeDocument().getObject(analysisName))
+        
 
 
 
 
-        # Move files to selected output directory
-        outName = '/' + geoName + geoType + str(i).zfill(3)
-        i = 0
-        while os.path.isdir(Path(outDir + outName)):
-            i = i+1
-            outName = '/' + geoName + geoType + str(i).zfill(3)
-            
-        os.rename(Path(tempPath),Path(outDir + outName))
+
 
 
         
@@ -740,7 +747,12 @@ class inputLDPMwindow:
              Gui.Control.closeDialog()
 
         
+class IconViewProviderToFile:                                       # Class ViewProvider create Property view of object
+    def __init__( self, obj, icon):
+        self.icone = icon
         
+    def getIcon(self):                                              # GetIcon
+        return self.icone        
 
 
 class inputLDPM_Class():
