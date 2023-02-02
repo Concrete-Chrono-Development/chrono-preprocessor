@@ -566,32 +566,39 @@ class inputLDPMwindow:
 
 
 
-        Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
-        Gui.runCommand('Std_ToggleVisibility',0)
-
-
-
+        #Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
+        #Gui.runCommand('Std_ToggleVisibility',0)
+        
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').DisplayMode = u"Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointSize = 3.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointColor = (0.00,0.00,0.00)
 
 
 
         
         Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
         #Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk')),App.ActiveDocument.Name)
-        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)
-
-        object1 = App.ActiveDocument.addObject("App::FeaturePython", "LDPMgeo_para_particles_000")                                     # create your object
-        object1.ViewObject.Proxy = IconViewProviderToFile( object1, 'C:/Users/mtroe/AppData/Roaming/FreeCAD/Mod/chronoConcrete/freecad/chronoConcrete/gui/icons/freeCADIco.png')
+        #Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)
 
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000').Label = 'LDPMparticlesVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000'))
-        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_particles_000').addProperty("App::PropertyFile",'File_Location','Paraview VTK File','Location of Paraview VTK file').File_Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
+
+        LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
+        LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMparticlesVTK)
+        LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
+
+        LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
+        LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMmeshVTK)
+        LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
+
+        #App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').Label = 'LDPMmeshVTK' 
+        #App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000'))
 
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').Label = 'LDPMmeshVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000'))
 
         App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').Label = 'LDPMfacetsVTK' 
         App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000'))
@@ -632,36 +639,27 @@ class inputLDPMwindow:
             
             materialProps = [\
                 "Density",\
-                "Elastic_Modulus",\
+                "Compressive_Normal_Modulus",\
                 "Poissons_Ratio",\
-                "Tensile_Strength",\
-                "Tensile_Characteristic_Length",\
-                "Shear_Strength_Ratio",\
-                "Softening_Exponent",\
-                "Compressive_Yielding_Strength",\
                 "Initial_Hardening_Modulus_Ratio",\
+                "Densification_Ratio",\
                 "Transitional_Strain_Ratio",\
+                "Shear_Strength_Ratio",\
+                "Initial_Friction",\
+                "Softening_Exponent",\
                 "Deviatoric_Strain_Threshold_Ratio",\
                 "Deviatoric_Damage_Parameter",\
-                "Initial_Friction",\
                 "Asymptotic_Friction",\
                 "Transitional_Stress",\
-                "Densification_Ratio",\
-                "Volumetric_Deviatoric_Coupling",\
-                "Tensile_Unloading",\
-                "Shear_Unloading",\
-                "Compressive_Unloading",\
-                "Shear_Softening",\
-                "Final_Hardening_Modulus_Ratio",\
+                "Tensile_Strength",\
+                "Tensile_Characteristic_Length",\
+                "Shear_Softening_Modulus_Ratio",\
                 ]
 
+
+
+
             materialPropDesc = [\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
                 "Description coming soon...",\
                 "Description coming soon...",\
                 "Description coming soon...",\
@@ -685,6 +683,7 @@ class inputLDPMwindow:
         App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
 
         # Add appropriate material properties
+        App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEQ','Base','Set of constitutive equations.').ConstitutiveEQ=constitutiveEQ
         for x in range(len(materialProps)):
             App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
 

@@ -7,10 +7,7 @@ def readInputs(form):
     elementType         = "LDPM"
 
     # Basic Settings
-    if form[0].inelasticQuasi.isChecked():
-        constitutiveEQ  = "quasiBrittle"
-    else:
-        constitutiveEQ  = "elastic"
+    constitutiveEQ      = form[0].constEQ.currentText()
     paramLocation       = form[0].paramLocation.text()
     numCPU              = form[0].numCPUbox.value()
     numIncrements       = form[0].numPIncBox.value()
