@@ -635,25 +635,30 @@ class inputLDPMwindow:
 
 
         # Store material properties
+
+        # Property list from:
+        #--- Smith, J., & Cusatis, G. (2017). Numerical analysis of projectile penetration and perforation of plain and fiber reinforced concrete slabs. 
+        #--- International Journal for Numerical and Analytical Methods in Geomechanics, 41(3), 315-337.
+
         if elementType == 'LDPM':
             
             materialProps = [\
                 "Density",\
-                "Compressive_Normal_Modulus",\
-                "Poissons_Ratio",\
-                "Initial_Hardening_Modulus_Ratio",\
-                "Densification_Ratio",\
-                "Transitional_Strain_Ratio",\
-                "Shear_Strength_Ratio",\
-                "Initial_Friction",\
-                "Softening_Exponent",\
-                "Deviatoric_Strain_Threshold_Ratio",\
-                "Deviatoric_Damage_Parameter",\
-                "Asymptotic_Friction",\
-                "Transitional_Stress",\
-                "Tensile_Strength",\
-                "Tensile_Characteristic_Length",\
-                "Shear_Softening_Modulus_Ratio",\
+                "CompressiveNormalModulus",\
+                "PoissonsRatio",\
+                "InitialHardeningModulusRatio",\
+                "DensificationRatio",\
+                "TransitionalStrainRatio",\
+                "ShearStrengthRatio",\
+                "InitialFriction",\
+                "SofteningExponent",\
+                "DeviatoricStrainThresholdRatio",\
+                "DeviatoricDamageParameter",\
+                "AsymptoticFriction",\
+                "TransitionalStress",\
+                "TensileStrength",\
+                "TensileCharacteristicLength",\
+                "ShearSofteningModulusRatio",\
                 ]
 
 
@@ -683,7 +688,7 @@ class inputLDPMwindow:
         App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
 
         # Add appropriate material properties
-        App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEQ','Base','Set of constitutive equations.').ConstitutiveEQ=constitutiveEQ
+        App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEquationSet','Base','Set of constitutive equations.').ConstitutiveEquationSet=constitutiveEQ
         for x in range(len(materialProps)):
             App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
 
@@ -699,9 +704,9 @@ class inputLDPMwindow:
 
         # Add appropriate simulation properties
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","Solver","Simulation","Solver software").Solver=['Project Chrono']
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","Integrator","Simulation","Integrator type").Integrator=['Explicit','Implicit']
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyFloat","Duration","Simulation","Simulation duration")
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyString","Timestep","Simulation","")
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","IntegrationScheme","Simulation","Integrator type").IntegrationScheme=['Explicit','Implicit']
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyFloat","EndTime","Simulation","Simulation duration")
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyString","TimestepSize","Simulation","")
 
 
 
