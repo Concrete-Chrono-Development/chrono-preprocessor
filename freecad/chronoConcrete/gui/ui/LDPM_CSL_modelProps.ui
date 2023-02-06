@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>519</height>
+    <width>332</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
        <string notr="true">border-color: rgb(182, 182, 182);</string>
       </property>
       <property name="title">
-       <string>Read Existing Parameter File</string>
+       <string>Read Existing Model Setup File</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <property name="leftMargin">
@@ -87,57 +87,244 @@
        <string notr="true">border-color: rgb(182, 182, 182);</string>
       </property>
       <property name="title">
-       <string>Constitutive Equation Set</string>
+       <string>Constitutive Equations and Parameters</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <property name="leftMargin">
-        <number>9</number>
-       </property>
-       <property name="bottomMargin">
-        <number>9</number>
-       </property>
+      <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QComboBox" name="constEQ">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
          <item>
-          <property name="text">
-           <string>Concrete-Failure-V1</string>
-          </property>
+          <widget class="QComboBox" name="PrimitiveTypeCB">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>173</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maxVisibleItems">
+            <number>16</number>
+           </property>
+           <property name="frame">
+            <bool>true</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string notr="true">Concrete-Failure-V1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Concrete-Failure-V2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Concrete-Failure-V3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Concrete-Failure-V4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>FRC-Failure-V1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Sandstone-Failure-V1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Shale-Failure-V1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Wood-Failure-V1</string>
+            </property>
+           </item>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>Concrete-Failure-V2</string>
-          </property>
+          <widget class="QLabel" name="label">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Constitutive EQ Set</string>
+           </property>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>Concrete-Failure-V3</string>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-color: rgba(182, 182, 182, 0);</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="_2">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Concrete-Failure-V4</string>
+          <property name="leftMargin">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>FRC-Failure-V1</string>
+          <property name="topMargin">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Sandstone-Failure-V1</string>
+          <property name="rightMargin">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Shale-Failure-V1</string>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Wood-Failure-V1</string>
+          <property name="spacing">
+           <number>0</number>
           </property>
-         </item>
+          <item row="1" column="0">
+           <widget class="QStackedWidget" name="widgetStack2">
+            <property name="styleSheet">
+             <string notr="true">border-color: rgba(182, 182, 182, 0);</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="Page1_box">
+             <layout class="QGridLayout" name="gridLayout">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QComboBox" name="modelPara">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Custom Parameters</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 3</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 4</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 5.1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 5.2</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 5.3</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 6</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 7</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 8</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 9</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Parameter Set</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page"/>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
@@ -310,16 +497,6 @@
            </item>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Cell Generation Algorithm</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
       </layout>
@@ -332,7 +509,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>347</width>
+     <width>332</width>
      <height>21</height>
     </rect>
    </property>

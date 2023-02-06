@@ -72,7 +72,7 @@ class inputLDPMwindow:
     def __init__(self):
 
         # Load UI's for Side Panel
-        a = ccloadUIfile("LDPM_CSL_meshProps.ui")
+        a = ccloadUIfile("LDPM_CSL_modelProps.ui")
         b = ccloadUIfile("LDPM_CSL_geometry.ui")
         c = ccloadUIfile("LDPM_CSL_particles.ui")        
         d = ccloadUIfile("LDPM_CSL_mixDesign.ui")          
@@ -81,7 +81,7 @@ class inputLDPMwindow:
         self.form = [a, b, c, d, e, f]
 
         # Label, Load Icons, and Initialize Panels
-        self.form[0].setWindowTitle("Meshing Settings")
+        self.form[0].setWindowTitle("Model Settings")
         self.form[1].setWindowTitle("Geometry")
         self.form[2].setWindowTitle("Particles")        
         self.form[3].setWindowTitle("Mix Design")
@@ -495,6 +495,8 @@ class inputLDPMwindow:
         App.activeDocument().visualFiles.Label = 'Visualization Files'
 
 
+
+
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("dataFiles"))
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("visualFiles"))
 
@@ -526,6 +528,9 @@ class inputLDPMwindow:
 
 
         writeTime = round(time.time() - writeTimeStart,2)
+
+
+
 
         # Generate Log file after run
         #mkLogFile = logFile(gmshTime,nParticles,placementTime,maxPar,\
@@ -566,68 +571,41 @@ class inputLDPMwindow:
 
 
 
-        #Gui.Selection.addSelection(App.ActiveDocument.Name,'LDPMmesh')
-        #Gui.runCommand('Std_ToggleVisibility',0)
         
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').DisplayMode = u"Nodes"
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointSize = 3.00
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointColor = (0.00,0.00,0.00)
 
 
-
-        
-        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)
-        #Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk')),App.ActiveDocument.Name)
-        #Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)
-
-
-
-
+        # Set linked object for particle VTK file
         LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
         LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
         App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMparticlesVTK)
         LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
+        # Set linked object for mesh VTK file
         LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
         LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
         App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMmeshVTK)
         LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
 
 
-        #App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').Label = 'LDPMmeshVTK' 
-        #App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000'))
+        # Insert facet visualization and link facet VTK file
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)        
+        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000')
+        LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMfacetsVTK)
+        LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk'))
 
 
-
-
-        App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').Label = 'LDPMfacetsVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000'))
-
-
-
-
+        # Set visualization properties for facets
         Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').DisplayMode = u"Wireframe"
         Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').MaxFacesShowInner = 0
         Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').BackfaceCulling = False
-
         Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').ShapeColor = (0.36,0.36,0.36)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # Set visualization properties for particle centers
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').DisplayMode = u"Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointSize = 3.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointColor = (0.00,0.00,0.00)
 
 
 
@@ -689,6 +667,10 @@ class inputLDPMwindow:
 
         # Add appropriate material properties
         App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEquationSet','Base','Set of constitutive equations.').ConstitutiveEquationSet=constitutiveEQ
+
+
+
+
         for x in range(len(materialProps)):
             App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
 
