@@ -1,53 +1,44 @@
-import math
 import numpy as np
 
 
+def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
+    minPar, maxEdgeLength, aggOffset, parDiameterList):
 
-def overlapCheck(nodes,center,parDiameter,facePoints,binMin,binMax,\
-    minPar,maxEdgeLength,aggOffset,parDiameterList):
+    # Combine the conditions for all particles and store the result in an array
+    binTestParticles = np.all([(nodes[:,0] > binMin[0]),
+        (nodes[:,0] < binMax[0]), (nodes[:,1] > binMin[1]),
+        (nodes[:,1] < binMax[1]), (nodes[:,2] > binMin[2]),
+        (nodes[:,2] < binMax[2])], axis=0)
 
     # Store particle nodes that fall inside the bin
-    binTestParticles = np.all([(nodes[:,0] > binMin[0]) , \
-        (nodes[:,0] < binMax[0]) , (nodes[:,1] > binMin[1]) , \
-        (nodes[:,1] < binMax[1]) , (nodes[:,2] > binMin[2]) , \
-        (nodes[:,2] < binMax[2])],axis=0)
-    existingnodes = np.asarray(nodes[binTestParticles,:])
-    existingParD = np.asarray(parDiameterList[binTestParticles])
+    existingNodes = nodes[binTestParticles, :]
+    existingParD = parDiameterList[binTestParticles]
 
-    # Compute distance between particles 
-    if len(existingnodes>0):
-        nodalDistance = np.linalg.norm(center-existingnodes, axis=1)
-        parOffsetDist = nodalDistance - parDiameter/2 - existingParD\
-            /2 - aggOffset
-    else: 
-        parOffsetDist = np.array(([1]))
-
-    # Kill and return if overlap
-    if (parOffsetDist<0).any():
-        return True,"NA"
+    # Combine the conditions for all surface points and store the result in an array
+    binTestSurf = np.all([(facePoints[:,0] > binMin[0]),
+        (facePoints[:,0] < binMax[0]), (facePoints[:,1] > binMin[1]),
+        (facePoints[:,1] < binMax[1]), (facePoints[:,2] > binMin[2]),
+        (facePoints[:,2] < binMax[2])], axis=0)
 
     # Store edge nodes that fall inside the bin
-    binTestSurf = np.all([(facePoints[:,0] > binMin[0]) , \
-        (facePoints[:,0] < binMax[0]) , (facePoints[:,1] > \
-            binMin[1]) , (facePoints[:,1] < binMax[1]) ,\
-        (facePoints[:,2] > binMin[2]) , (facePoints[:,2] < \
-            binMax[2])],axis=0)     
-    existingSurf = np.asarray(facePoints[binTestSurf,:])
+    existingSurf = facePoints[binTestSurf, :]
 
-    # Compute distance between particle and edge nodes
-    if len(existingSurf>0):
-        surfNodalDistance = np.linalg.norm(center-existingSurf, axis=1)
-        parSurfaceDist = np.asarray(surfNodalDistance - parDiameter/2 - 1.1*minPar/2)
-    else: 
-        parSurfaceDist = np.array(([1]))
+    if existingNodes.shape[0] > 0:
+        nodalDistance = np.linalg.norm(center - existingNodes, axis=1)
+        parOffsetDist = nodalDistance - parDiameter/2 - existingParD/2 - aggOffset
+        if (parOffsetDist < 0).any():
+            return True, "NA"
+    else:
+        parOffsetDist = np.array([1])
 
-    # Kill and return if overlap
-    if (parSurfaceDist<0).any():
-        return True,"NA"
+    if existingSurf.shape[0] > 0:
+        surfNodalDistance = np.linalg.norm(center - existingSurf, axis=1)
+        parSurfaceDist = surfNodalDistance - parDiameter/2 - 1.1 * minPar / 2
+        if (parSurfaceDist < 0).any():
+            return True, "NA"
+        if (surfNodalDistance <= np.sqrt((maxEdgeLength * np.sqrt(3) / 3)**2 + (parDiameter / 2)**2)).any():
+            return False, True
+    else:
+        parSurfaceDist = np.array([1])
 
-    # Otherwise return false and check if critically close to surface
-    if len(existingSurf>0):
-        if (surfNodalDistance<=math.sqrt((maxEdgeLength*math.sqrt(3)/3)**2+(parDiameter/2)**2)).any():
-            return False,True
-
-    return False,False
+    return False, False

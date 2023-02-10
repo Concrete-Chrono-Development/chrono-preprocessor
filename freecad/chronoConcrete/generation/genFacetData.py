@@ -10,46 +10,73 @@ import numpy as np
 def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList):
+    
+    ''' OLD CODE VERSION
+        # Store facets as set of three points
+        facets = tetFacets.reshape(-1,9)
 
-    # Store facets as set of three points
-    facets = tetFacets.reshape(-1,9)
+        # Store particles accociated with facets
+        p1 = allNodes[(allTets[:,tetn1]-1).astype(int),:].reshape(-1,3)
+        p2 = allNodes[(allTets[:,tetn2]-1).astype(int),:].reshape(-1,3)
 
-    # Store particles accociated with facets
-    p1 = allNodes[(allTets[:,tetn1]-1).astype(int),:].reshape(-1,3)
-    p2 = allNodes[(allTets[:,tetn2]-1).astype(int),:].reshape(-1,3)
 
+        # Projected facet normal
+        pn = (p2-p1)/np.array([np.linalg.norm(p2-p1,axis=1),]*3).T
+        pn = pn.reshape(-1,3)
+        #print('n',pn)
+
+        InitialNormal=[]
+        coords=[]
+
+        for x in range(0,len(allTets)):
+
+            for y in range(0,12):
+                Check = pn[12*x+y,0]*facetNormals[12*x+y,0]+\
+                        pn[12*x+y,1]*facetNormals[12*x+y,1]+\
+                        pn[12*x+y,2]*facetNormals[12*x+y,2]
+
+                if Check < 0.0:
+                    InitialN = -1.0*facetNormals[12*x+y,0:3]
+                    c1 = facets[12*x+y,0:3]
+                    c2 = facets[12*x+y,6:9]
+                    c3 = facets[12*x+y,3:6]
+
+                else:
+                    InitialN = facetNormals[12*x+y,0:3]
+                    c1 = facets[12*x+y,0:3]
+                    c2 = facets[12*x+y,3:6]
+                    c3 = facets[12*x+y,6:9]
+
+                coords.append(np.array([c1,c2,c3]))
+                InitialNormal.append(InitialN)
+    '''
+    facets = tetFacets.reshape(-1, 9)
+    p1 = allNodes[(allTets[:, tetn1] - 1).astype(int), :].reshape(-1, 3)
+    p2 = allNodes[(allTets[:, tetn2] - 1).astype(int), :].reshape(-1, 3)
 
     # Projected facet normal
-    pn = (p2-p1)/np.array([np.linalg.norm(p2-p1,axis=1),]*3).T
-    pn = pn.reshape(-1,3)
-    #print('n',pn)
+    pn = (p2 - p1) / np.linalg.norm(p2 - p1, axis=1).reshape(-1, 1)
 
-    InitialNormal=[]
-    coords=[]
+    InitialNormal = np.empty((len(allTets) * 12, 3))
+    coords = np.empty((len(allTets) * 12, 3, 3))
 
-    for x in range(0,len(allTets)):
-
-        for y in range(0,12):
-            Check = pn[12*x+y,0]*facetNormals[12*x+y,0]+\
-                    pn[12*x+y,1]*facetNormals[12*x+y,1]+\
-                    pn[12*x+y,2]*facetNormals[12*x+y,2]
-
-            if Check < 0.0:
-                InitialN = -1.0*facetNormals[12*x+y,0:3]
-                c1 = facets[12*x+y,0:3]
-                c2 = facets[12*x+y,6:9]
-                c3 = facets[12*x+y,3:6]
-
+    k = 0
+    for i in range(len(allTets)):
+        for j in range(12):
+            Check = np.dot(pn[12 * i + j], facetNormals[12 * i + j])
+            if Check < 0:
+                InitialNormal[k] = -1 * facetNormals[12 * i + j]
+                coords[k, 0] = facets[12 * i + j, 0:3]
+                coords[k, 1] = facets[12 * i + j, 6:9]
+                coords[k, 2] = facets[12 * i + j, 3:6]
             else:
-                InitialN = facetNormals[12*x+y,0:3]
-                c1 = facets[12*x+y,0:3]
-                c2 = facets[12*x+y,3:6]
-                c3 = facets[12*x+y,6:9]
+                InitialNormal[k] = facetNormals[12 * i + j]
+                coords[k, 0] = facets[12 * i + j, 0:3]
+                coords[k, 1] = facets[12 * i + j, 3:6]
+                coords[k, 2] = facets[12 * i + j, 6:9]
+            k += 1
 
-            coords.append(np.array([c1,c2,c3]))
-            InitialNormal.append(InitialN)
-
-
+    
     InitialNormal=np.array(InitialNormal).reshape(-1,3)
     coords = np.array(coords).reshape(-1,9)
     facetNormals=InitialNormal
@@ -68,9 +95,9 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
 
     # Clear not needed variables from memory
     del Check
-    del c1
-    del c2
-    del c3
+    #del c1
+    #del c2
+    #del c3
     del v
     del zeros
     del identity
@@ -86,6 +113,10 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     # Define 2nd projected tangential
     ptan2 = np.cross(pn,ptan1)/np.array([np.linalg.norm(np.cross(pn,ptan1),\
         axis=1),]*3).T
+    
+
+
+
 
     # Sub-tet Volume
     coord1 = facets[:,0:3]

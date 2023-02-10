@@ -29,9 +29,8 @@ from freecad.chronoConcrete                                     import ICONPATH
 from freecad.chronoConcrete                                     import GUIPATH
 from freecad.chronoConcrete                                     import TETGENPATH
 
-
-from freecad.chronoConcrete.gui.ccloadUIfile                    import ccloadUIfile
-from freecad.chronoConcrete.gui.ccloadUIicon                    import ccloadUIicon
+from freecad.chronoConcrete.util.ccloadUIfile                   import ccloadUIfile
+from freecad.chronoConcrete.util.ccloadUIicon                   import ccloadUIicon
 
 from freecad.chronoConcrete.generation.genAnalysis              import genAnalysis
 from freecad.chronoConcrete.generation.genGeometry              import genGeometry
@@ -55,8 +54,8 @@ from freecad.chronoConcrete.input.readInputsLDPM                import readInput
 
 from freecad.chronoConcrete.output.mkVtkParticles               import mkVtkParticles
 from freecad.chronoConcrete.output.mkVtkFacets                  import mkVtkFacets
-
-
+from freecad.chronoConcrete.output.mkDataNodes                  import mkDataNodes
+from freecad.chronoConcrete.output.mkDataTets                   import mkDataTets
 
 
 # Turn off error for divide by zero and invalid operations
@@ -68,17 +67,20 @@ np.seterr(divide='ignore', invalid='ignore')
 #multiprocessing.set_executable('C:/Users/mtroe/anaconda3/pythonw.exe')
 
 
-class inputLDPMwindow:
+
+
+class inputWindow_LDPM_CSL:
     def __init__(self):
 
+        self.form = []
+
         # Load UI's for Side Panel
-        a = ccloadUIfile("LDPM_CSL_modelProps.ui")
-        b = ccloadUIfile("LDPM_CSL_geometry.ui")
-        c = ccloadUIfile("LDPM_CSL_particles.ui")        
-        d = ccloadUIfile("LDPM_CSL_mixDesign.ui")          
-        e = ccloadUIfile("LDPM_CSL_additionalPara.ui")       
-        f = ccloadUIfile("LDPM_CSL_generation.ui")
-        self.form = [a, b, c, d, e, f]
+        self.form.append(ccloadUIfile("LDPM_CSL_modelProps.ui"))
+        self.form.append(ccloadUIfile("LDPM_CSL_geometry.ui"))
+        self.form.append(ccloadUIfile("LDPM_CSL_particles.ui"))        
+        self.form.append(ccloadUIfile("LDPM_CSL_mixDesign.ui"))          
+        self.form.append(ccloadUIfile("LDPM_CSL_additionalPara.ui"))       
+        self.form.append(ccloadUIfile("LDPM_CSL_generation.ui"))
 
         # Label, Load Icons, and Initialize Panels
         self.form[0].setWindowTitle("Model Settings")
@@ -175,6 +177,23 @@ class inputLDPMwindow:
         tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
         os.mkdir(tempPath)
 
+
+
+        #with open(Path(tempPath + "file.txt"), "w") as f:
+        #    path = "where python > " + str(Path(tempPath + "file.txt"))
+        #    os.system(path)
+
+        #with open(Path(tempPath + "file.txt"), "r") as f:
+        #    output = f.readline()
+
+        #new_string = output.replace("python", "pythonw")
+
+        #print(new_string)
+
+
+
+
+
         # Store document
         docGui = Gui.activeDocument()
 
@@ -189,7 +208,8 @@ class inputLDPMwindow:
 
         # Read in inputs from input panel
         [elementType, \
-            constitutiveEQ, paramLocation, numCPU, numIncrements,maxIter,placementAlg,\
+            setupFile, constitutiveEQ, matParaSet, \
+            numCPU, numIncrements,maxIter,placementAlg,\
             geoType, dimensions,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
@@ -370,13 +390,10 @@ class inputLDPMwindow:
                 tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
                 maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes)
 
-            # NEED TO FIX THIS, DOESN'T ALWAYS PRINT
             # Update progress bar every 1% of placement
             if x % np.rint(len(parDiameterList)/100) == 0:
                 self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
-            # NEED TO FIX THIS, DOESN'T ALWAYS PRINT
-            
             if len(parDiameterList)<=1000:
                 # Update number particles placed every 1%
                 if x % np.rint(len(parDiameterList)/100) == 0:
@@ -432,7 +449,7 @@ class inputLDPMwindow:
 
 
         self.form[5].statusWindow.setText("Status: Forming tesselation.") 
-        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters] = \
+        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
             genTesselation(allNodes,allTets,parDiameterList,minPar,\
             geoName)
         self.form[5].progressBar.setValue(95) 
@@ -501,10 +518,13 @@ class inputLDPMwindow:
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("visualFiles"))
 
 
-        print('Writing Mesh Data file.')
+        print('Writing Node Data file.')
 
-        # If data files requested, generate Mesh File
-        #meshFile(geoName,allNodes,allTets)
+        mkDataNodes(geoName,tempPath,allNodes)
+
+        print('Writing Tet Data file.')
+
+        mkDataTets(geoName,tempPath,allTets)
 
         print('Writing Facet Data file.')
 
@@ -523,7 +543,7 @@ class inputLDPMwindow:
         mkVtkParticles(nodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
-        mkVtkFacets(geoName,tetFacets,dataList,facetMaterial,multiMaterial,cementStructure,tempPath)
+        mkVtkFacets(geoName,tetFacets,dataList,facetMaterial,multiMaterial,cementStructure,tempPath,facetPointData,facetCellData)
 
 
 
@@ -566,12 +586,24 @@ class inputLDPMwindow:
             
         os.rename(Path(tempPath),Path(outDir + outName))
         os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
- 
+        os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
+        os.remove(Path(outDir + outName + '/' + geoName + '.node'))
+        os.remove(Path(outDir + outName + '/' + geoName + '.ele'))
 
 
 
 
+        # Set linked object for node data file
+        LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
+        LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject('dataFiles').addObject(LDPMnodesData)
+        LDPMnodesData.addProperty("App::PropertyFile",'Location','Node Data File','Location of node data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-nodes.dat'))
         
+        # Set linked object for tet data file
+        LDPMtetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMtetsData")                                     # create your object
+        LDPMtetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMtetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject('dataFiles').addObject(LDPMtetsData)
+        LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
 
 
         # Set linked object for particle VTK file
@@ -741,7 +773,7 @@ class IconViewProviderToFile:                                       # Class View
         return self.icone        
 
 
-class inputLDPM_Class():
+class input_LDPM_CSL_Class():
     """My new command"""
 
     def GetResources(self):
@@ -751,7 +783,7 @@ class inputLDPM_Class():
 
     def Activated(self):
 
-        Gui.Control.showDialog(inputLDPMwindow())
+        Gui.Control.showDialog(inputWindow_LDPM_CSL())
 
         return
 
@@ -760,4 +792,4 @@ class inputLDPM_Class():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand("mod_LDPM_CSL", inputLDPM_Class())
+Gui.addCommand("mod_LDPM_CSL", input_LDPM_CSL_Class())

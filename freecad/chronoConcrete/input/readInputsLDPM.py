@@ -7,8 +7,10 @@ def readInputs(form):
     elementType         = "LDPM"
 
     # Basic Settings
+    setupFile           = form[0].setupFile.text()
     constitutiveEQ      = form[0].constEQ.currentText()
-    paramLocation       = form[0].paramLocation.text()
+    matParaSet          = form[0].matParaSet.currentText()
+
     numCPU              = form[0].numCPUbox.value()
     numIncrements       = form[0].numPIncBox.value()
     maxIter             = form[0].numIncBox.value()
@@ -70,7 +72,8 @@ def readInputs(form):
     outputDir           = form[5].outputDir.text()
 
     return elementType, \
-        constitutiveEQ, paramLocation, numCPU, numIncrements,maxIter,placementAlg,\
+        setupFile, constitutiveEQ, matParaSet, \
+        numCPU, numIncrements,maxIter,placementAlg,\
         geoType, dimensions,\
         minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\

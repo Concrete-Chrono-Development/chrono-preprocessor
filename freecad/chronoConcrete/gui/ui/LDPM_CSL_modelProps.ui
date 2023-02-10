@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>332</width>
-    <height>426</height>
+    <width>333</width>
+    <height>331</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,6 +19,9 @@
   <property name="windowIcon">
    <iconset resource="../icons.qrc">
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
+  </property>
+  <property name="toolTipDuration">
+   <number>0</number>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -53,7 +56,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLineEdit" name="paramLocation">
+        <widget class="QLineEdit" name="setupFile">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -90,16 +93,19 @@
        <string>Constitutive Equations and Parameters</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <property name="leftMargin">
-          <number>2</number>
+          <number>4</number>
          </property>
          <property name="rightMargin">
-          <number>2</number>
+          <number>4</number>
          </property>
          <item>
-          <widget class="QComboBox" name="PrimitiveTypeCB">
+          <widget class="QComboBox" name="constEQ">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -178,7 +184,7 @@
        <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -229,6 +235,9 @@
              <number>0</number>
             </property>
             <widget class="QWidget" name="Page1_box">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <layout class="QGridLayout" name="gridLayout">
               <property name="leftMargin">
                <number>0</number>
@@ -242,18 +251,51 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <property name="spacing">
+              <property name="horizontalSpacing">
+               <number>6</number>
+              </property>
+              <property name="verticalSpacing">
                <number>0</number>
               </property>
               <item row="0" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <property name="spacing">
+                 <number>7</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
                 <item>
-                 <widget class="QComboBox" name="modelPara">
+                 <widget class="QComboBox" name="matParaSet">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>173</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maxVisibleItems">
+                   <number>16</number>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
                   </property>
                   <item>
                    <property name="text">
@@ -265,55 +307,15 @@
                     <string>Cusatis et al. 2011 Section 3</string>
                    </property>
                   </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 4</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 5.1</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 5.2</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 5.3</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 6</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 7</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 8</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 9</string>
-                   </property>
-                  </item>
                  </widget>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_5">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="text">
-                   <string>Parameter Set</string>
+                   <string>Material Parameter Set</string>
                   </property>
                  </widget>
                 </item>
@@ -321,7 +323,90 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="page"/>
+            <widget class="QWidget" name="page">
+             <layout class="QGridLayout" name="gridLayout_5">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <property name="spacing">
+                 <number>7</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QComboBox" name="PrimitiveTypeCB_3">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>173</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="maxVisibleItems">
+                   <number>16</number>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>aaaaa</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cusatis et al. 2011 Section 3</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Mat. Parameter Set</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page_2"/>
            </widget>
           </item>
          </layout>
@@ -509,7 +594,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>332</width>
+     <width>333</width>
      <height>21</height>
     </rect>
    </property>

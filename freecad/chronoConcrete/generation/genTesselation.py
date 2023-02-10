@@ -189,21 +189,40 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     facet11 = np.concatenate(([tetPoints,face3Point,edgePoints[:,3:6]]),axis=1)
     facet12 = np.concatenate(([tetPoints,face3Point,edgePoints[:,9:12]]),axis=1)
 
+    facetPointData = np.concatenate(([tetPoints,face0Point,face1Point,face2Point,face3Point,edgePoints[:,0:3],edgePoints[:,3:6],edgePoints[:,6:9],edgePoints[:,9:12],edgePoints[:,12:15],edgePoints[:,15:18]]),axis=0)
+
+    facetCellData1 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
+    facetCellData2 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
+    facetCellData3 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
+    facetCellData4 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(6*len(tetPoints)+1,7*len(tetPoints)+1))).T
+    facetCellData5 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
+    facetCellData6 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
+    facetCellData7 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(5*len(tetPoints)+1,6*len(tetPoints)+1))).T
+    facetCellData8 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
+    facetCellData9 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
+    facetCellData10 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(5*len(tetPoints)+1,6*len(tetPoints)+1))).T
+    facetCellData11 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(6*len(tetPoints)+1,7*len(tetPoints)+1))).T
+    facetCellData12 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
+
+    facetCellData = np.concatenate(([facetCellData1,facetCellData2,facetCellData3,facetCellData4,facetCellData5,facetCellData6,\
+        facetCellData7,facetCellData8,facetCellData9,facetCellData10,facetCellData11,facetCellData12]),axis=0)
+
+
     # Facets for P0 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    facetsP0 = np.concatenate(([facet4,facet5,facet7,facet8,facet10,facet11]),axis=1)
+    #facetsP0 = np.concatenate(([facet4,facet5,facet7,facet8,facet10,facet11]),axis=1)
 
     # Facets for P1 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    facetsP1 = np.concatenate(([facet1,facet2,facet7,facet9,facet10,facet12]),axis=1)
+    #facetsP1 = np.concatenate(([facet1,facet2,facet7,facet9,facet10,facet12]),axis=1)
 
     # Facets for P2 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    facetsP2 = np.concatenate(([facet1,facet3,facet4,facet6,facet11,facet12]),axis=1)
+    #facetsP2 = np.concatenate(([facet1,facet3,facet4,facet6,facet11,facet12]),axis=1)
 
     # Facets for P3 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    facetsP3 = np.concatenate(([facet2,facet3,facet5,facet6,facet8,facet9]),axis=1)
+    #facetsP3 = np.concatenate(([facet2,facet3,facet5,facet6,facet8,facet9]),axis=1)
 
     # Combination of all facets for general tet (24)
-    cellTetFacets = np.concatenate(([facetsP0,facetsP1,facetsP2,facetsP3]),\
-        axis=1)
+    #cellTetFacets = np.concatenate(([facetsP0,facetsP1,facetsP2,facetsP3]),\
+    #    axis=1)
 
     # Combination of nonrepeating facets for general tet (12)
     tetFacets = np.concatenate(([facet1,facet2,facet3,facet4,facet5,facet6,\
@@ -255,7 +274,7 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
 
 
     return tetFacets, facetCenters, facetAreas, facetNormals, \
-        tetn1, tetn2, tetPoints, allDiameters
+        tetn1, tetn2, tetPoints, allDiameters, facetPointData, facetCellData
 
 
 

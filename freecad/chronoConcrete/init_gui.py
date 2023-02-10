@@ -10,7 +10,7 @@ from freecad.chronoConcrete import GUIPATH
 
 # Chrono Scripts to Import
 from freecad.chronoConcrete.modules import mod_LDPM_CSL
-
+from freecad.chronoConcrete.modules import mod_LDPM_CSL_gen
 
 
 
@@ -23,7 +23,7 @@ class ChronoWorkbench(Gui.Workbench):
     MenuText = "Chrono Workbench"
     ToolTip = "A workbench for building LDPM, CSL, DEM, and SPH models for Project Chrono"
     Icon = os.path.join(ICONPATH, "ldpm.svg")
-    toolbox = ["mod_LDPM_CSL"] # a list of command names 
+    toolbox = ["mod_LDPM_CSL","mod_LDPM_CSL_gen"] # a list of command names 
 
 
     def Initialize(self):

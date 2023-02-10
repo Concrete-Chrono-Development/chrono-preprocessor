@@ -1,7 +1,5 @@
 import numpy as np
 
-
-
 def insideCheck(vertices,tets,center,parDiameter,binMin,binMax,coord1,\
     coord2,coord3,coord4,maxC):
 
