@@ -43,18 +43,17 @@ def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater
 
 
 def meshVolume(vertices,tets):
-
     tets = tets.astype(int)
-
     coord1 = vertices[tets[:,0]-1]
     coord2 = vertices[tets[:,1]-1]
     coord3 = vertices[tets[:,2]-1]
     coord4 = vertices[tets[:,3]-1]
 
-    tetVolume = abs(np.vdot(np.transpose(coord1-coord4),\
-        np.transpose(np.cross((coord2-coord4),(coord3-coord4)))))/6
+    # Calculate the volume of all tetrahedrons in one go
+    tetVolume = np.abs(np.sum(np.cross((coord2-coord4),(coord3-coord4)) * (coord1-coord4), axis=1))/6
 
-    return tetVolume
+    return np.sum(tetVolume)
+
 
 
 # Shift total sieve curve to coarse sieve curve

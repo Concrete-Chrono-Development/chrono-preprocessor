@@ -7,10 +7,8 @@ import numpy as np
 
 
 def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
-    
-    # Create diameters list (including fictitious edge particle diameters)
-    allDiameters = np.concatenate((np.array([1.1*minPar,]*\
-        int(len(allNodes)-len(parDiameter))),parDiameter))
+        
+    allDiameters = np.concatenate((np.repeat(1.1 * minPar, int(len(allNodes) - len(parDiameter))), parDiameter))
 
     # Definition of Edge Points [Coordinates1,....,Coordinates6]
     edges1 = [allTets[:,0],allTets[:,1]]
@@ -32,7 +30,6 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     edgeDistance = (nodalDistance - (allDiameters[(edges[:,0]-1).\
         astype(int)]/2) - (allDiameters[(edges[:,1]-1).astype(int)])/2)/2
 
-
     # Make unit vector from edgeNode 1 to edgeNode2, multiply vector 
     # by sum(agg1 and edgeDistance) and add to edgeNode2
     edgePoints = (edgeNode1-edgeNode2)/np.array([nodalDistance,]*3).T*\
@@ -42,6 +39,7 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
 
     # Form Edge Point List
     edgePoints = np.concatenate(np.split(edgePoints,6),axis=1)
+
 
     # Definition of Face Points faceNPoint[Coordinates]
 
@@ -176,30 +174,30 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     tetPoints = np.vstack((tetx,tety,tetz)).T
 
     # Coordinates for each facet in each tet
-    facet1 = np.concatenate(([tetPoints,face0Point,edgePoints[:,9:12]]),axis=1)
-    facet2 = np.concatenate(([tetPoints,face0Point,edgePoints[:,12:15]]),axis=1)
-    facet3 = np.concatenate(([tetPoints,face0Point,edgePoints[:,15:18]]),axis=1)
-    facet4 = np.concatenate(([tetPoints,face1Point,edgePoints[:,3:6]]),axis=1)
-    facet5 = np.concatenate(([tetPoints,face1Point,edgePoints[:,6:9]]),axis=1)
-    facet6 = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)
-    facet7 = np.concatenate(([tetPoints,face2Point,edgePoints[:,0:3]]),axis=1)
-    facet8 = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)
-    facet9 = np.concatenate(([tetPoints,face2Point,edgePoints[:,12:15]]),axis=1)
+    facet1  = np.concatenate(([tetPoints,face0Point,edgePoints[:,9:12]]),axis=1)
+    facet2  = np.concatenate(([tetPoints,face0Point,edgePoints[:,12:15]]),axis=1)
+    facet3  = np.concatenate(([tetPoints,face0Point,edgePoints[:,15:18]]),axis=1)
+    facet4  = np.concatenate(([tetPoints,face1Point,edgePoints[:,3:6]]),axis=1)
+    facet5  = np.concatenate(([tetPoints,face1Point,edgePoints[:,6:9]]),axis=1)
+    facet6  = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)
+    facet7  = np.concatenate(([tetPoints,face2Point,edgePoints[:,0:3]]),axis=1)
+    facet8  = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)
+    facet9  = np.concatenate(([tetPoints,face2Point,edgePoints[:,12:15]]),axis=1)
     facet10 = np.concatenate(([tetPoints,face3Point,edgePoints[:,0:3]]),axis=1)
     facet11 = np.concatenate(([tetPoints,face3Point,edgePoints[:,3:6]]),axis=1)
     facet12 = np.concatenate(([tetPoints,face3Point,edgePoints[:,9:12]]),axis=1)
 
     facetPointData = np.concatenate(([tetPoints,face0Point,face1Point,face2Point,face3Point,edgePoints[:,0:3],edgePoints[:,3:6],edgePoints[:,6:9],edgePoints[:,9:12],edgePoints[:,12:15],edgePoints[:,15:18]]),axis=0)
 
-    facetCellData1 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
-    facetCellData2 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
-    facetCellData3 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
-    facetCellData4 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(6*len(tetPoints)+1,7*len(tetPoints)+1))).T
-    facetCellData5 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
-    facetCellData6 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
-    facetCellData7 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(5*len(tetPoints)+1,6*len(tetPoints)+1))).T
-    facetCellData8 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
-    facetCellData9 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
+    facetCellData1  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
+    facetCellData2  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
+    facetCellData3  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
+    facetCellData4  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(6*len(tetPoints)+1,7*len(tetPoints)+1))).T
+    facetCellData5  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
+    facetCellData6  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(2*len(tetPoints)+1,3*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
+    facetCellData7  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(5*len(tetPoints)+1,6*len(tetPoints)+1))).T
+    facetCellData8  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(7*len(tetPoints)+1,8*len(tetPoints)+1))).T
+    facetCellData9  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(3*len(tetPoints)+1,4*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
     facetCellData10 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(5*len(tetPoints)+1,6*len(tetPoints)+1))).T
     facetCellData11 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(6*len(tetPoints)+1,7*len(tetPoints)+1))).T
     facetCellData12 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T

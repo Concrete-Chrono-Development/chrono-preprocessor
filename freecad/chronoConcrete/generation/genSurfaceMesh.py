@@ -18,7 +18,7 @@ def genSurfMesh(analysisName,geoName,meshName,minPar,maxPar):
     App.ActiveDocument.getObject(meshName).Algorithm3D = u"Delaunay"
     App.ActiveDocument.getObject(meshName).ElementDimension = u"3D"
     App.ActiveDocument.getObject(meshName).CoherenceMesh = True
-    App.ActiveDocument.ActiveObject.Part = App.ActiveDocument.getObject(geoName)
+    App.ActiveDocument.ActiveObject.Part = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0]
     App.ActiveDocument.recompute()
     App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(analysisName))
     App.ActiveDocument.getObject(analysisName).addObject(App.ActiveDocument.getObject(meshName))

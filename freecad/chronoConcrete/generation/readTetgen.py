@@ -1,9 +1,6 @@
 import numpy as np
 
 
-
-
-
 def readTetgen(nodeFile, tetFile):                                       
 
     allNodes = np.loadtxt(nodeFile, usecols=(1,2,3), \

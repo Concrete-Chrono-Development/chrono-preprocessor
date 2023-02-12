@@ -6,9 +6,9 @@ from freecad.chronoConcrete.generation.particleOverlapCheck     import overlapCh
 from freecad.chronoConcrete.generation.particleInsideCheck     	import insideCheck
 
 
-def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
+def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
     vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
-    aggOffset,verbose,parDiameterList,maxEdgeLength,nodes,parDiameter):
+    aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,nodes,parDiameter):
     
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)
@@ -53,7 +53,7 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(nodes,node,parDiameter,trianglePoints,binMin,\
+        overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
 
         if overlap[0] == False:
@@ -63,9 +63,8 @@ def generateParticleMPI(trianglePoints,maxParNum,minC,maxC,\
 
 
                 # Check if particle is inside the mesh if critically close          
-                inside = insideCheck(vertices,\
-                tets,node,parDiameter,binMin,binMax,coord1,coord2,coord3,\
-                coord4,maxC)
+                inside = insideCheck(vertices,tets,node,parDiameter,binMin,binMax,coord1,\
+                                    coord2,coord3,coord4)
 
             else:
 

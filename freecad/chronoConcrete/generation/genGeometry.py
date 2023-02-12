@@ -1,8 +1,13 @@
+import os
+import re
 
 import FreeCAD as App
+import ImportGui
+import JoinFeatures
+import BOPTools.JoinFeatures
 
 
-def genGeometry(dimensions,geoType,geoName):
+def genGeometry(dimensions,geoType,geoName,cadFile):
 
 
     if geoType in ['Box', 'Cylinder', 'Cone', 'Sphere']:
@@ -69,7 +74,45 @@ def genGeometry(dimensions,geoType,geoName):
         geo.Height = dimensions[1]
         geo.Polygon = int(dimensions[2])
 
+    if geoType == "Notched Prism":
+
+        # Create a notched prism and name it
+        App.ActiveDocument.addObject("Part::Box","Box")
+        App.ActiveDocument.Box.Length=dimensions[0]
+        App.ActiveDocument.Box.Width=dimensions[1]
+        App.ActiveDocument.Box.Height=dimensions[2]
+        App.ActiveDocument.Box.Placement=App.Placement(App.Vector(0.00,0.00,0.00),App.Rotation(App.Vector(0.00,0.00,1.00),0.00))
+        App.ActiveDocument.Box.Label='Box'
+
+        App.ActiveDocument.addObject("Part::Box","Notch")
+        App.ActiveDocument.Notch.Length=dimensions[3] # Notch Width
+        App.ActiveDocument.Notch.Width=dimensions[1]
+        App.ActiveDocument.Notch.Height=dimensions[4] # Notch Depth
+        App.ActiveDocument.Notch.Placement=App.Placement(App.Vector(0.00,0.00,0.00),App.Rotation(App.Vector(0.00,0.00,1.00),0.00))
+        App.ActiveDocument.Notch.Label='Notch'
+
+        App.getDocument(App.ActiveDocument.Name).getObject('Notch').Placement = App.Placement(App.Vector((float(dimensions[0].strip(" mm"))/2-float(dimensions[3].strip(" mm"))/2),0.00,0.00),App.Rotation(App.Vector(0.00,0.00,1.00),0.00))
+
+        j = BOPTools.JoinFeatures.makeCutout(name=geoName)
+        j.Base = App.ActiveDocument.Box
+        j.Tool = App.ActiveDocument.Notch
+        j.Proxy.execute(j)
+        j.purgeTouched()
+        for obj in j.ViewObject.Proxy.claimChildren():
+            obj.ViewObject.hide()
 
 
+    if geoType == "Custom":
+        pass
+
+
+    if geoType == "Import CAD":
+        ImportGui.insert(cadFile,App.ActiveDocument.Name)
+        filename = os.path.basename(cadFile)
+        filename, file_extension = os.path.splitext(filename)
+        filename = re.sub("\.", "_", filename)
+        filename = re.sub("/.", "_", filename)
+        geo = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(filename)[0]
+        geo.Label = geoName
 
     App.ActiveDocument.recompute()

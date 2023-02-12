@@ -1,7 +1,7 @@
 import numpy as np
 
 def insideCheck(vertices,tets,center,parDiameter,binMin,binMax,coord1,\
-    coord2,coord3,coord4,maxC):
+    coord2,coord3,coord4):
 
     # Store tet vertices that fall inside the bin
     coord1 = np.all([(coord1[:,0] > binMin[0]) , (coord1[:,0] < binMax[0]),\

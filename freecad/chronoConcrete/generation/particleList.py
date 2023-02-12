@@ -7,10 +7,11 @@ def particleList(parVolTotal,minPar,maxPar,newSieveCurveD,cdf,kappa_i,NewSet,ful
 
     q = 3.0-fullerCoef
 
-    smallParVolume = 4/3*math.pi*(minPar/2)**3
-    maxParNum = np.ceil(parVolTotal/smallParVolume)
-    parDiameter = np.zeros(int(maxParNum))
-    parVol = np.zeros(int(maxParNum))
+
+    smallparVolume = 4/3*math.pi*(minPar/2)**3
+    maxparNum = np.ceil(parVolTotal/smallparVolume)
+    parDiameter = np.zeros(int(maxparNum))
+    parVol = np.zeros(int(maxparNum))
 
     i = 0
 
@@ -67,4 +68,4 @@ def particleList(parVolTotal,minPar,maxPar,newSieveCurveD,cdf,kappa_i,NewSet,ful
     # Sort particle diameters large-to-small
     parDiameterList = np.sort(parDiameter)[::-1]
 
-    return maxParNum,parDiameterList
+    return maxparNum,parDiameterList

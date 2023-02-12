@@ -432,7 +432,7 @@
          <item>
           <widget class="QSpinBox" name="numCPUbox">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -463,7 +463,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Number of CPUs for Particle Placement</string>
@@ -477,7 +477,7 @@
          <item>
           <widget class="QSpinBox" name="numPIncBox">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -508,7 +508,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Number of Placement Increments (MPI only)</string>

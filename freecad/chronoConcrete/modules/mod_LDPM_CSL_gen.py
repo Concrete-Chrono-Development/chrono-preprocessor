@@ -37,25 +37,28 @@ from freecad.chronoConcrete.output.mkChronoInput                  import mkChron
 class genWindow_LDPM_CSL:
     def __init__(self):
 
+        self.form = []
+
         # Load UI's for Side Panel
-        a = ccloadUIfile("LDPM_CSL_writeSimFiles.ui")
-        self.form = [a]
+        self.form.append(ccloadUIfile("LDPM_CSL_writeSimInfo.ui"))
+        self.form.append(ccloadUIfile("LDPM_CSL_writeSimFiles.ui"))
 
         # Label, Load Icons, and Initialize Panels
-        self.form[0].setWindowTitle("Write File")
-
+        self.form[0].setWindowTitle("Confirm Output")
+        self.form[1].setWindowTitle("Write File")
 
         ccloadUIicon(self.form[0],"ldpmOutput.svg")
+        ccloadUIicon(self.form[1],"ldpmOutput.svg")
 
 
         # Set initial output directory
-        self.form[0].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
+        self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
         # Connect Open File Buttons
-        QtCore.QObject.connect(self.form[0].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
+        QtCore.QObject.connect(self.form[1].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
-        QtCore.QObject.connect(self.form[0].writeChrono, QtCore.SIGNAL("clicked()"), self.generation)
+        QtCore.QObject.connect(self.form[1].writeChrono, QtCore.SIGNAL("clicked()"), self.generation)
 
 
 

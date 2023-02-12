@@ -43,6 +43,14 @@ def readInputs(form):
         dimensions.append(form[1].prismCircumradius.text())
         dimensions.append(form[1].prismHeight.text())
         dimensions.append(form[1].prismPolygon.text())
+    if geoType == "Notched Prism":
+        dimensions.append(form[1].notchBoxLength.text())
+        dimensions.append(form[1].notchBoxWidth.text())
+        dimensions.append(form[1].notchBoxHeight.text())
+        dimensions.append(form[1].notchWidth.text())
+        dimensions.append(form[1].notchDepth.text())
+    cadFile             = form[1].cadFile.toPlainText()
+
 
     # Particle Settings
     minPar              = float(form[2].minPar.value() or 0)
@@ -74,7 +82,7 @@ def readInputs(form):
     return elementType, \
         setupFile, constitutiveEQ, matParaSet, \
         numCPU, numIncrements,maxIter,placementAlg,\
-        geoType, dimensions,\
+        geoType, dimensions, cadFile,\
         minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\

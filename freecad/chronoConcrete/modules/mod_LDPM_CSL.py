@@ -63,9 +63,8 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 
-#sys.executable = 'C:/Users/mtroe/anaconda3/python.exe'
-#multiprocessing.set_executable('C:/Users/mtroe/anaconda3/pythonw.exe')
-
+#sys.executable = str(Path(App.ConfigGet('AppHomePath') + '/bin/python.exe'))
+multiprocessing.set_executable(str(Path(App.ConfigGet('AppHomePath') + '/bin/pythonw.exe')))
 
 
 
@@ -101,7 +100,8 @@ class inputWindow_LDPM_CSL:
         self.form[5].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
         # Connect Open File Buttons
-        QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFile)
+        QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFilePara)
+        QtCore.QObject.connect(self.form[1].readFileButton, QtCore.SIGNAL("clicked()"), self.openFileGeo)
         QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
@@ -117,23 +117,43 @@ class inputWindow_LDPM_CSL:
         # def accept() in no longer needed, since there is no OK button
         return int(QtGui.QDialogButtonBox.Close)
 
-
-
-    def openFile(self):
+    def openFilePara(self):
 
         path = App.ConfigGet("UserHomePath")
+        filetype = "CC Parameter input format (*.ccPar)"
 
         OpenName = ""
         try:
-            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file parameter file"),path,             "*.para") # PyQt4
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file parameter file"),path,             filetype) # PyQt4
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         except Exception:
-            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file parameter file", path,             "*.para") #PySide
+            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file parameter file", path,             filetype) #PySide
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         if OpenName == "":                                                            # if the name file are not selected then Abord process
             App.Console.PrintMessage("Process aborted"+"\n")
         else:
-            App.Console.PrintMessage("Read "+OpenName+"\n")                           # text displayed to Report view (Menu > View > Report view checked)
+            self.form[0].setupFile.setText(OpenName)
+
+    def openFileGeo(self):
+
+        path = App.ConfigGet("UserHomePath")
+        filetype = "Supported formats (*.brep *.brp *.iges *.igs *.step *.stp);;\
+                    BREP format       (*.brep *.brp);; \
+                    IGES format       (*.iges *.igs);; \
+                    STEP format       (*.step *.stp)"
+
+        OpenName = ""
+        try:
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a geometry file"),path,             filetype) # PyQt4
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        except Exception:
+            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a geometry file", path,             filetype) #PySide
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        if OpenName == "":                                                            # if the name file are not selected then Abord process
+            App.Console.PrintMessage("Process aborted"+"\n")
+        else:
+            self.form[1].cadName.setText("Import geometry listed below")
+            self.form[1].cadFile.setText(OpenName)
 
 
 
@@ -210,7 +230,7 @@ class inputWindow_LDPM_CSL:
         [elementType, \
             setupFile, constitutiveEQ, matParaSet, \
             numCPU, numIncrements,maxIter,placementAlg,\
-            geoType, dimensions,\
+            geoType, dimensions, cadFile,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
@@ -232,19 +252,27 @@ class inputWindow_LDPM_CSL:
         analysisName = elementType + "analysis"
         materialName = elementType + "material"
 
+
         i = 0
-        while App.activeDocument().getObject(geoName) != None:
+        try:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+        except:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+
+        while test == True:
             i = i+1
             geoName = elementType + "geo" + str(i)
             meshName = elementType + "mesh" + str(i)
             analysisName = elementType + "analysis" + str(i)
             materialName = elementType + "material" + str(i)
-
-
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+            except:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
 
         # Generate geometry
         self.form[5].statusWindow.setText("Status: Generating geometry.") 
-        genGeo = genGeometry(dimensions,geoType,geoName)
+        genGeo = genGeometry(dimensions,geoType,geoName,cadFile)
         self.form[5].progressBar.setValue(2) 
 
         # Set view
@@ -305,7 +333,8 @@ class inputWindow_LDPM_CSL:
 
 
 
-
+        verts = vertices[np.array(tets).flatten()-1]
+        max_dist = np.max(np.sqrt(np.sum(verts**2, axis=1)))
 
 
 
@@ -318,15 +347,13 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText('Status: Placing particles into geometry. (' + str(0) + '/' + str(len(parDiameterList)) + ')') 
         # Initialize values
-        newMaxIter = 2
+        newMaxIter = 6
         particlesPlaced = 0
 
+        
 
 
 
-
-        #numCPU = 6
-        #numIncrements = 10
 
         if numCPU > 1:
         
@@ -339,7 +366,7 @@ class inputWindow_LDPM_CSL:
 
                 outputMPI = process_pool.map(functools.partial(generateParticleMPI, facePoints,maxParNum, minC, maxC, vertices, \
                     tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
+                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,nodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
 
                 nodeMPI = np.array(outputMPI)[:,0:3]
                 diameter = np.array(outputMPI)[:,3]
@@ -369,10 +396,10 @@ class inputWindow_LDPM_CSL:
 
                         if overlap == True:
 
-                            [newMaxIter,node,iterReq] = generateParticle(particlesPlaced+x,facePoints,\
-                                parDiameterList[particlesPlaced+x],maxParNum, minC, maxC, vertices, \
-                                tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                                maxPar,aggOffset,'No',parDiameterList,maxEdgeLength,nodes)
+                            [newMaxIter,node,iterReq] = generateParticle(facePoints,\
+                                parDiameterList[particlesPlaced+x], vertices, \
+                                tets,newMaxIter,maxIter,minPar,\
+                                maxPar,aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes)
                             
                             nodes[particlesPlaced+x,:] = node[0,:]
 
@@ -385,10 +412,8 @@ class inputWindow_LDPM_CSL:
         for x in range(particlesPlaced,len(parDiameterList)):
 
             # Generate particle
-            [newMaxIter,node,iterReq] = generateParticle(x,facePoints,\
-                parDiameterList[x],maxParNum, minC, maxC, vertices, \
-                tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,nodes)
+            [newMaxIter,node,iterReq] = generateParticle(facePoints,parDiameterList[x],vertices,tets,newMaxIter,maxIter,minPar,maxPar,\
+                aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes)
 
             # Update progress bar every 1% of placement
             if x % np.rint(len(parDiameterList)/100) == 0:
@@ -398,12 +423,16 @@ class inputWindow_LDPM_CSL:
                 # Update number particles placed every 1%
                 if x % np.rint(len(parDiameterList)/100) == 0:
                     self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
-            else:
+            elif len(parDiameterList)<=10000:
                 # Update number particles placed every 0.1%
                 if x % np.rint(len(parDiameterList)/1000) == 0:
                     self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+            else:
+                # Update number particles placed every 0.01%
+                if x % np.rint(len(parDiameterList)/10000) == 0:
+                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
-            nodes[x,:] = node[0,:]
+            nodes[x,:] = node
 
         self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
 
@@ -551,7 +580,6 @@ class inputWindow_LDPM_CSL:
 
 
 
-
         # Generate Log file after run
         #mkLogFile = logFile(gmshTime,nParticles,placementTime,maxPar,\
         #    minPar,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
@@ -593,6 +621,17 @@ class inputWindow_LDPM_CSL:
 
 
 
+
+
+        ## TODO: UPDATE VISUALIZATION SETTING TO BE DIFFERENT FOR CYLINDERS (AND CURVED GEOMETRIES)
+        ## VS FLAT GEOMETRIES, FLAT SHOULD HAVE GEO ON AND MESH OFF, OTHER ONE SHOULD HAVE BOTH TURNED ON
+
+
+
+
+
+
+
         # Set linked object for node data file
         LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
         LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
@@ -612,9 +651,11 @@ class inputWindow_LDPM_CSL:
         App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMparticlesVTK)
         LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
-        # Set linked object for mesh VTK file
-        LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
-        LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+
+        # Insert mesh visualization and link mesh VTK file
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)        
+        LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000')
+        LDPMmeshVTK.Label = 'LDPMmeshVTK' 
         App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMmeshVTK)
         LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
 
@@ -635,9 +676,24 @@ class inputWindow_LDPM_CSL:
 
 
         # Set visualization properties for particle centers
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').DisplayMode = u"Nodes"
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointSize = 3.00
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMmesh').PointColor = (0.00,0.00,0.00)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).DisplayMode = u"Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointSize = 3.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointColor = (0.00,0.00,0.00)
+
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').ShapeColor = (0.80,0.80,0.80)
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').DisplayMode = u"Faces"
+
+
+        objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
+        try:
+            Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 50
+            Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
+        except:
+            pass
+
+
 
 
 
