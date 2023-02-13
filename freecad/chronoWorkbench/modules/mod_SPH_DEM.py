@@ -258,7 +258,7 @@ class input_SPH_DEM_Class():
     """My new command"""
 
     def GetResources(self):
-        return {"Pixmap"  : os.path.join(ICONPATH, "ldpm.svg"), # the name of a svg file available in the resources
+        return {"Pixmap"  : os.path.join(ICONPATH, "Arch_Material_Group.svg"), # the name of a svg file available in the resources
                 "MenuText": "SPH/DEM Generation",
                 "ToolTip" : "Generation of an SPH or DEM simulation"}
 
