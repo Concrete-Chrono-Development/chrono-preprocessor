@@ -247,11 +247,14 @@ class inputWindow_LDPM_CSL:
         self.form[5].progressBar.setValue(1) 
         self.form[5].statusWindow.setText("Status: Generating objects.") 
 
-        geoName = elementType + "geo"
-        meshName = elementType + "mesh"
-        analysisName = elementType + "analysis"
-        materialName = elementType + "material"
 
+
+        geoName = elementType + "geo" + str(0).zfill(3)
+        meshName = elementType + "mesh" + str(0).zfill(3)
+        analysisName = elementType + "analysis" + str(0).zfill(3)
+        materialName = elementType + "material" + str(0).zfill(3)
+        dataFilesName = elementType + 'dataFiles'+ str(0).zfill(3)
+        visualFilesName = elementType + 'visualFiles'+ str(0).zfill(3)
 
         i = 0
         try:
@@ -261,10 +264,12 @@ class inputWindow_LDPM_CSL:
 
         while test == True:
             i = i+1
-            geoName = elementType + "geo" + str(i)
-            meshName = elementType + "mesh" + str(i)
-            analysisName = elementType + "analysis" + str(i)
-            materialName = elementType + "material" + str(i)
+            geoName = elementType + "geo" + str(i).zfill(3)
+            meshName = elementType + "mesh" + str(i).zfill(3)
+            analysisName = elementType + "analysis" + str(i).zfill(3)
+            materialName = elementType + "material" + str(i).zfill(3)
+            dataFilesName = elementType + 'dataFiles'+ str(i).zfill(3)
+            visualFilesName = elementType + 'visualFiles'+ str(i).zfill(3)
             try:
                 test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
             except:
@@ -534,17 +539,17 @@ class inputWindow_LDPM_CSL:
 
 
 
-        App.activeDocument().addObject('App::DocumentObjectGroup','dataFiles')
-        App.activeDocument().dataFiles.Label = 'Data Files'
+        App.activeDocument().addObject('App::DocumentObjectGroup',dataFilesName)
+        App.activeDocument().getObject(dataFilesName).Label = 'Data Files'
 
-        App.activeDocument().addObject('App::DocumentObjectGroup','visualFiles')
-        App.activeDocument().visualFiles.Label = 'Visualization Files'
-
-
+        App.activeDocument().addObject('App::DocumentObjectGroup',visualFilesName)
+        App.activeDocument().getObject(visualFilesName).Label = 'Visualization Files'
 
 
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("dataFiles"))
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject("visualFiles"))
+
+
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName))
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName))
 
 
         print('Writing Node Data file.')
@@ -623,56 +628,79 @@ class inputWindow_LDPM_CSL:
 
 
 
-        ## TODO: UPDATE VISUALIZATION SETTING TO BE DIFFERENT FOR CYLINDERS (AND CURVED GEOMETRIES)
-        ## VS FLAT GEOMETRIES, FLAT SHOULD HAVE GEO ON AND MESH OFF, OTHER ONE SHOULD HAVE BOTH TURNED ON
-
-
-
-
 
 
 
         # Set linked object for node data file
         LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
         LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-        App.getDocument(App.ActiveDocument.Name).getObject('dataFiles').addObject(LDPMnodesData)
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMnodesData)
         LDPMnodesData.addProperty("App::PropertyFile",'Location','Node Data File','Location of node data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-nodes.dat'))
         
         # Set linked object for tet data file
         LDPMtetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMtetsData")                                     # create your object
         LDPMtetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMtetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-        App.getDocument(App.ActiveDocument.Name).getObject('dataFiles').addObject(LDPMtetsData)
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMtetsData)
         LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
 
 
         # Set linked object for particle VTK file
         LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
         LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMparticlesVTK)
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMparticlesVTK)
         LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
 
-        # Insert mesh visualization and link mesh VTK file
-        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)        
-        LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000')
-        LDPMmeshVTK.Label = 'LDPMmeshVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMmeshVTK)
-        LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+        if geoType in ['Cylinder', 'Cone', 'Sphere']:
+
+
+            # Insert mesh visualization and link mesh VTK file
+            Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)        
+            LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000')
+            LDPMmeshVTK.Label = 'LDPMmeshVTK' 
+            App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
+            LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').ShapeColor = (0.80,0.80,0.80)
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').BackfaceCulling = False
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').MaxFacesShowInner = 0
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').DisplayMode = u"Faces"
+
+            objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
+            try:
+                Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 50
+                Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
+            except:
+                pass
+
+        else:
+            # Set linked object for mesh VTK file
+            LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
+            LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+            App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
+            LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
+            objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
+            try:
+                Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 0
+                Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
+            except:
+                pass
 
 
         # Insert facet visualization and link facet VTK file
         Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)        
-        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000')
+        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000')
         LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject('visualFiles').addObject(LDPMfacetsVTK)
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMfacetsVTK)
         LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk'))
 
 
         # Set visualization properties for facets
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').DisplayMode = u"Wireframe"
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').MaxFacesShowInner = 0
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').BackfaceCulling = False
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_facet_000').ShapeColor = (0.36,0.36,0.36)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').DisplayMode = u"Wireframe"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').ShapeColor = (0.36,0.36,0.36)
 
 
         # Set visualization properties for particle centers
@@ -680,18 +708,7 @@ class inputWindow_LDPM_CSL:
         Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointSize = 3.00
         Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointColor = (0.00,0.00,0.00)
 
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').ShapeColor = (0.80,0.80,0.80)
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').BackfaceCulling = False
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').MaxFacesShowInner = 0
-        Gui.getDocument(App.ActiveDocument.Name).getObject('LDPMgeo_para_mesh_000').DisplayMode = u"Faces"
 
-
-        objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
-        try:
-            Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 50
-            Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
-        except:
-            pass
 
 
 

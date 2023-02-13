@@ -43,12 +43,19 @@ def readInputs(form):
         dimensions.append(form[1].prismCircumradius.text())
         dimensions.append(form[1].prismHeight.text())
         dimensions.append(form[1].prismPolygon.text())
-    if geoType == "Notched Prism":
+    if geoType == "Notched Prism - Square":
         dimensions.append(form[1].notchBoxLength.text())
         dimensions.append(form[1].notchBoxWidth.text())
         dimensions.append(form[1].notchBoxHeight.text())
         dimensions.append(form[1].notchWidth.text())
         dimensions.append(form[1].notchDepth.text())
+    if geoType == "Notched Prism - Semi Circle":
+        dimensions.append(form[1].notchSCBoxLength.text())
+        dimensions.append(form[1].notchSCBoxWidth.text())
+        dimensions.append(form[1].notchSCBoxHeight.text())
+        dimensions.append(form[1].notchSCWidth.text())
+        dimensions.append(form[1].notchSCDepth.text())
+
     cadFile             = form[1].cadFile.toPlainText()
 
 

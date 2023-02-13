@@ -10,7 +10,7 @@ import BOPTools.JoinFeatures
 def genGeometry(dimensions,geoType,geoName,cadFile):
 
 
-    if geoType in ['Box', 'Cylinder', 'Cone', 'Sphere']:
+    if geoType in ['Box', 'Cylinder', 'Cone', 'Sphere', "Notched Prism - Square"]:
         if all(float(i.strip(" mm")) > 0 for i in dimensions):
             pass
         else:
@@ -65,7 +65,7 @@ def genGeometry(dimensions,geoType,geoName,cadFile):
         geo.Angle2 = dimensions[4]
         geo.Angle3 = dimensions[5]
 
-    if geoType == "Prism":
+    if geoType == "Arbitrary Prism":
 
         # Create a prism and name it
         geo = App.ActiveDocument.addObject("Part::Prism",geoName)
@@ -74,7 +74,7 @@ def genGeometry(dimensions,geoType,geoName,cadFile):
         geo.Height = dimensions[1]
         geo.Polygon = int(dimensions[2])
 
-    if geoType == "Notched Prism":
+    if geoType == "Notched Prism - Square":
 
         # Create a notched prism and name it
         App.ActiveDocument.addObject("Part::Box","Box")
@@ -100,6 +100,48 @@ def genGeometry(dimensions,geoType,geoName,cadFile):
         j.purgeTouched()
         for obj in j.ViewObject.Proxy.claimChildren():
             obj.ViewObject.hide()
+
+    if geoType == "Notched Prism - Semi Circle":
+
+        # Create a notched prism and name it
+        App.ActiveDocument.addObject("Part::Box","Box")
+        App.ActiveDocument.Box.Length=dimensions[0]
+        App.ActiveDocument.Box.Width=dimensions[1]
+        App.ActiveDocument.Box.Height=dimensions[2]
+        App.ActiveDocument.Box.Placement=App.Placement(App.Vector(0.00,0.00,0.00),App.Rotation(App.Vector(0.00,0.00,1.00),0.00))
+        App.ActiveDocument.Box.Label='Box'
+
+        App.ActiveDocument.addObject("Part::Box","BoxNotch")
+        App.ActiveDocument.BoxNotch.Length=dimensions[3] # BoxNotch Width
+        App.ActiveDocument.BoxNotch.Width=dimensions[1]
+        App.ActiveDocument.BoxNotch.Height=dimensions[4] # BoxNotch Depth
+        App.ActiveDocument.BoxNotch.Placement=App.Placement(App.Vector(float(dimensions[0].strip(" mm"))/2-float(dimensions[3].strip(" mm"))/2,0.00,0.00),App.Rotation(App.Vector(0.00,0.00,1.00),0.00))
+        App.ActiveDocument.BoxNotch.Label='BoxNotch'
+
+        App.ActiveDocument.addObject("Part::Cylinder","CylinderNotch")
+        App.ActiveDocument.CylinderNotch.Radius=float(dimensions[3].strip(" mm"))/2
+        App.ActiveDocument.CylinderNotch.Height=float(dimensions[1].strip(" mm"))
+        App.ActiveDocument.CylinderNotch.Angle=360.00
+        App.ActiveDocument.CylinderNotch.FirstAngle=0.00
+        App.ActiveDocument.CylinderNotch.SecondAngle=0.00
+        App.ActiveDocument.CylinderNotch.Placement=App.Placement(App.Vector(float(dimensions[0].strip(" mm"))/2,0.00,float(dimensions[4].strip(" mm"))),App.Rotation(App.Vector(1.00,0.00,0.00),-90.00))
+        App.ActiveDocument.CylinderNotch.Label='CylinderNotch'
+
+        j = BOPTools.JoinFeatures.makeConnect(name='Connect')
+        j.Objects = [App.ActiveDocument.BoxNotch, App.ActiveDocument.CylinderNotch]
+        j.Proxy.execute(j)
+        j.purgeTouched()
+        for obj in j.ViewObject.Proxy.claimChildren():
+            obj.ViewObject.hide()
+
+        j = BOPTools.JoinFeatures.makeCutout(name=geoName)
+        j.Base = App.ActiveDocument.Box
+        j.Tool = App.ActiveDocument.Connect
+        j.Proxy.execute(j)
+        j.purgeTouched()
+        for obj in j.ViewObject.Proxy.claimChildren():
+            obj.ViewObject.hide()
+
 
 
     if geoType == "Custom":
