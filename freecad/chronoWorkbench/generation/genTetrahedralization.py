@@ -2,7 +2,7 @@ import os
 import numpy as np
 from pathlib import Path
 
-from freecad.chronoConcrete import TETGENPATH
+from freecad.chronoWorkbench import TETGENPATH
 
 
 

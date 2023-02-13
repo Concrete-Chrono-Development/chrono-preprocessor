@@ -24,13 +24,13 @@ import Spreadsheet
 
 from PySide import QtCore, QtGui
 
-from freecad.chronoConcrete                                     import ICONPATH
-from freecad.chronoConcrete                                     import GUIPATH
+from freecad.chronoWorkbench                                     import ICONPATH
+from freecad.chronoWorkbench                                     import GUIPATH
 
-from freecad.chronoConcrete.util.ccloadUIfile                    import ccloadUIfile
-from freecad.chronoConcrete.util.ccloadUIicon                    import ccloadUIicon
+from freecad.chronoWorkbench.util.cwloadUIfile                    import cwloadUIfile
+from freecad.chronoWorkbench.util.cwloadUIicon                    import cwloadUIicon
 
-from freecad.chronoConcrete.output.mkChronoInput                  import mkChronoInput
+from freecad.chronoWorkbench.output.mkChronoInput                  import mkChronoInput
 
 
 
@@ -40,15 +40,15 @@ class genWindow_LDPM_CSL:
         self.form = []
 
         # Load UI's for Side Panel
-        self.form.append(ccloadUIfile("LDPM_CSL_writeSimInfo.ui"))
-        self.form.append(ccloadUIfile("LDPM_CSL_writeSimFiles.ui"))
+        self.form.append(cwloadUIfile("LDPM_CSL_writeSimInfo.ui"))
+        self.form.append(cwloadUIfile("LDPM_CSL_writeSimFiles.ui"))
 
         # Label, Load Icons, and Initialize Panels
         self.form[0].setWindowTitle("Confirm Output")
         self.form[1].setWindowTitle("Write File")
 
-        ccloadUIicon(self.form[0],"ldpmOutput.svg")
-        ccloadUIicon(self.form[1],"ldpmOutput.svg")
+        cwloadUIicon(self.form[0],"ldpmOutput.svg")
+        cwloadUIicon(self.form[1],"ldpmOutput.svg")
 
 
         # Set initial output directory

@@ -1,8 +1,8 @@
 import os
 from PySide import QtCore, QtGui
-from freecad.chronoConcrete import ICONPATH
+from freecad.chronoWorkbench import ICONPATH
 
 
-def ccloadUIicon(form,icon):
+def cwloadUIicon(form,icon):
 
     form.setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, icon))))

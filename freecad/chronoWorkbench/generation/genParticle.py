@@ -1,7 +1,7 @@
 import numpy as np
 
-from freecad.chronoConcrete.generation.particleOverlapCheck     import overlapCheck
-from freecad.chronoConcrete.generation.particleInsideCheck     	import insideCheck
+from freecad.chronoWorkbench.generation.particleOverlapCheck     import overlapCheck
+from freecad.chronoWorkbench.generation.particleInsideCheck     	import insideCheck
 
 
 def generateParticle(facePoints,parDiameter,\

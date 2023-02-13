@@ -9,8 +9,8 @@ import BOPTools.JoinFeatures
 
 def genGeometry(dimensions,geoType,geoName,cadFile):
 
-
-    if geoType in ['Box', 'Cylinder', 'Cone', 'Sphere', "Notched Prism - Square"]:
+    # Check if dimensions are positive (ignore geometries we cannot check)
+    if geoType not in ['Ellipsoid', 'Custom', 'Import CAD']:
         if all(float(i.strip(" mm")) > 0 for i in dimensions):
             pass
         else:
