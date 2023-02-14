@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons.qrc">
+   <iconset>
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
   </property>
   <property name="sizeGripEnabled" stdset="0">
@@ -1082,6 +1082,169 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="page_5">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QGridLayout" name="_7">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="1" column="2">
+             <widget class="Gui::QuantitySpinBox" name="notchSEBoxWidth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="textLabel2_7">
+              <property name="text">
+               <string>Length:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="textLabel3_7">
+              <property name="text">
+               <string>Width:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="Gui::QuantitySpinBox" name="notchSEBoxLength" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="Gui::QuantitySpinBox" name="notchSEBoxHeight" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="textLabel4_4">
+              <property name="text">
+               <string>Height:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="QLabel" name="textLabel2_6">
+              <property name="text">
+               <string>Notch Width:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="Gui::QuantitySpinBox" name="notchSEWidth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="textLabel3_6">
+              <property name="text">
+               <string>Notch Depth:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="Gui::QuantitySpinBox" name="notchSEDepth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="textLabel3_8">
+              <property name="text">
+               <string>Notch Tip Depth:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="Gui::QuantitySpinBox" name="notchSEtipDepth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="spacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>21</width>
+              <height>291</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
@@ -1245,6 +1408,15 @@
      </item>
      <item>
       <property name="text">
+       <string>Notched Prism - Semi Ellipse</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</iconset>
+      </property>      
+     </item>
+     <item>
+      <property name="text">
        <string>Custom</string>
       </property>
       <property name="icon">
@@ -1296,13 +1468,20 @@
   <tabstop>notchBoxLength</tabstop>
   <tabstop>notchBoxWidth</tabstop>
   <tabstop>notchBoxHeight</tabstop>
+  <tabstop>notchDepth</tabstop>
+  <tabstop>notchWidth</tabstop>
   <tabstop>notchSCBoxLength</tabstop>
   <tabstop>notchSCBoxWidth</tabstop>
   <tabstop>notchSCBoxHeight</tabstop>
+  <tabstop>notchSCDepth</tabstop>
+  <tabstop>notchSCWidth</tabstop>  
+  <tabstop>notchSEBoxLength</tabstop>
+  <tabstop>notchSEBoxWidth</tabstop>
+  <tabstop>notchSEBoxHeight</tabstop>
+  <tabstop>notchSEDepth</tabstop>
+  <tabstop>notchSEWidth</tabstop>  
  </tabstops>
- <resources>
-  <include location="../icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>geometryType</sender>

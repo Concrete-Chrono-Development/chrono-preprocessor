@@ -55,6 +55,13 @@ def readInputs(form):
         dimensions.append(form[1].notchSCBoxHeight.text())
         dimensions.append(form[1].notchSCWidth.text())
         dimensions.append(form[1].notchSCDepth.text())
+    if geoType == "Notched Prism - Semi Ellipse":
+        dimensions.append(form[1].notchSEBoxLength.text())
+        dimensions.append(form[1].notchSEBoxWidth.text())
+        dimensions.append(form[1].notchSEBoxHeight.text())
+        dimensions.append(form[1].notchSEWidth.text())
+        dimensions.append(form[1].notchSEDepth.text())
+        dimensions.append(form[1].notchSEtipDepth.text())
 
     cadFile             = form[1].cadFile.toPlainText()
 

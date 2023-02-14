@@ -767,7 +767,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Remove unused material properties
-        App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
+        #App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
 
         # Add appropriate material properties
         App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEquationSet','Base','Set of constitutive equations.').ConstitutiveEquationSet=constitutiveEQ
