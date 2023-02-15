@@ -1245,6 +1245,182 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="page_6">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QGridLayout" name="_8">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="1" column="2">
+             <widget class="Gui::QuantitySpinBox" name="dogboneWidth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="textLabel2_9">
+              <property name="text">
+               <string>Length:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="textLabel3_11">
+              <property name="text">
+               <string>Width:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="Gui::QuantitySpinBox" name="dogboneLength" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="Gui::QuantitySpinBox" name="dogboneThickness" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="textLabel4_5">
+              <property name="text">
+               <string>Thickness</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QLabel" name="textLabel2_8">
+              <property name="text">
+               <string>Gauge Length:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="Gui::QuantitySpinBox" name="gaugeLength" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="textLabel3_9">
+              <property name="text">
+               <string>Gauge Width:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="Gui::QuantitySpinBox" name="gaugeWidth" native="true">
+              <property name="keyboardTracking" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="unit" stdset="0">
+               <string notr="true">mm</string>
+              </property>
+              <property name="value" stdset="0">
+               <double>10.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="textLabel3_10">
+              <property name="text">
+               <string>Dogbone Type:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="dogboneType">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>20</height>
+               </size>
+              </property>
+              <item>
+               <property name="text">
+                <string>Rounded</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Straight</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="spacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>21</width>
+              <height>284</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
@@ -1413,7 +1589,16 @@
       <property name="icon">
        <iconset>
         <normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</normaloff>:/icons/parametric/Part_Wedge_Parametric.svg</iconset>
-      </property>      
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dogbone</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/Arch_Nest.svg</normaloff>:/icons/Arch_Nest.svg</iconset>
+      </property>
      </item>
      <item>
       <property name="text">
@@ -1474,12 +1659,18 @@
   <tabstop>notchSCBoxWidth</tabstop>
   <tabstop>notchSCBoxHeight</tabstop>
   <tabstop>notchSCDepth</tabstop>
-  <tabstop>notchSCWidth</tabstop>  
+  <tabstop>notchSCWidth</tabstop>
   <tabstop>notchSEBoxLength</tabstop>
   <tabstop>notchSEBoxWidth</tabstop>
   <tabstop>notchSEBoxHeight</tabstop>
   <tabstop>notchSEDepth</tabstop>
-  <tabstop>notchSEWidth</tabstop>  
+  <tabstop>notchSEWidth</tabstop>
+  <tabstop>dogboneLength</tabstop>
+  <tabstop>dogboneWidth</tabstop>
+  <tabstop>dogboneThickness</tabstop>
+  <tabstop>gaugeLength</tabstop>
+  <tabstop>gaugeWidth</tabstop>
+  <tabstop>dogboneType</tabstop> 
  </tabstops>
  <resources/>
  <connections>

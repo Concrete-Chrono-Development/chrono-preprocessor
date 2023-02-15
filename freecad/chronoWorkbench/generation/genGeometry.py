@@ -1,17 +1,20 @@
 import os
 import re
+import math
 
 import FreeCAD as App
 import ImportGui
 import JoinFeatures
 import BOPTools.JoinFeatures
+import Part
 from FreeCAD import Base
+
 
 
 def genGeometry(dimensions,geoType,geoName,cadFile):
 
     # Check if dimensions are positive (ignore geometries we cannot check)
-    if geoType not in ['Ellipsoid', 'Custom', 'Import CAD']:
+    if geoType not in ['Ellipsoid', 'Dogbone', 'Custom', 'Import CAD']:
         if all(float(i.strip(" mm")) > 0 for i in dimensions):
             pass
         else:
@@ -218,6 +221,85 @@ def genGeometry(dimensions,geoType,geoName,cadFile):
         App.ActiveDocument.getObject(geoName+'EllipseNotch').Visibility = False
         App.ActiveDocument.getObject(geoName+'BoxNotch').Visibility = False
 
+
+
+
+
+
+    if geoType == "Dogbone":
+
+        # Define variables
+        length = float(dimensions[0].strip(" mm"))  # Length of the part
+        width = float(dimensions[1].strip(" mm"))  # Width of the part
+        thickness = float(dimensions[2].strip(" mm"))  # Thickness of the part
+        gauge_length = float(dimensions[3].strip(" mm"))  # Gauge length of the dogbone
+        gauge_width = float(dimensions[4].strip(" mm"))  # Gauge width of the dogbone
+        dogbone_type = dimensions[5]  # Type of the dogbone shape
+
+        # Create a rectangular shape
+        rectangle = App.ActiveDocument.addObject("Part::Box", geoName+"Rectangle")
+        rectangle.Length = width
+        rectangle.Width = thickness
+        rectangle.Height = length
+
+        # Create a dogbone shape
+        if dogbone_type == 'Rounded':
+            radius = (width-gauge_width)/2
+            dogbone1 = App.ActiveDocument.addObject("Part::Cylinder", geoName+"Dogbone1")
+            dogbone1.Radius = radius
+            dogbone1.Height = thickness
+            dogbone1.Placement = App.Placement(App.Vector(0, 0, length/2-gauge_length/2),App.Rotation(App.Vector(1,0,0),-90.00))
+
+            dogbone2 = App.ActiveDocument.addObject("Part::Cylinder", geoName+"Dogbone2")
+            dogbone2.Radius = radius
+            dogbone2.Height = thickness
+            dogbone2.Placement = App.Placement(App.Vector(width, 0, length/2-gauge_length/2),App.Rotation(App.Vector(1,0,0),-90.00))
+
+            dogbone3 = App.ActiveDocument.addObject("Part::Cylinder", geoName+"Dogbone3")
+            dogbone3.Radius = radius
+            dogbone3.Height = thickness
+            dogbone3.Placement = App.Placement(App.Vector(0, 0, length/2+gauge_length/2),App.Rotation(App.Vector(1,0,0),-90.00))
+
+            dogbone4 = App.ActiveDocument.addObject("Part::Cylinder", geoName+"Dogbone4")
+            dogbone4.Radius = radius
+            dogbone4.Height = thickness
+            dogbone4.Placement = App.Placement(App.Vector(width, 0, length/2+gauge_length/2),App.Rotation(App.Vector(1,0,0),-90.00))
+
+            side1 = App.ActiveDocument.addObject("Part::Box", geoName+"side1")
+            side1.Length = (width-gauge_width)/2
+            side1.Width = thickness
+            side1.Height = gauge_length
+            side1.Placement = App.Placement(App.Vector(0, 0, length/2-gauge_length/2),App.Rotation(App.Vector(0,0,0),0.00))
+
+            side2 = App.ActiveDocument.addObject("Part::Box", geoName+"side2")
+            side2.Length = (width-gauge_width)/2
+            side2.Width = thickness
+            side2.Height = gauge_length
+            side2.Placement = App.Placement(App.Vector(width-(width-gauge_width)/2, 0, length/2-gauge_length/2),App.Rotation(App.Vector(0,0,0),0.00))
+
+            DogboneInsert = App.ActiveDocument.addObject("Part::MultiFuse", geoName+"DogboneInsert")
+            DogboneInsert.Shapes = [dogbone1, dogbone2, dogbone3, dogbone4, side1, side2]
+
+        else:
+            side1 = App.ActiveDocument.addObject("Part::Box", geoName+"side1")
+            side1.Length = (width-gauge_width)/2
+            side1.Width = thickness
+            side1.Height = gauge_length
+            side1.Placement = App.Placement(App.Vector(0, 0, length/2-gauge_length/2),App.Rotation(App.Vector(0,0,0),0.00))
+
+            side2 = App.ActiveDocument.addObject("Part::Box", geoName+"side2")
+            side2.Length = (width-gauge_width)/2
+            side2.Width = thickness
+            side2.Height = gauge_length
+            side2.Placement = App.Placement(App.Vector(width-(width-gauge_width)/2, 0, length/2-gauge_length/2),App.Rotation(App.Vector(0,0,0),0.00))
+
+            DogboneInsert = App.ActiveDocument.addObject("Part::MultiFuse", geoName+"DogboneInsert")
+            DogboneInsert.Shapes = [side1, side2]
+
+        # Subtract the dogbone from the rectangle
+        part = App.ActiveDocument.addObject("Part::Cut",geoName)
+        part.Base = rectangle
+        part.Tool = DogboneInsert
 
 
     if geoType == "Custom":

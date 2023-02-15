@@ -62,6 +62,13 @@ def readInputs(form):
         dimensions.append(form[1].notchSEWidth.text())
         dimensions.append(form[1].notchSEDepth.text())
         dimensions.append(form[1].notchSEtipDepth.text())
+    if geoType == "Dogbone":
+        dimensions.append(form[1].dogboneLength.text())
+        dimensions.append(form[1].dogboneWidth.text())
+        dimensions.append(form[1].dogboneThickness.text())
+        dimensions.append(form[1].gaugeLength.text())
+        dimensions.append(form[1].gaugeWidth.text())
+        dimensions.append(form[1].dogboneType.currentText())
 
     cadFile             = form[1].cadFile.toPlainText()
 
