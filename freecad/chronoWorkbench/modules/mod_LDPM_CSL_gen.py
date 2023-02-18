@@ -121,18 +121,19 @@ class genWindow_LDPM_CSL:
         print('Writing files.')
 
         elementType = "LDPM"
-        materialProps = ("b" "h")
-        materialPropsValues = (3,4)
-        simProps = ("e" "s")
-        simPropsValues = (1,2)
-        nodesFilename = "test"
-        tetsFilename = "test"
-        
+        materialProps = ["Alpha", "Normal Modulus", "etc."]
+        materialPropsValues = (0,0,0)
+        simProps = ["TBD", "TBD", "TBD", "TBD"]
+        simPropsValues = (0,0,0,0)
+        nodesFilename = "LDPMgeo000-data-nodes.dat"
+        tetsFilename = "LDPMgeo000-data-tets.dat"
+        facetsFilename = "LDPMgeo000-data-facets.dat"
+
         geoName = "TestGeo"
         geoType = "TestType"
 
         # Make output directory if does not exist
-        outDir =  self.form[0].outputDir.text()
+        outDir =  self.form[1].outputDir.text()
         try:
             os.mkdir(outDir)
         except:
@@ -152,7 +153,7 @@ class genWindow_LDPM_CSL:
 
         # Make Project Chrono input file
         mkChronoInput(elementType, materialProps, materialPropsValues, simProps, simPropsValues, \
-            nodesFilename, tetsFilename, geoName, outDir, outName)
+            nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName)
 
 
 
