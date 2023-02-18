@@ -24,7 +24,7 @@ def mkDataTets(geoName,tempPath,allTets):
     
 
     np.savetxt(Path(tempPath + geoName + \
-        '-data-tets.dat'), allTets, fmt='%s', delimiter=' ', comments=''\
+        '-data-tets.dat'), allTets.astype(int), fmt='%i', delimiter=' ', comments=''\
         ,header='\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\
