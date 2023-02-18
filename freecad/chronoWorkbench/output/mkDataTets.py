@@ -43,8 +43,7 @@ def mkDataTets(geoName,tempPath,allTets):
 // Data Structure:\n\
 // Node 1 Node 2 Node 3 Node 4\n\
 //\n\
-// ================================================================================\n\
-')
+// ================================================================================')
 
 
 #    with open(Path(tempPath + geoName + \

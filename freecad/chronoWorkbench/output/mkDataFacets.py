@@ -45,5 +45,4 @@ def mkDataFacets(geoName,tempPath,facetData,facetPointData):
 // Tet IDx IDy IDz Vol pArea cx cy cz px py pz qx qy qz sx sy sz mF\n\
 // One line per facet, ordering is Tet 1 (Facet 1-12),...,Tet N (Facet 1-12)\n\
 //\n\
-// ================================================================================\n\
-')
+// ================================================================================')
