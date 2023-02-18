@@ -1,8 +1,24 @@
+## ================================================================================
+## CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+##
+## Copyright (c) 2023 
+## All rights reserved. 
+##
+## Use of this source code is governed by a BSD-style license that can be found
+## in the LICENSE file at the top level of the distribution and at
+## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+##
+## ================================================================================
+## Author: Matthew Troemner
+## ================================================================================
+##
+## Description coming soon...
+##
+##
+## ================================================================================
+
 from setuptools import setup
 import os
-# from freecad.chronoWorkbench.version import __version__
-# name: this is the name of the distribution.
-# Packages using the same name here cannot be installed together
 
 version_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 
                             "freecad", "chronoWorkbench", "version.py")

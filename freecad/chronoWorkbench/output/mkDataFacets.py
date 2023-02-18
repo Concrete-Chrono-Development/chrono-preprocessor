@@ -21,10 +21,11 @@ from pathlib import Path
 import numpy as np
 
 
-def mkDataNodes(geoName,tempPath,allNodes):
+def mkDataFacets(geoName,tempPath,facetData,facetPointData):
     
+
     np.savetxt(Path(tempPath + geoName + \
-        '-data-nodes.dat'), allNodes, fmt='%.10g', delimiter=' ', comments=''\
+        '-data-facets.dat'), facetData, fmt='%.10g', comments = '', delimiter=' '\
         ,header='\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\
@@ -37,11 +38,12 @@ def mkDataNodes(geoName,tempPath,allNodes):
 // github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE\n\
 //\n\
 // ================================================================================\n\
-// Node Data File\n\
+// Facet Data File\n\
 // ================================================================================\n\
 //\n\
 // Data Structure:\n\
-// Vertex 1 Vertex 2 Vertex 3\n\
+// Tet IDx IDy IDz Vol pArea cx cy cz px py pz qx qy qz sx sy sz mF\n\
+// One line per facet, ordering is Tet 1 (Facet 1-12),...,Tet N (Facet 1-12)\n\
 //\n\
 // ================================================================================\n\
 ')

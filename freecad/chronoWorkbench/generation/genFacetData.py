@@ -1,3 +1,22 @@
+## ================================================================================
+## CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+##
+## Copyright (c) 2023 
+## All rights reserved. 
+##
+## Use of this source code is governed by a BSD-style license that can be found
+## in the LICENSE file at the top level of the distribution and at
+## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+##
+## ================================================================================
+## Author: Matthew Troemner
+## ================================================================================
+##
+## Description coming soon...
+##
+##
+## ================================================================================
+
 import numpy as np
 
 
@@ -9,47 +28,9 @@ import numpy as np
 
 def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
-    multiMaterial,cementStructure,edgeMaterialList):
-    
-    ''' OLD CODE VERSION
-        # Store facets as set of three points
-        facets = tetFacets.reshape(-1,9)
-
-        # Store particles accociated with facets
-        p1 = allNodes[(allTets[:,tetn1]-1).astype(int),:].reshape(-1,3)
-        p2 = allNodes[(allTets[:,tetn2]-1).astype(int),:].reshape(-1,3)
-
-
-        # Projected facet normal
-        pn = (p2-p1)/np.array([np.linalg.norm(p2-p1,axis=1),]*3).T
-        pn = pn.reshape(-1,3)
-        #print('n',pn)
-
-        InitialNormal=[]
-        coords=[]
-
-        for x in range(0,len(allTets)):
-
-            for y in range(0,12):
-                Check = pn[12*x+y,0]*facetNormals[12*x+y,0]+\
-                        pn[12*x+y,1]*facetNormals[12*x+y,1]+\
-                        pn[12*x+y,2]*facetNormals[12*x+y,2]
-
-                if Check < 0.0:
-                    InitialN = -1.0*facetNormals[12*x+y,0:3]
-                    c1 = facets[12*x+y,0:3]
-                    c2 = facets[12*x+y,6:9]
-                    c3 = facets[12*x+y,3:6]
-
-                else:
-                    InitialN = facetNormals[12*x+y,0:3]
-                    c1 = facets[12*x+y,0:3]
-                    c2 = facets[12*x+y,3:6]
-                    c3 = facets[12*x+y,6:9]
-
-                coords.append(np.array([c1,c2,c3]))
-                InitialNormal.append(InitialN)
-    '''
+    multiMaterial,cementStructure,edgeMaterialList,facetCellData):
+  
+  
     facets = tetFacets.reshape(-1, 9)
     p1 = allNodes[(allTets[:, tetn1] - 1).astype(int), :].reshape(-1, 3)
     p2 = allNodes[(allTets[:, tetn2] - 1).astype(int), :].reshape(-1, 3)
@@ -95,9 +76,6 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
 
     # Clear not needed variables from memory
     del Check
-    #del c1
-    #del c2
-    #del c3
     del v
     del zeros
     del identity
@@ -132,8 +110,9 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetVol2 = np.squeeze(abs(np.matmul(volCalc3,volCalc4))/6)
     subtetVol = np.squeeze(abs(np.matmul(volCalc1,volCalc2))/6 \
         + abs(np.matmul(volCalc3,volCalc4))/6)
-    #print(facetVol1)
-    #print(facetVol2)
+
+
+
 
     # Clear not needed variables from memory
     del R
@@ -156,7 +135,7 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     pArea = abs(areaCalc1/areaCalc2*facetAreas)
 
     # Initialize a data matrix for all facet data
-    dataList = np.empty([len(allTets)*36,10])
+    facetData = np.empty([len(allTets)*12,19])
 
     # Initialize a matrix for facet material information
     facetMaterial = np.empty([len(allTets)*12,])
@@ -172,142 +151,29 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
             len(materialList),]),materialList))
 
     elif cementStructure in ['on','On','Y','y','Yes','yes']:
-
-    # materialList = np.concatenate((0*np.ones([len(allNodes)-\
-    #     len(materialList),]),materialList))  
         materialList = np.concatenate((edgeMaterialList,materialList))
 
     else:
-
         materialList = np.concatenate((0*np.ones([len(allNodes)-\
             len(materialList),]),materialList))            
+
+    facetCellData = (facetCellData.reshape(-1,3)).astype(int)
 
     for x in range(0,len(allTets)):
 
         for y in range(0,12):
 
-            # Store: [n1 n2 cx cy cz fa nx ny nz vol]
-            dataList[36*x+3*y,0] = allTets[x,tetn1[y]].astype(int)
-            dataList[36*x+3*y,1] = allTets[x,tetn2[y]].astype(int)
-            dataList[36*x+3*y,2:5] = facetCenters[12*x+y,:]
-            dataList[36*x+3*y,5] = facetAreas[12*x+y]
-            dataList[36*x+3*y,6:9] = facetNormals[12*x+y,:]
-            dataList[36*x+3*y,9] = subtetVol[12*x+y]
+            # [Tet Nodes:(IDx IDy IDz) Vol pArea Centers:(cx cy cz) pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
+            # Note that the order of the facets is Tet 1 (Facet 1-12),Tet 2 (Facet 1-12),...,Tet N (Facet 1-12)
+            facetData[12*x+y,0]     = x                       # Tet ID      
+            facetData[12*x+y,1:4]   = facetCellData[12*x+y,:] # Global Facet ID
+            facetData[12*x+y,4]     = subtetVol[12*x+y]       # Subtet Volume
+            facetData[12*x+y,5]     = pArea[12*x+y]           # Projected Facet Area
+            facetData[12*x+y,6:9]   = facetCenters[12*x+y,:]  # Facet Centroid
+            facetData[12*x+y,9:12]  = pn[12*x+y,:]            # Projected Facet Normal
+            facetData[12*x+y,12:15] = ptan1[12*x+y,:]         # Projected Tangent 1
+            facetData[12*x+y,15:18] = ptan2[12*x+y,:]         # Projected Tangent 2
+            facetData[12*x+y,18]    = 0                       # Material Flag (Coming Soon)
+               
 
-            # Store: [pa px py pz qx qy qz sx sy sz]
-            dataList[36*x+3*y+1,0] = pArea[12*x+y]
-            dataList[36*x+3*y+1,1:4] = pn[12*x+y,:]
-            dataList[36*x+3*y+1,4:7] = ptan1[12*x+y,:]
-            dataList[36*x+3*y+1,7:10] = ptan2[12*x+y,:]
-
-            # Store: [cx1 cy1 cz1 cx2 cy2 cz2 cx3 cy3 cz3 0]
-        # if multiMaterial in ['on','On','Y','y','Yes','yes']
-            # 1 = ITZ
-            # 2 = Binder
-            # 3 = Aggregate
-            dataList[36*x+3*y+2,0:9] = facets[12*x+y,:]
-
-            # Store particle materials
-            particleMaterial[12*x+y,0] = materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)
-            particleMaterial[12*x+y,1] = materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)
-
-            # Material rule based on particle diameters volumes
-            if materialRule == 9 or materialRule == 10:
-
-                if facetVol1.all() == facetVol2.all():
-                    
-                    dataList[36*x+3*y+2,9] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                    facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-
-                else:
-
-                    if facetVol1.any() > facetVol2.any():
-
-                        dataList[36*x+3*y+2,9] = materialList[allTets[x,tetn1[y]]\
-                            .astype(int)-1].astype(int)
-                        facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                            .astype(int)-1].astype(int)
-
-                    else: 
-
-                        dataList[36*x+3*y+2,9] = materialList[allTets[x,tetn2[y]]\
-                            .astype(int)-1].astype(int)
-                        facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
-                            .astype(int)-1].astype(int)
-
-            elif materialRule > 0:
-
-                if materialRule == 1:
-                    aggITZ = 3
-                    aggBinder = 3
-                    itzBinder = 1
-                elif materialRule == 2:
-                    aggITZ = 3
-                    aggBinder = 3
-                    itzBinder = 2
-                elif materialRule == 3:
-                    aggITZ = 3
-                    aggBinder = 2
-                    itzBinder = 1
-                elif materialRule == 4:
-                    aggITZ = 3
-                    aggBinder = 2
-                    itzBinder = 2
-                elif materialRule == 5:
-                    aggITZ = 1
-                    aggBinder = 3
-                    itzBinder = 1
-                elif materialRule == 6:
-                    aggITZ = 1
-                    aggBinder = 3
-                    itzBinder = 2
-                elif materialRule == 7:
-                    aggITZ = 1
-                    aggBinder = 2
-                    itzBinder = 1
-                elif materialRule == 8:
-                    aggITZ = 1
-                    aggBinder = 2
-                    itzBinder = 2
-                
-                if materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int) \
-                    == materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int):
-                    
-                    dataList[36*x+3*y+2,9] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                    facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==2:
-
-                    dataList[36*x+3*y+2,9] = itzBinder
-                    facetMaterial[12*x+y] = itzBinder
-
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==2 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
-
-                    dataList[36*x+3*y+2,9] = itzBinder
-                    facetMaterial[12*x+y] = itzBinder
-
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==3:
-
-                    dataList[36*x+3*y+2,9] = aggITZ
-                    facetMaterial[12*x+y] = aggITZ
-
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==3 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
-
-                    dataList[36*x+3*y+2,9] = aggITZ
-                    facetMaterial[12*x+y] = aggITZ
-
-                else:
-                    
-                    dataList[36*x+3*y+2,9] = aggBinder
-                    facetMaterial[12*x+y] = aggBinder
-
-            else:
-
-                dataList[36*x+3*y+2,9] = 0
-                facetMaterial[12*x+y] = 0                       
-
-    return dataList,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial
+    return facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial

@@ -1,3 +1,22 @@
+## ================================================================================
+## CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+##
+## Copyright (c) 2023 
+## All rights reserved. 
+##
+## Use of this source code is governed by a BSD-style license that can be found
+## in the LICENSE file at the top level of the distribution and at
+## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+##
+## ================================================================================
+## Author: Matthew Troemner
+## ================================================================================
+##
+## Description coming soon...
+##
+##
+## ================================================================================
+
 import os
 import sys
 import time
@@ -55,6 +74,8 @@ from freecad.chronoWorkbench.output.mkVtkParticles               import mkVtkPar
 from freecad.chronoWorkbench.output.mkVtkFacets                  import mkVtkFacets
 from freecad.chronoWorkbench.output.mkDataNodes                  import mkDataNodes
 from freecad.chronoWorkbench.output.mkDataTets                   import mkDataTets
+from freecad.chronoWorkbench.output.mkDataFacets                 import mkDataFacets
+
 
 
 # Turn off error for divide by zero and invalid operations
@@ -507,9 +528,9 @@ class inputWindow_LDPM_CSL:
 
      
         self.form[5].statusWindow.setText("Status: Generating facet data information.") 
-        [dataList,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetData(\
+        [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetData(\
             allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList)
+            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
         self.form[5].progressBar.setValue(98) 
 
 
@@ -520,7 +541,7 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText("Status: Writing external facet data file.") 
         # Create file of external triangle facets for plotting of cells
-        #externalFacetsFile = externalFacetFile(dataList,vertices,faces,geoName)
+        #externalFacetsFile = externalFacetFile(facetData,vertices,faces,geoName)
 
 
 
@@ -561,7 +582,9 @@ class inputWindow_LDPM_CSL:
         print('Writing Facet Data file.')
 
         # If data files requested, generate Facet File
-        #facetFile(geoName,dataList,allTets,dataType)
+        mkDataFacets(geoName,tempPath,facetData,facetPointData)
+
+
 
         print('Writing Particle Data file.')
 
@@ -575,7 +598,7 @@ class inputWindow_LDPM_CSL:
         mkVtkParticles(nodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
-        mkVtkFacets(geoName,tetFacets,dataList,facetMaterial,multiMaterial,cementStructure,tempPath,facetPointData,facetCellData)
+        mkVtkFacets(geoName,tempPath,facetPointData,facetCellData)
 
 
 
