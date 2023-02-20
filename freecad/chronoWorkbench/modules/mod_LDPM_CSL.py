@@ -26,6 +26,7 @@ from pathlib import Path
 import multiprocessing
 import functools
 import math
+import ast
 
 import FreeCADGui as Gui
 import FreeCAD as App
@@ -255,6 +256,12 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
             outputDir] = readInputs(self.form)
+        #sieveCurveDiameter = np.array(sieveCurveDiameter)
+
+
+        sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
+        sieveCurvePassing = ast.literal_eval(sieveCurvePassing)
+
 
 
         #if fillerC > 0:

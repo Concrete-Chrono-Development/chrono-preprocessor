@@ -33,7 +33,7 @@ def particleVol(wcRatio,volFracAir,fullerCoef,cementC,densityCement,densityWater
 
     # Gets volume of geometry
     tetVolume = meshVolume(vertices,tets)
-    
+
 
     # Shift sieve curve if needed
     if sieveCurveDiameter != (0 or None or [] or ""):
@@ -77,7 +77,7 @@ def meshVolume(vertices,tets):
 
 # Shift total sieve curve to coarse sieve curve
 def sieveCurve(minPar,maxPar,sieveCurveDiameter,sieveCurvePassing):
-    
+
     nblines = len(sieveCurveDiameter)
 
     for i in range(0,nblines):
