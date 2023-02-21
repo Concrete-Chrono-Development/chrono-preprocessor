@@ -151,6 +151,121 @@ class genWindow_LDPM_CSL:
             pass
 
 
+
+
+
+        # Check for number of LDPM components
+        elementType = "LDPM"
+        geoName = elementType + "geo" + str(0).zfill(3)
+        i = 0
+        count = 0
+        try:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+        except:
+            count = count+1
+        try:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+        except:
+            count = count+1
+        if count == 2:
+            test = False
+        
+        while test == True:
+            i = i+1
+            geoName = elementType + "geo" + str(i).zfill(3)
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+            except:
+                count = count+1
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+            except:
+                count = count+1
+            if count == 2:
+                test = False
+        numPartsLDPM = i
+
+
+        # Check for number of CSL components
+        elementType = "CSL"
+        geoName = elementType + "geo" + str(0).zfill(3)
+        i = 0
+        count = 0
+        try:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+        except:
+            count = count+1
+        try:
+            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+        except:
+            count = count+1
+        if count == 2:
+            test = False
+        
+        while test == True:
+            i = i+1
+            geoName = elementType + "geo" + str(i).zfill(3)
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+            except:
+                count = count+1
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+            except:
+                count = count+1
+            if count == 2:
+                test = False
+        numPartsCSL = i
+
+        if numPartsLDPM == 0 and numPartsCSL ==0:
+            raise Exception("No LDPM or CSL parts detected!")
+
+
+        if numPartsLDPM > 0:
+            elementType = "LDPM"
+            analysisName = elementType + "analysis"
+            materialName = elementType + "material"
+
+        if numPartsCSL > 0:
+            elementType = "CSL"
+            analysisName = elementType + "analysis"
+            materialName = elementType + "material"
+
+
+        materialProps = [\
+            "Density",\
+            "CompressiveNormalModulus",\
+            "PoissonsRatio",\
+            "InitialHardeningModulusRatio",\
+            "DensificationRatio",\
+            "TransitionalStrainRatio",\
+            "ShearStrengthRatio",\
+            "InitialFriction",\
+            "SofteningExponent",\
+            "DeviatoricStrainThresholdRatio",\
+            "DeviatoricDamageParameter",\
+            "AsymptoticFriction",\
+            "TransitionalStress",\
+            "TensileStrength",\
+            "TensileCharacteristicLength",\
+            "ShearSofteningModulusRatio",\
+            ]
+        materialPropsValues = []
+
+        # Read material properties from model
+        for x in range(len(materialProps)):
+            materialPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(materialName).getPropertyByName(materialProps[x]))
+
+
+
+
+
+
+
+
+
+
+
         # Make Project Chrono input file
         mkChronoInput(elementType, materialProps, materialPropsValues, simProps, simPropsValues, \
             nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName)

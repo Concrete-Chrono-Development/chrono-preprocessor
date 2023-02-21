@@ -258,9 +258,12 @@ class inputWindow_LDPM_CSL:
             outputDir] = readInputs(self.form)
         #sieveCurveDiameter = np.array(sieveCurveDiameter)
 
+        try:
+            sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
+            sieveCurvePassing = ast.literal_eval(sieveCurvePassing)
+        except:
+            pass
 
-        sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
-        sieveCurvePassing = ast.literal_eval(sieveCurvePassing)
 
 
 
@@ -279,7 +282,7 @@ class inputWindow_LDPM_CSL:
         geoName = elementType + "geo" + str(0).zfill(3)
         meshName = elementType + "mesh" + str(0).zfill(3)
         analysisName = elementType + "analysis"
-        materialName = elementType + "material" + str(0).zfill(3)
+        materialName = elementType + "material"
         dataFilesName = elementType + 'dataFiles'+ str(0).zfill(3)
         visualFilesName = elementType + 'visualFiles'+ str(0).zfill(3)
 
@@ -293,7 +296,6 @@ class inputWindow_LDPM_CSL:
             i = i+1
             geoName = elementType + "geo" + str(i).zfill(3)
             meshName = elementType + "mesh" + str(i).zfill(3)
-            materialName = elementType + "material" + str(i).zfill(3)
             dataFilesName = elementType + 'dataFiles'+ str(i).zfill(3)
             visualFilesName = elementType + 'visualFiles'+ str(i).zfill(3)
             try:
