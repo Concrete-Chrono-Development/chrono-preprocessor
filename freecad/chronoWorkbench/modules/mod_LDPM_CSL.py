@@ -673,6 +673,12 @@ class inputWindow_LDPM_CSL:
         App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMtetsData)
         LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
 
+        # Set linked object for facet data file
+        LDPMfacetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfacetsData")                                     # create your object
+        LDPMfacetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMfacetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsData)
+        LDPMfacetsData.addProperty("App::PropertyFile",'Location','Facet Data File','Location of facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facets.dat'))
+
 
         # Set linked object for particle VTK file
         LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
@@ -753,48 +759,69 @@ class inputWindow_LDPM_CSL:
         #--- Smith, J., & Cusatis, G. (2017). Numerical analysis of projectile penetration and perforation of plain and fiber reinforced concrete slabs. 
         #--- International Journal for Numerical and Analytical Methods in Geomechanics, 41(3), 315-337.
 
-        if elementType == 'LDPM':
-            
-            materialProps = [\
-                "Density",\
-                "CompressiveNormalModulus",\
-                "PoissonsRatio",\
-                "InitialHardeningModulusRatio",\
-                "DensificationRatio",\
-                "TransitionalStrainRatio",\
-                "ShearStrengthRatio",\
-                "InitialFriction",\
-                "SofteningExponent",\
-                "DeviatoricStrainThresholdRatio",\
-                "DeviatoricDamageParameter",\
-                "AsymptoticFriction",\
-                "TransitionalStress",\
-                "TensileStrength",\
-                "TensileCharacteristicLength",\
-                "ShearSofteningModulusRatio",\
-                ]
+
+        
+        materialProps = [\
+            "Density",\
+            "CompressiveNormalModulus",\
+            "PoissonsRatio",\
+            "InitialHardeningModulusRatio",\
+            "DensificationRatio",\
+            "TransitionalStrainRatio",\
+            "ShearStrengthRatio",\
+            "InitialFriction",\
+            "SofteningExponent",\
+            "DeviatoricStrainThresholdRatio",\
+            "DeviatoricDamageParameter",\
+            "AsymptoticFriction",\
+            "TransitionalStress",\
+            "TensileStrength",\
+            "TensileCharacteristicLength",\
+            "ShearSofteningModulusRatio",\
+            ]
 
 
 
 
-            materialPropDesc = [\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                "Description coming soon...",\
-                ]
+        materialPropDesc = [\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            ]
+
+
+        simProps = [\
+            "TotalTime",\
+            "TimestepSize",\
+            "NumberOfThreads",\
+            "NumberOutputSteps",\
+            ]
+
+
+
+
+        simPropDesc = [\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            "Description coming soon...",\
+            ]
+
+
+
 
 
         # Remove unused material properties
@@ -810,20 +837,12 @@ class inputWindow_LDPM_CSL:
             App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
 
 
-       
-
-
-
-        
-
-        # Hide un-needed simulation properties
-        
-
         # Add appropriate simulation properties
+        for x in range(len(simProps)):
+            App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyFloat",simProps[x],"Simulation",simPropDesc[x])#.Density=0.25
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","Solver","Simulation","Solver software").Solver=['Project Chrono']
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","IntegrationScheme","Simulation","Integrator type").IntegrationScheme=['Explicit','Implicit']
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyFloat","EndTime","Simulation","Simulation duration")
-        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyString","TimestepSize","Simulation","")
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addProperty("App::PropertyEnumeration","IntegrationScheme","Simulation","Integrator type").IntegrationScheme=['Explicit']
+
 
 
 

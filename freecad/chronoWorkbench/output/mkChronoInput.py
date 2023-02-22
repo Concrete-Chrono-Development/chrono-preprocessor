@@ -59,22 +59,22 @@ int main(int argc, char** argv) {
         """)
 
         # Store solver parameters
-        f.write('// Solver Parameters\n')
+        f.write('\n// Solver Parameters\n')
         for x in range(len(simProps)):    
-            f.write('double ' + simProps[x] + ' = ' + str(simPropsValues[x]) + ';\n')
+            f.write('    double ' + simProps[x] + ' = ' + str(simPropsValues[x]) + ';\n')
         f.write('\n')
 
         # Store material parameters
-        f.write('// ' + elementType + ' Material Parameters\n')
+        f.write('    // ' + elementType + ' Material Parameters\n')
         for x in range(len(materialProps)):
-            f.write('double ' + materialProps[x] + ' = ' + str(materialPropsValues[x]) + ';\n')
+            f.write('    double ' + materialProps[x] + ' = ' + str(materialPropsValues[x]) + ';\n')
         f.write('\n')
 
         # Store files to read
-        f.write('// Reference Data Files\n')
-        f.write('std::ifstream nodesFilename = "' + nodesFilename + '";\n')
-        f.write('std::ifstream tetsFilename = "' + tetsFilename + '";\n')
-        f.write('std::ifstream facetsFilename = "' + facetsFilename + '";\n')
+        f.write('    // Reference Data Files\n')
+        f.write('    std::ifstream nodesFilename = "' + nodesFilename + '";\n')
+        f.write('    std::ifstream tetsFilename = "' + tetsFilename + '";\n')
+        f.write('    std::ifstream facetsFilename = "' + facetsFilename + '";\n')
         f.write('\n')
 
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
 
 
 
-        # Read and store facets
+        
         // Read the facets from the file facetsFilename
         std::vector<ChVector<> > facets;
         std::ifstream facetsFile(facetsFilename);
@@ -120,16 +120,15 @@ int main(int argc, char** argv) {
             facets.push_back(ChVector<>(Tet, IDx, IDy, IDz, Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz, mF));
         }
         facetsFile.close();
-    
 
-    // Set material properties
-    double rho = 1000; // density
-    double E = 1e9;    // Young's modulus
-    double nu = 0.3;   // Poisson's ratio
-    // Additional LDPM parameters
+        \n""")
+        f.write('    mesh->SetMaterialProperties(')
 
-    mesh->SetMaterialProperties(rho, E, nu);
+        for x in range(len(materialProps)):
+            f.write(materialProps[x] + ', ')
+        f.write(');\n')
 
+        f.write("""\n
     // Create a Chrono system
     ChSystemParallelNSC system;
 
@@ -148,27 +147,21 @@ int main(int argc, char** argv) {
 
 
     // Use the parallel processing capabilities of Chrono to run the simulation on multiple cores
-    int num_threads = 4;
+    num_threads = int(NumberOfThreads);
     ChOMPUtils::SetNumThreads(num_threads);
     system.SetParallelThreadNumber(num_threads);
     system.GetSettings()->max_threads = num_threads;
 
-    // Use the Chrono output system to write the visualization output for Paraview
-    system.SetOutputMode(ChSystem::OutputMode::PARAVIEW);
-    system.SetOutputFlags(ChSystem::OutputFlags::MESH);
-
 
     // Perform the simulation
-    double time_step = 1e-6;
-    double end_time = 1;
-    int num_output_steps = 20; // output 20 times
-    double output_interval = end_time / num_output_steps; // output every 1/17 of the total time
+    int num_output_steps = int(NumberOutputSteps); 
+    double output_interval = TotalTime / num_output_steps; 
     int output_counter = 0;    // counter for output
-    for (double t = 0; t < end_time; t += time_step) {
-        system.DoStepDynamics(time_step);
+    for (double t = 0; t < TotalTime; t += TimestepSize) {
+        system.DoStepDynamics(TimestepSize);
         std::cout << ''\"Time: \"'' << t << std::endl;
 
-        if (std::fmod(t, output_interval) < time_step) {
+        if (std::fmod(t, output_interval) < TimestepSize) {
             // Write output files
             char filename[100];
             sprintf(filename, ''\"output_%04d.vtu\"'', static_cast<int>(t * 1000));

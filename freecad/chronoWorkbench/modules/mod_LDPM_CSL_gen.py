@@ -25,6 +25,7 @@ import numpy as np
 from pathlib import Path
 import functools
 import math
+import shutil
 
 import FreeCADGui as Gui
 import FreeCAD as App
@@ -121,10 +122,7 @@ class genWindow_LDPM_CSL:
         print('Writing files.')
 
         elementType = "LDPM"
-        materialProps = ["Alpha", "Normal Modulus", "etc."]
-        materialPropsValues = (0,0,0)
-        simProps = ["TBD", "TBD", "TBD", "TBD"]
-        simPropsValues = (0,0,0,0)
+
         nodesFilename = "LDPMgeo000-data-nodes.dat"
         tetsFilename = "LDPMgeo000-data-tets.dat"
         facetsFilename = "LDPMgeo000-data-facets.dat"
@@ -139,16 +137,6 @@ class genWindow_LDPM_CSL:
         except:
             pass
 
-        i = 0
-        outName = '/' + geoName + geoType + str(i).zfill(3)
-        while os.path.isdir(Path(outDir + outName)):
-            i = i+1
-            outName = '/' + geoName + geoType + str(i).zfill(3)
-
-        try:
-            os.mkdir(outDir + outName)
-        except:
-            pass
 
 
 
@@ -184,6 +172,19 @@ class genWindow_LDPM_CSL:
             if count == 2:
                 test = False
         numPartsLDPM = i
+
+
+
+        i = 0
+        outName = '/' + "chronoPackage" + elementType + str(i).zfill(3)
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = '/' + "chronoPackage" + elementType + str(i).zfill(3)
+
+        try:
+            os.mkdir(outDir + outName)
+        except:
+            pass
 
 
         # Check for number of CSL components
@@ -231,6 +232,20 @@ class genWindow_LDPM_CSL:
             analysisName = elementType + "analysis"
             materialName = elementType + "material"
 
+        geoName = elementType + "geo" + str(0).zfill(3)
+        LDPMnodesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMnodesData").getPropertyByName("Location"))
+        LDPMtetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMtetsData").getPropertyByName("Location"))
+        LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
+
+
+        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/LDPMgeo000-data-nodes.dat")
+        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/LDPMgeo000-data-tets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facets.dat")
+
+
+
+
+
 
         materialProps = [\
             "Density",\
@@ -252,11 +267,23 @@ class genWindow_LDPM_CSL:
             ]
         materialPropsValues = []
 
+        simProps = [\
+            "TotalTime",\
+            "TimestepSize",\
+            "NumberOfThreads",\
+            "NumberOutputSteps",\
+            ]
+
+        simPropsValues = []
+
         # Read material properties from model
         for x in range(len(materialProps)):
             materialPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(materialName).getPropertyByName(materialProps[x]))
 
 
+        # Read simulation properties from model
+        for x in range(len(simProps)):
+            simPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(analysisName).getPropertyByName(simProps[x]))
 
 
 
