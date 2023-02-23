@@ -1,21 +1,25 @@
-## ================================================================================
-## CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+## ===========================================================================
+## CHRONO WORKBENCH:github.com/Concrete-Chrono-Development/chrono-preprocessor
 ##
 ## Copyright (c) 2023 
 ## All rights reserved. 
 ##
-## Use of this source code is governed by a BSD-style license that can be found
-## in the LICENSE file at the top level of the distribution and at
+## Use of this source code is governed by a BSD-style license that can be
+## found in the LICENSE file at the top level of the distribution and at
 ## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
 ##
-## ================================================================================
+## ===========================================================================
 ## Author: Matthew Troemner
-## ================================================================================
+## ===========================================================================
 ##
-## Description coming soon...
+## This function creates a 3D geometric shape using dimensions and parameters 
+## passed to it. The function supports several different shapes including 
+## boxes, cylinders, cones, spheres, ellipsoids, arbitrary prisms, and notched 
+## prisms of square, semi-circle, and semi-ellipse shapes. The 'Dogbone' 
+## option creates a special 3D dogbone shape using specific dimensions passed 
+## to the function.
 ##
-##
-## ================================================================================
+## ===========================================================================
 
 import os
 import re
@@ -27,7 +31,6 @@ import JoinFeatures
 import BOPTools.JoinFeatures
 import Part
 from FreeCAD import Base
-
 
 
 def genGeometry(dimensions,geoType,geoName,cadFile):
