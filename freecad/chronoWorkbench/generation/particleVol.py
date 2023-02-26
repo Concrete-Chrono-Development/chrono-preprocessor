@@ -9,7 +9,8 @@
 ## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
 ##
 ## ===========================================================================
-## Author: Matthew Troemner
+## Developed by Northwestern University
+## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
 ## This section of code defines several functions for calculating the volume 

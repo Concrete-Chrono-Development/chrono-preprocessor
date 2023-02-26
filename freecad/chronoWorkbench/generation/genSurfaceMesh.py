@@ -9,7 +9,8 @@
 ## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
 ##
 ## ===========================================================================
-## Author: Matthew Troemner
+## Developed by Northwestern University
+## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
 ## Generate surface mesh using Gmsh and extract the vertices, edges, faces, 

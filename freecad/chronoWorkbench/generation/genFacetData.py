@@ -9,7 +9,8 @@
 ## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
 ##
 ## ================================================================================
-## Author: Matthew Troemner
+## Developed by Northwestern University
+## Primary Authors: Matthew Troemner
 ## ================================================================================
 ##
 ## Description coming soon...
