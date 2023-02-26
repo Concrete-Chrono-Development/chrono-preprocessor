@@ -22,38 +22,58 @@ import numpy as np
 
 
 def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
-        
-    allDiameters = np.concatenate((np.repeat(1.1 * minPar, int(len(allNodes) - len(parDiameter))), parDiameter))
+    
+    """
+    Variable List:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    allNodes:        An array of coordinates for all nodes in the mesh.
+    allTets:         An array of indices defining the tet connectivity 
+    parDiameter:     An array of diameters for each particle.
+    minPar:          The minimum particle diameter.
+    geoName:         The name of the geometry.
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    tetFacets:       An array of indices defining the facet connectivity 
+    facetCenters:    An array of coordinates for the center of each facet in the mesh.
+    facetAreas:      An array of the area of each facet in the mesh.
+    facetNormals:    An array of the normal vector of each facet in the mesh.
+    tetn1:           An array of indices for the first node of each tetrahedron in the mesh.
+    tetn2:           An array of indices for the second node of each tetrahedron in the mesh.
+    tetPoints:       An array of coordinates for the center of each tetrahedron in the mesh.
+    allDiameters:    An array of diameters for each node in the mesh.
+    facetPointData:  Condensed array of facet nodes
+    facetCellData:   Facet connectivity for condensed facet node list
+    --------------------------------------------------------------------------
+    """
+
+    all_diameters = np.concatenate((np.repeat(1.1 * min_par, int(len(all_nodes) - len(par_diameter))), par_diameter))
 
     # Definition of Edge Points [Coordinates1,....,Coordinates6]
-    edges1 = [allTets[:,0],allTets[:,1]]
-    edges2 = [allTets[:,0],allTets[:,2]]
-    edges3 = [allTets[:,0],allTets[:,3]]
-    edges4 = [allTets[:,1],allTets[:,2]]
-    edges5 = [allTets[:,1],allTets[:,3]]
-    edges6 = [allTets[:,2],allTets[:,3]]
+    edges1 = [all_tets[:,0],all_tets[:,1]]
+    edges2 = [all_tets[:,0],all_tets[:,2]]
+    edges3 = [all_tets[:,0],all_tets[:,3]]
+    edges4 = [all_tets[:,1],all_tets[:,2]]
+    edges5 = [all_tets[:,1],all_tets[:,3]]
+    edges6 = [all_tets[:,2],all_tets[:,3]]
 
-    edges = np.concatenate((edges1,edges2,edges3,edges4,edges5,edges6),\
-        axis=1).T
+    edges = np.concatenate((edges1,edges2,edges3,edges4,edges5,edges6), axis=1).T
 
-    edges = np.sort(edges,axis=1)
+    edges = np.sort(edges, axis=1)
 
-    edgeNode1 = allNodes[(edges[:,0]-1).astype(int),:]
-    edgeNode2 = allNodes[(edges[:,1]-1).astype(int),:]
+    edge_nodes1 = all_nodes[(edges[:,0] - 1).astype(int),:]
+    edge_nodes2 = all_nodes[(edges[:,1] - 1).astype(int),:]
 
-    nodalDistance = np.linalg.norm(edgeNode1-edgeNode2, axis=1)
-    edgeDistance = (nodalDistance - (allDiameters[(edges[:,0]-1).\
-        astype(int)]/2) - (allDiameters[(edges[:,1]-1).astype(int)])/2)/2
+    nodal_distance = np.linalg.norm(edge_nodes1 - edge_nodes2, axis=1)
+    edge_diameter = all_diameters[(edges - 1).astype(int)]
+    edge_distance = (nodal_distance - edge_diameter.sum(axis=1)/2)/2
 
-    # Make unit vector from edgeNode 1 to edgeNode2, multiply vector 
-    # by sum(agg1 and edgeDistance) and add to edgeNode2
-    edgePoints = (edgeNode1-edgeNode2)/np.array([nodalDistance,]*3).T*\
-        (np.array([allDiameters[(edges[:,1]-1).astype(int)],]*3).T/2+\
-        np.array([edgeDistance,]*3).T)+edgeNode2
-
+    # Make unit vector from edge_nodes1 to edge_nodes2, multiply vector 
+    # by sum(agg1 and edge_distance) and add to edge_nodes2
+    edge_points = (edge_nodes1 - edge_nodes2) / nodal_distance[:,np.newaxis] * (edge_diameter/2 + edge_distance)[:,np.newaxis] + edge_nodes2
 
     # Form Edge Point List
-    edgePoints = np.concatenate(np.split(edgePoints,6),axis=1)
+    edge_points = np.concatenate(np.split(edge_points, 6), axis=1)
 
 
     # Definition of Face Points faceNPoint[Coordinates]
@@ -221,45 +241,11 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
         facetCellData7,facetCellData8,facetCellData9,facetCellData10,facetCellData11,facetCellData12]),axis=0)
 
 
-    # Facets for P0 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    #facetsP0 = np.concatenate(([facet4,facet5,facet7,facet8,facet10,facet11]),axis=1)
-
-    # Facets for P1 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    #facetsP1 = np.concatenate(([facet1,facet2,facet7,facet9,facet10,facet12]),axis=1)
-
-    # Facets for P2 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    #facetsP2 = np.concatenate(([facet1,facet3,facet4,facet6,facet11,facet12]),axis=1)
-
-    # Facets for P3 in General Tet [facet[Point1[x,y,z],Point2[x,y,z],Point3[x,y,z]],....,facetN]
-    #facetsP3 = np.concatenate(([facet2,facet3,facet5,facet6,facet8,facet9]),axis=1)
-
-    # Combination of all facets for general tet (24)
-    #cellTetFacets = np.concatenate(([facetsP0,facetsP1,facetsP2,facetsP3]),\
-    #    axis=1)
-
     # Combination of nonrepeating facets for general tet (12)
     tetFacets = np.concatenate(([facet1,facet2,facet3,facet4,facet5,facet6,\
         facet7,facet8,facet9,facet10,facet11,facet12]),axis=1)
     facets = tetFacets.reshape(-1,9)
 
-    # Initialize cell facet list
-    #cells = []
-
-    #for i in range(1,len(allNodes)):
-
-        # Find locations in tet list which contain the given vertex
-    #    location = np.argwhere(allTets==i)
-
-        # Initialize empty facet list for vertex
-    #    cellFacets=np.zeros(([len(location)*6,9]))
-
-        # Store facets for given cell
-    #    for x in range(0,len(location)):
-    #       cellFacets[x*6:x*6+6,:] = cellTetFacets[location[x,0],\
-    #        location[x,1]*54:location[x,1]*54+54].reshape((-1,9))
-
-        # Add cell facets to master list
-    #    cells.append(cellFacets)
 
     threes = 3*np.array([np.ones((len(facets)))]).T
 

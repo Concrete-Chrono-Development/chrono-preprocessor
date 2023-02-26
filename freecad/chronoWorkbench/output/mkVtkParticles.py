@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Function to generate a VTK file for visualization in Paraview of particles
+## and their corresponding material and diameter for LDPM and CSL models.
 ##
 ## ===========================================================================
 

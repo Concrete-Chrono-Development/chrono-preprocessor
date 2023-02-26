@@ -13,16 +13,29 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Determine the maximum and minimum extents of a bounding box surrounding the 
+## input mesh vertices.
 ##
 ## ===========================================================================
 
 import numpy as np
 
+
 def surfMeshExtents(vertices):
 
-    minC = np.amin(vertices, axis=0)
-    maxC = np.amax(vertices, axis=0)
+    """
+    Variable List:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    vertices:        (x,y,z) coordinates of each vertex.
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    minExtent:       Coordinate of minimum bounding box corner
+    maxExtent:       Coordinate of maximum bounding box corner
+    --------------------------------------------------------------------------
+    """
 
-    return minC, maxC
+    minExtent = np.amin(vertices, axis=0)
+    maxExtent = np.amax(vertices, axis=0)
+
+    return minExtent, maxExtent

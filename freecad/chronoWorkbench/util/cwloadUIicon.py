@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Function to assign icons from the 'icon' directory to modules in the left
+## pane window of FreeCAD.
 ##
 ## ===========================================================================
 

@@ -13,8 +13,7 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Function to load a module into the left pane of the FreeCAD gui.
 ##
 ## ===========================================================================
 

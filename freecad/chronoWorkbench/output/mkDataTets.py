@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Function to generate and write a data file of all tetrahedra in an LDPM
+## model, for later use in Project Chrono.
 ##
 ## ===========================================================================
 

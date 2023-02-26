@@ -22,7 +22,30 @@ import numpy as np
 
 
 def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
-    minPar, maxEdgeLength, aggOffset, parDiameterList):
+    minPar, maxEdgeLength, parOffset, parDiameterList):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - nodes:           (x, y, z) coordinates of each node
+    - center:          (x, y, z) position of the center of the new particle
+    - parDiameter:     Diameter of the new particle
+    - facePoints:      (x, y, z) coordinates of each surface point
+    - binMin:          (x, y, z) minimum for the bin to be checked
+    - binMax:          (x, y, z) maximum for the bin to be checked
+    - minPar:          Minimum diameter of a particle
+    - maxEdgeLength:   Maximum length of an edge in the mesh
+    - parOffset:       Minimum offset coefficient between particles
+    - parDiameterList: List of diameters of each particle
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A boolean value that is True if the new particle overlaps
+    - A boolean value that is True if the new particle is close to the surface
+    --------------------------------------------------------------------------
+    """
+
+
 
     # Combine the conditions for all particles and store the result in an array
     binTestParticles = np.logical_and.reduce([(nodes[:,0] > binMin[0]),
@@ -45,7 +68,7 @@ def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
 
     if existingNodes.shape[0] > 0:
         nodalDistance = np.linalg.norm(center - existingNodes, axis=1)
-        parOffsetDist = nodalDistance - parDiameter/2 - existingParD/2 - aggOffset
+        parOffsetDist = nodalDistance - parDiameter/2 - existingParD/2 - parOffset
         if (parOffsetDist < 0).any():
             return True, "NA"
     else:

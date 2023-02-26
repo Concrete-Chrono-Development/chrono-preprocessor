@@ -23,46 +23,52 @@ import numpy as np
 def insideCheck(vertices,tets,center,parDiameter,binMin,binMax,coord1,\
     coord2,coord3,coord4):
 
+    # Convert center to a 1D array
+    center = center.flatten()
+
     # Store tet vertices that fall inside the bin
     coord1 = np.all([(coord1[:,0] > binMin[0]) , (coord1[:,0] < binMax[0]),\
-        (coord1[:,1] > binMin[1]) , (coord1[:,1] < binMax[1]) ,\
-        (coord1[:,2] > binMin[2]) , (coord1[:,2] < binMax[2])],axis=0)      
+                     (coord1[:,1] > binMin[1]) , (coord1[:,1] < binMax[1]),\
+                     (coord1[:,2] > binMin[2]) , (coord1[:,2] < binMax[2])],axis=0)      
     coord2 = np.all([(coord2[:,0] > binMin[0]) , (coord2[:,0] < binMax[0]),\
-        (coord2[:,1] > binMin[1]) , (coord2[:,1] < binMax[1]) ,\
-        (coord2[:,2] > binMin[2]) , (coord2[:,2] < binMax[2])],axis=0)          
+                     (coord2[:,1] > binMin[1]) , (coord2[:,1] < binMax[1]),\
+                     (coord2[:,2] > binMin[2]) , (coord2[:,2] < binMax[2])],axis=0)          
     coord3 = np.all([(coord3[:,0] > binMin[0]) , (coord3[:,0] < binMax[0]),\
-        (coord3[:,1] > binMin[1]) , (coord3[:,1] < binMax[1]) ,\
-        (coord3[:,2] > binMin[2]) , (coord3[:,2] < binMax[2])],axis=0)  
+                     (coord3[:,1] > binMin[1]) , (coord3[:,1] < binMax[1]),\
+                     (coord3[:,2] > binMin[2]) , (coord3[:,2] < binMax[2])],axis=0)  
     coord4 = np.all([(coord4[:,0] > binMin[0]) , (coord4[:,0] < binMax[0]),\
-        (coord4[:,1] > binMin[1]) , (coord4[:,1] < binMax[1]) ,\
-        (coord4[:,2] > binMin[2]) , (coord4[:,2] < binMax[2])],axis=0)  
+                     (coord4[:,1] > binMin[1]) , (coord4[:,1] < binMax[1]),\
+                     (coord4[:,2] > binMin[2]) , (coord4[:,2] < binMax[2])],axis=0)  
 
+    # Get tets with a vertex that falls inside the bin
     binTets = np.any([coord1,coord2,coord3,coord4],axis=0)
 
+    # Store vertices of those tets
     coord1 = vertices[tets.astype(int)[binTets,0]-1]
     coord2 = vertices[tets.astype(int)[binTets,1]-1]
     coord3 = vertices[tets.astype(int)[binTets,2]-1]
     coord4 = vertices[tets.astype(int)[binTets,3]-1]
 
+    # Get the 8 vertices which make up a bounding box around the particle
     node = np.empty((8,3))
+    node[0,:] = [center[0]+parDiameter/2,center[1]+parDiameter/2,\
+                 center[2]+parDiameter/2]
+    node[1,:] = [center[0]-parDiameter/2,center[1]+parDiameter/2,\
+                 center[2]+parDiameter/2]
+    node[2,:] = [center[0]+parDiameter/2,center[1]-parDiameter/2,\
+                 center[2]+parDiameter/2]
+    node[3,:] = [center[0]+parDiameter/2,center[1]+parDiameter/2,\
+                 center[2]-parDiameter/2]
+    node[4,:] = [center[0]-parDiameter/2,center[1]-parDiameter/2,\
+                 center[2]+parDiameter/2]
+    node[5,:] = [center[0]+parDiameter/2,center[1]-parDiameter/2,\
+                 center[2]-parDiameter/2]
+    node[6,:] = [center[0]-parDiameter/2,center[1]+parDiameter/2,\
+                 center[2]-parDiameter/2]
+    node[7,:] = [center[0]-parDiameter/2,center[1]-parDiameter/2,\
+                 center[2]-parDiameter/2]
 
-    node[0,:] = [center[0,0]+parDiameter/2,center[0,1]+parDiameter/2,\
-        center[0,2]+parDiameter/2]
-    node[1,:] = [center[0,0]-parDiameter/2,center[0,1]+parDiameter/2,\
-        center[0,2]+parDiameter/2]
-    node[2,:] = [center[0,0]+parDiameter/2,center[0,1]-parDiameter/2,\
-        center[0,2]+parDiameter/2]
-    node[3,:] = [center[0,0]+parDiameter/2,center[0,1]+parDiameter/2,\
-        center[0,2]-parDiameter/2]
-    node[4,:] = [center[0,0]-parDiameter/2,center[0,1]-parDiameter/2,\
-        center[0,2]+parDiameter/2]
-    node[5,:] = [center[0,0]+parDiameter/2,center[0,1]-parDiameter/2,\
-        center[0,2]-parDiameter/2]
-    node[6,:] = [center[0,0]-parDiameter/2,center[0,1]+parDiameter/2,\
-        center[0,2]-parDiameter/2]
-    node[7,:] = [center[0,0]-parDiameter/2,center[0,1]-parDiameter/2,\
-        center[0,2]-parDiameter/2]
-
+    # Check whether all 8 vertices fall inside of tets
     inside = 0
     emptyOnes = np.ones(len(coord1[:,0]))
 
@@ -93,12 +99,6 @@ def insideCheck(vertices,tets,center,parDiameter,binMin,binMax,coord1,\
             np.sign(D0) == np.sign(D4))).any():
             inside = inside+1
         else:
-            #if ParticleGen.badItem % 100 == 0:
-            #    ParticleGen.badList = np.concatenate((ParticleGen.\
-            #        badList,np.array([maxC,]*100)*2))
-
-            #ParticleGen.badList[ParticleGen.badItem,:] = node[i,:]
-            #ParticleGen.badItem = ParticleGen.badItem+1
             pass
 
         if inside <= i:

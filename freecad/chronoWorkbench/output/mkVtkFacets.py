@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## Function to generate VTK file for visualization in Paraview of facets
+## and their corresponding material for LDPM models.
 ##
 ## ===========================================================================
 
