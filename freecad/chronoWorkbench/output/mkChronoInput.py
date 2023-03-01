@@ -106,8 +106,8 @@ int main(int argc, char** argv) {
         std::vector<ChVector<> > facets;
         std::ifstream facetsFile(facetsFilename);
         if (!facetsFile.is_open()) {
-            GetLog() << ''\"ERROR: Could not open facets file\"'';
-            return;
+            std::cerr << \"ERROR: Could not open facets file\";
+            return 0;
         }
         int Tet, IDx, IDy, IDz, mF;
         double Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz;
@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
 
     // Use the parallel processing capabilities of Chrono to run the simulation on multiple cores
-    num_threads = int(NumberOfThreads);
+    int num_threads = int(NumberOfThreads);
     ChOMPUtils::SetNumThreads(num_threads);
     system.SetParallelThreadNumber(num_threads);
     system.GetSettings()->max_threads = num_threads;
