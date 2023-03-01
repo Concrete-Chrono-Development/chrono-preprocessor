@@ -47,34 +47,40 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     --------------------------------------------------------------------------
     """
 
-    all_diameters = np.concatenate((np.repeat(1.1 * min_par, int(len(all_nodes) - len(par_diameter))), par_diameter))
+    # Create diameters list (including fictitious edge particle diameters)
+    allDiameters = np.concatenate((np.array([1.1*minPar,]*\
+        int(len(allNodes)-len(parDiameter))),parDiameter))
 
     # Definition of Edge Points [Coordinates1,....,Coordinates6]
-    edges1 = [all_tets[:,0],all_tets[:,1]]
-    edges2 = [all_tets[:,0],all_tets[:,2]]
-    edges3 = [all_tets[:,0],all_tets[:,3]]
-    edges4 = [all_tets[:,1],all_tets[:,2]]
-    edges5 = [all_tets[:,1],all_tets[:,3]]
-    edges6 = [all_tets[:,2],all_tets[:,3]]
+    edges1 = [allTets[:,0],allTets[:,1]]
+    edges2 = [allTets[:,0],allTets[:,2]]
+    edges3 = [allTets[:,0],allTets[:,3]]
+    edges4 = [allTets[:,1],allTets[:,2]]
+    edges5 = [allTets[:,1],allTets[:,3]]
+    edges6 = [allTets[:,2],allTets[:,3]]
 
-    edges = np.concatenate((edges1,edges2,edges3,edges4,edges5,edges6), axis=1).T
+    edges = np.concatenate((edges1,edges2,edges3,edges4,edges5,edges6),\
+        axis=1).T
 
-    edges = np.sort(edges, axis=1)
+    edges = np.sort(edges,axis=1)
 
-    edge_nodes1 = all_nodes[(edges[:,0] - 1).astype(int),:]
-    edge_nodes2 = all_nodes[(edges[:,1] - 1).astype(int),:]
+    edgeNode1 = allNodes[(edges[:,0]-1).astype(int),:]
+    edgeNode2 = allNodes[(edges[:,1]-1).astype(int),:]
 
-    nodal_distance = np.linalg.norm(edge_nodes1 - edge_nodes2, axis=1)
-    edge_diameter = all_diameters[(edges - 1).astype(int)]
-    edge_distance = (nodal_distance - edge_diameter.sum(axis=1)/2)/2
+    nodalDistance = np.linalg.norm(edgeNode1-edgeNode2, axis=1)
+    edgeDistance = (nodalDistance - (allDiameters[(edges[:,0]-1).\
+        astype(int)]/2) - (allDiameters[(edges[:,1]-1).astype(int)])/2)/2
 
-    # Make unit vector from edge_nodes1 to edge_nodes2, multiply vector 
-    # by sum(agg1 and edge_distance) and add to edge_nodes2
-    edge_points = (edge_nodes1 - edge_nodes2) / nodal_distance[:,np.newaxis] * (edge_diameter/2 + edge_distance)[:,np.newaxis] + edge_nodes2
+
+    # Make unit vector from edgeNode 1 to edgeNode2, multiply vector 
+    # by sum(agg1 and edgeDistance) and add to edgeNode2
+    edgePoints = (edgeNode1-edgeNode2)/np.array([nodalDistance,]*3).T*\
+        (np.array([allDiameters[(edges[:,1]-1).astype(int)],]*3).T/2+\
+        np.array([edgeDistance,]*3).T)+edgeNode2
+
 
     # Form Edge Point List
-    edge_points = np.concatenate(np.split(edge_points, 6), axis=1)
-
+    edgePoints = np.concatenate(np.split(edgePoints,6),axis=1)
 
     # Definition of Face Points faceNPoint[Coordinates]
 
