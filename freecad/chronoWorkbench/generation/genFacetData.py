@@ -83,18 +83,14 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     del mulNormalsPn
     del ssc        
 
-
-
-
-
     # Generate a random vector of size n x 3
     r = np.random.rand(facetNormals.shape[0], 3)
 
-    # Subtract the projection of r onto v from r to make it orthogonal to v
-    r = r - np.dot(r, facetNormals.T) / np.dot(facetNormals,facetNormals.T) * facetNormals
+    # Calculate the Householder matrix
+    H = np.eye(3) - 2 * np.einsum('ij,ik->ijk', facetNormals, facetNormals).sum(axis=0) / np.dot(facetNormals.T, facetNormals).diagonal()
 
-    # Normalize the vectors to make them unit vectors
-    r = r / np.linalg.norm(r, axis=1, keepdims=True)
+    # Apply the Householder transformation to r to make it orthogonal to v
+    r = np.einsum('ij,kj->ki', H, r)
 
     # Define 1st projected tangential
     tan1 = np.expand_dims(r, axis=2)
@@ -105,9 +101,6 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     # Define 2nd projected tangential
     ptan2 = np.cross(pn,ptan1)/np.array([np.linalg.norm(np.cross(pn,ptan1),\
         axis=1),]*3).T
-    
-
-
 
 
     # Sub-tet Volume
