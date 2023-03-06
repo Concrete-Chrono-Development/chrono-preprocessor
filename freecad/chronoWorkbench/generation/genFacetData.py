@@ -83,8 +83,21 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     del mulNormalsPn
     del ssc        
 
+
+
+
+
+    # Generate a random vector of size n x 3
+    r = np.random.rand(facetNormals.shape[0], 3)
+
+    # Subtract the projection of r onto v from r to make it orthogonal to v
+    r = r - np.dot(r, facetNormals.T) / np.dot(facetNormals,facetNormals.T) * facetNormals
+
+    # Normalize the vectors to make them unit vectors
+    r = r / np.linalg.norm(r, axis=1, keepdims=True)
+
     # Define 1st projected tangential
-    tan1 = np.expand_dims(facetCenters-facets[:,0:3], axis=2)
+    tan1 = np.expand_dims(r, axis=2)
     ptan1 = np.squeeze(np.matmul(np.transpose(R.T,(0, 2, 1)),tan1))/\
         np.array([np.linalg.norm(np.squeeze(np.matmul(np.transpose(R.T,\
             (0, 2, 1)),tan1)),axis=1),]*3).T
