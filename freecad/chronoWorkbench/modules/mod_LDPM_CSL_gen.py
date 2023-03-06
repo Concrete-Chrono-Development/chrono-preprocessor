@@ -18,6 +18,7 @@
 ##
 ## ===========================================================================
 
+# pyright: reportMissingImports=false
 import os
 import sys
 import time

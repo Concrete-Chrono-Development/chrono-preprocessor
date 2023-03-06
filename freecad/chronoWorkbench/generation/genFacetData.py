@@ -28,7 +28,36 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList,facetCellData):
   
-  
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - allNodes:        (x, y, z) coordinates of each node
+    - allTets:         (n1, n2, n3, n4) node numbers of each tet
+    - tetFacets:       (n1, n2, n3, n4, n5, n6, n7, n8, n9) node numbers of each facet
+    - facetCenters:    (x, y, z) coordinates of each facet center
+    - facetAreas:      area of each facet
+    - facetNormals:    (x, y, z) direction of each facet normal
+    - tetn1:           number of the first node
+    - tetn2:           number of the second node
+    - materialList:    list of materials
+    - materialRule:    material rule
+    - multiMaterial:   boolean value that is True if the material rule is multi-material
+    - cementStructure: boolean value that is True if the material rule is cement structure
+    - edgeMaterialList:list of edge materials
+    - facetCellData:   list of facet cell data
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - facetData:       datastructure with all facet data
+    - facetMaterial:   material of each facet
+    - subtetVol:       volume of each subtet
+    - facetVol1:       volume of each facet pyramid 1
+    - facetVol2:       volume of each facet pyramid 2
+    - particleMaterial:material of each particle
+    --------------------------------------------------------------------------
+    """  
+
+
     facets = tetFacets.reshape(-1, 9)
     p1 = allNodes[(allTets[:, tetn1] - 1).astype(int), :].reshape(-1, 3)
     p2 = allNodes[(allTets[:, tetn2] - 1).astype(int), :].reshape(-1, 3)
