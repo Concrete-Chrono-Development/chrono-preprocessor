@@ -24,9 +24,6 @@ import numpy as np
 
 
 
-
-
-
 def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList,facetCellData):
@@ -58,7 +55,6 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
                 coords[k, 2] = facets[12 * i + j, 6:9]
             k += 1
 
-    
     InitialNormal=np.array(InitialNormal).reshape(-1,3)
     coords = np.array(coords).reshape(-1,9)
     facetNormals=InitialNormal
@@ -86,14 +82,11 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     # Generate a random vector of size n x 3
     r = np.random.rand(facetNormals.shape[0], 3)
 
-    # Calculate the Householder matrix
-    H = np.eye(3) - 2 * np.einsum('ij,ik->ijk', facetNormals, facetNormals).sum(axis=0) / np.dot(facetNormals.T, facetNormals).diagonal()
-
-    # Apply the Householder transformation to r to make it orthogonal to v
-    r = np.einsum('ij,kj->ki', H, r)
-
+    # Make vectors that are orthogonal to the facet normal   
+    tan1 = np.cross(facetNormals,r)/np.array([np.linalg.norm(np.cross(facetNormals,r),axis=1),]*3).T
+    tan1 = np.expand_dims(tan1, axis=2)
+    
     # Define 1st projected tangential
-    tan1 = np.expand_dims(r, axis=2)
     ptan1 = np.squeeze(np.matmul(np.transpose(R.T,(0, 2, 1)),tan1))/\
         np.array([np.linalg.norm(np.squeeze(np.matmul(np.transpose(R.T,\
             (0, 2, 1)),tan1)),axis=1),]*3).T
