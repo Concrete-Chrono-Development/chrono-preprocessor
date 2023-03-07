@@ -21,8 +21,8 @@
 
 import numpy as np
 
-from freecad.chronoWorkbench.generation.particleOverlapCheck     import overlapCheck
-from freecad.chronoWorkbench.generation.particleInsideCheck     	import insideCheck
+from freecad.chronoWorkbench.generation.particleOverlapCheck    import overlapCheck
+from freecad.chronoWorkbench.generation.particleInsideCheck     import insideCheck
 
 
 def generateParticle(facePoints,parDiameter,\
@@ -59,17 +59,15 @@ def generateParticle(facePoints,parDiameter,\
     """  
 
     # Generate random numbers to use in generation
-    randomN = np.random.rand(newMaxIter*3)
-    i=0
-    ntet = len(tets)
-    
+    randomN = np.random.rand(newMaxIter*3)    
 
     # Generate random nodal location
+    iterReq = 0
     while True:
-        i = i + 3
+        iterReq = iterReq + 3
 
-        if i/3 >= newMaxIter:
-            i = 0
+        if iterReq/3 >= newMaxIter:
+            iterReq = 0
             newMaxIter = newMaxIter * 2
             randomN = np.random.rand(newMaxIter*3)
 
@@ -78,14 +76,14 @@ def generateParticle(facePoints,parDiameter,\
             print('Now exitting...')
             exit()
 
-        # Random point selection in random tet prism container
-        tetIndex = int(np.around(randomN[i] * ntet)) - 1
+        # Random point selection in random tet prism container    
+        tetIndex = int(np.around(randomN[iterReq] * len(tets))) - 1
         tetVerts = vertices[tets[tetIndex]-1]
 
         tetMin = np.amin(tetVerts, axis=0)
         tetMax = np.amax(tetVerts, axis=0)
 
-        node = randomN[i:i+3] * (tetMax - tetMin) + tetMin
+        node = randomN[iterReq:iterReq+3] * (tetMax - tetMin) + tetMin
         node = node[np.newaxis,:]
 
         # Obtain extents for floating bin
@@ -96,10 +94,10 @@ def generateParticle(facePoints,parDiameter,\
         overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,parOffset,parDiameterList)
 
-        # If does not overlap an existing particle
+        # If does not overlap an existing particle set overlap[0] = False
         if overlap[0] == False:
             
-            # If critically close to the surface
+            # If critically close to the surface set overlap[1] = True
             if overlap[1] == True:
 
                 # Check if particle is inside the mesh if critically close          
@@ -107,13 +105,8 @@ def generateParticle(facePoints,parDiameter,\
                                     coord2,coord3,coord4)
 
             else:
-
                 inside = True
 
             # Indicate placed particle and break While Loop
             if inside == True and overlap[0] == False:
-                break
-
-
-    iterReq = i
-    return newMaxIter,node,iterReq
+                return newMaxIter,node,iterReq

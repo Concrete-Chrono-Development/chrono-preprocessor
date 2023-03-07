@@ -23,6 +23,21 @@ from pathlib import Path
 
 def mkVtkParticles(center,parDiameter,materialList,geoName,tempPath):
 
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - center:       List of particle centers
+    - parDiameter:  List of particle diameters
+    - materialList: List of particle materials
+    - geoName:      Name of the geometry
+    - tempPath:     Path to the temporary directory
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A VTK file for visualizing particles
+    --------------------------------------------------------------------------
+    """
+
     # Generate VTK file for visualizing particles
     with open(Path(tempPath + geoName + \
         '-para-particles.000.vtk'),"w") as f:                                       

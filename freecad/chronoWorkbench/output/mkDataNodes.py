@@ -23,6 +23,19 @@ import numpy as np
 
 
 def mkDataNodes(geoName,tempPath,allNodes):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - geoName:      Name of the geometry file
+    - tempPath:     Path to the temporary directory
+    - allNodes:     Array of all nodes in the model
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A data file of all nodes in the model
+    --------------------------------------------------------------------------
+    """
     
     np.savetxt(Path(tempPath + geoName + \
         '-data-nodes.dat'), allNodes, fmt='%.10g', delimiter=' ', comments=''\

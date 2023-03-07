@@ -23,6 +23,18 @@ import numpy as np
 
 def mkDataTets(geoName,tempPath,allTets):
     
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - geoName:      Name of the geometry file
+    - tempPath:     Path to the temporary directory
+    - allTets:      Array of all tetrahedra in the model
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A data file of all tetrahedra in the model
+    --------------------------------------------------------------------------
+    """
 
     np.savetxt(Path(tempPath + geoName + \
         '-data-tets.dat'), allTets.astype(int), fmt='%i', delimiter=' ', comments=''\

@@ -24,6 +24,18 @@ from freecad.chronoWorkbench import GUIPATH
 
 def cwloadUIfile(filename):
 
+        """
+        Variables:
+        --------------------------------------------------------------------------
+        ### Inputs ###
+        - filename: Name of the file to be loaded
+        --------------------------------------------------------------------------
+        ### Outputs ###
+        - A module that is loaded into the left pane of the FreeCAD gui
+        --------------------------------------------------------------------------
+        """
+
+        # Load the ui file
         ui_file_A = os.path.join(GUIPATH,filename)
         a = Gui.PySideUic.loadUi(ui_file_A)
 

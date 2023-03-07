@@ -93,13 +93,9 @@ def particleList(parVolTotal, minPar, maxPar, newSieveCurveD, cdf, kappa_i,
 
     # If a Sieve Curve is provided
     else:
-
         while sum(parVol) < parVolTotal:
-
             F = np.random.rand(1)
-
             for x in range(0,NewSet):
-
                 if (F >= cdf[x] and F < cdf[x+1]) :
                     # Calculate the diameter of the selected particle
                     parDiameter[i] = ((newSieveCurveD[x]**2*kappa_i[x])/(kappa_i[x]-2*(F-cdf[x])*newSieveCurveD[x]**2))**0.5

@@ -13,16 +13,40 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
 ##
 ##
 ## ===========================================================================
 
+# pyright: reportMissingImports=false
 from pathlib import Path
 import FreeCAD as App
+from femtools import membertools
 
-def mkChronoInput(elementType, materialProps, materialPropsValues, simProps, simPropsValues, \
+def mkChronoInput(elementType, analysisName, materialProps, materialPropsVals, simProps, simPropsValues, \
     nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - elementType:      The type of element that will be used
+    - analysisName:     The name of the analysis
+    - materialProps:    The names of the material properties
+    - materialPropsVals:The values of the material properties
+    - simProps:         The names of the simulation properties
+    - simPropsValues:   The values of the simulation properties
+    - nodesFilename:    The name of the file containing the nodes
+    - tetsFilename:     The name of the file containing the tets
+    - facetsFilename:   The name of the file containing the facets
+    - geoName:          The name of the geometry
+    - outDir:           The output directory
+    - outName:          The output name
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - An input file for Project Chrono
+    --------------------------------------------------------------------------
+    """
+
 
     doc = App.ActiveDocument
     analysis = doc.getObject("LDPManalysis")
@@ -74,7 +98,7 @@ def mkChronoInput(elementType, materialProps, materialPropsValues, simProps, sim
         # Store material parameters
         output_file.write('    // ' + elementType + ' Material Parameters\n')
         for x in range(len(materialProps)):
-            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsValues[x]) + ';\n')
+            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsVals[x]) + ';\n')
         output_file.write('\n')
 
         # Store files to read
@@ -141,11 +165,14 @@ def mkChronoInput(elementType, materialProps, materialPropsValues, simProps, sim
         #analysis.Nodes = []
         #analysis.Elements = []
         #analysis.Materials = []
+
+
+        # Get the mesh to solve
+        mesh = membertools.get_mesh_to_solve(App.getDocument(App.ActiveDocument.Name).getObject(analysisName))        
+
         Nodes = []
         Elements = []
         Materials = []
-
-
 
 
         # Create the finite element mesh
@@ -193,15 +220,15 @@ def mkChronoInput(elementType, materialProps, materialPropsValues, simProps, sim
         output_file.write("    // Create a material composition and add the materials to it\n")
         output_file.write("    auto composition = std::make_shared<ChMaterialShellANCF>();\n")
         for material in Materials:
-            if isinstance(material, Fem.ElasticMaterial):
+            if isinstance(material, Fem.ElasticMaterial): # type: ignore
                 output_file.write("    composition->AddLayer({}, {}, {});\n".format(material.Thickness, material.ElasticModulus, material.PoissonRatio))
-            elif isinstance(material, Fem.InelasticLinearMaterial):
+            elif isinstance(material, Fem.InelasticLinearMaterial):# type: ignore
                 output_file.write("    composition->AddLayer({}, {}, {}, {});\n".format(material.Thickness, material.ElasticModulus, material.PoissonRatio, material.YieldStress))
-            elif isinstance(material, Fem.InelasticTensionCompressionMaterial):
+            elif isinstance(material, Fem.InelasticTensionCompressionMaterial):# type: ignore
                 output_file.write("    composition->AddLayer({}, {}, {}, {}, {});\n".format(material.Thickness, material.ElasticModulus, material.PoissonRatio, material.YieldStress, material.CompressiveYieldStress))
-            elif isinstance(material, Fem.InelasticKinematicHardeningMaterial):
+            elif isinstance(material, Fem.InelasticKinematicHardeningMaterial):# type: ignore
                 output_file.write("    composition->AddLayer({}, {}, {}, {}, {}, {});\n".format(material.Thickness, material.ElasticModulus, material.PoissonRatio, material.YieldStress, material.KinematicHardeningModulus, material.KinematicHardeningCoeff))
-            elif isinstance(material, Fem.InelasticCombinedMaterial):
+            elif isinstance(material, Fem.InelasticCombinedMaterial):# type: ignore
                 output_file.write("    composition->AddLayer({}, {}, {}, {}, {}, {}, {}, {});\n".format(material.Thickness, material.ElasticModulus, material.PoissonRatio, material.YieldStress, material.CompressiveYieldStress, material.KinematicHardeningModulus, material.IsotropicHardeningModulus, material.KinematicHardeningCoeff))
         output_file.write("\n")
 

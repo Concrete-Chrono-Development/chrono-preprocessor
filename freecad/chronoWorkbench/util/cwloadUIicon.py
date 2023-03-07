@@ -18,6 +18,7 @@
 ##
 ## ===========================================================================
 
+# pyright: reportMissingImports=false
 import os
 from PySide import QtCore, QtGui
 from freecad.chronoWorkbench import ICONPATH
@@ -25,4 +26,17 @@ from freecad.chronoWorkbench import ICONPATH
 
 def cwloadUIicon(form,icon):
 
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - form: The form that the icon will be assigned to
+    - icon: The name of the icon file
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - An icon that is assigned to the form
+    --------------------------------------------------------------------------
+    """
+
+    # Assign the icon to the form
     form.setWindowIcon(QtGui.QIcon.fromTheme("",QtGui.QIcon(os.path.join(ICONPATH, icon))))

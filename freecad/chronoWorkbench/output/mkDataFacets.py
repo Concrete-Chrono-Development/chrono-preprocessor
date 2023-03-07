@@ -24,7 +24,20 @@ import numpy as np
 
 def mkDataFacets(geoName,tempPath,facetData,facetPointData):
     
-
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - geoName:              Name of the geometry file
+    - tempPath:             Path to the temporary directory
+    - facetData:            Array of all facets in the model
+    - facetPointData:       Array of all facet points in the model
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A data file of all facets in the model
+    --------------------------------------------------------------------------
+    """
+    
     np.savetxt(Path(tempPath + geoName + \
         '-data-facets.dat'), facetData, fmt='%.10g', comments = '', delimiter=' '\
         ,header='\

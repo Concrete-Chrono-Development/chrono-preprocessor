@@ -39,8 +39,8 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
     facetCenters:    An array of coordinates for the center of each facet in the mesh.
     facetAreas:      An array of the area of each facet in the mesh.
     facetNormals:    An array of the normal vector of each facet in the mesh.
-    tetn1:           An array of indices for the first node of each tetrahedron in the mesh.
-    tetn2:           An array of indices for the second node of each tetrahedron in the mesh.
+    tetNodeA:           An array of indices for the first node of each tetrahedron in the mesh.
+    tetNodeB:           An array of indices for the second node of each tetrahedron in the mesh.
     tetPoints:       An array of coordinates for the center of each tetrahedron in the mesh.
     allDiameters:    An array of diameters for each node in the mesh.
     facetPointData:  Condensed array of facet nodes
@@ -275,12 +275,12 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
 
     # Specify tet-node connectivity for facets (i.e. facet 1 connected by 
         # node 0 and 1)
-    tetn1 = [0,0,0,0,1,1,1,1,2,2,0,0]
-    tetn2 = [1,1,2,2,2,2,3,3,3,3,3,3]
+    tetNodeA = [0,0,0,0,1,1,1,1,2,2,0,0]
+    tetNodeB = [1,1,2,2,2,2,3,3,3,3,3,3]
 
 
     return tetFacets, facetCenters, facetAreas, facetNormals, \
-        tetn1, tetn2, tetPoints, allDiameters, facetPointData, facetCellData
+        tetNodeA, tetNodeB, tetPoints, allDiameters, facetPointData, facetCellData
 
 
 

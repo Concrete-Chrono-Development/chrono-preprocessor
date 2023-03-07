@@ -45,8 +45,6 @@ def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
     --------------------------------------------------------------------------
     """
 
-
-
     # Combine the conditions for all particles and store the result in an array
     binTestParticles = np.logical_and.reduce([(nodes[:,0] > binMin[0]),
         (nodes[:,0] < binMax[0]), (nodes[:,1] > binMin[1]),
@@ -65,7 +63,8 @@ def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
 
     # Store edge nodes that fall inside the bin
     existingSurf = facePoints[binTestSurf, :]
-
+ 
+    # Check if the new particle overlaps with any existing particles
     if existingNodes.shape[0] > 0:
         nodalDistance = np.linalg.norm(center - existingNodes, axis=1)
         parOffsetDist = nodalDistance - parDiameter/2 - existingParD/2 - parOffset
@@ -74,6 +73,7 @@ def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
     else:
         parOffsetDist = np.array([1])
 
+    # Check if the new particle is too close to the surface
     if existingSurf.shape[0] > 0:
         surfNodalDistance = np.linalg.norm(center - existingSurf, axis=1)
         if (surfNodalDistance**2 <= (maxEdgeLength * np.sqrt(3) / 3)**2 + (parDiameter / 2)**2).any():

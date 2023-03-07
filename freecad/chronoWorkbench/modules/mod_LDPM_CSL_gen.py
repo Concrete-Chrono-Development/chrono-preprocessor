@@ -296,7 +296,7 @@ class genWindow_LDPM_CSL:
 
 
         # Make Project Chrono input file
-        mkChronoInput(elementType, materialProps, materialPropsValues, simProps, simPropsValues, \
+        mkChronoInput(elementType, analysisName, materialProps, materialPropsValues, simProps, simPropsValues, \
             nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName)
 
 

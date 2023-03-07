@@ -24,6 +24,19 @@ from pathlib import Path
 
 def mkVtkFacets(geoName,tempPath,facetPointData,facetCellData):
 
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - geoName:          Name of the geometry file
+    - tempPath:         Path to the temporary directory
+    - facetPointData:   List of facet point data
+    - facetCellData:    List of facet cell data
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - A VTK file that can be visualized in Paraview
+    --------------------------------------------------------------------------
+    """
 
     while facetPointData.shape[0] % 3 != 0:
         facetPointData = np.concatenate((facetPointData, np.zeros((1, facetPointData.shape[1]))), axis=0)
