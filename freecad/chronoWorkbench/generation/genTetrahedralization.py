@@ -29,7 +29,21 @@ from freecad.chronoWorkbench import TETGENPATH
 
 def genTetrahedralization(nodes,vertices2D,triangles2D,geoName,verbose,tempPath):
     
-
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - nodes:            Internal nodes of the geometry
+    - vertices2D:       External nodes of the geometry
+    - triangles2D:      External faces of the geometry
+    - geoName:          Name of the geometry
+    - verbose:          Print additional information
+    - tempPath:         Path to the temporary folder
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - None
+    --------------------------------------------------------------------------
+    """  
 
     # Prepare file of internal nodes and external nodes/facets for Tetgen
     nodeRange = np.arange(len(nodes))+1

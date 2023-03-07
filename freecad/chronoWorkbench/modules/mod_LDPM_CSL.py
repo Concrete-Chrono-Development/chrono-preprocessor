@@ -392,9 +392,7 @@ class inputWindow_LDPM_CSL:
 
         if numCPU > 1:
         
-            #if verbose in ['O', 'o', 'On', 'on', 'Y', 'y', 'Yes', 'yes']:
-            #    print("%s Remaining." % (len(parDiameterList)))
-
+            
             for increment in range(numIncrements-1):
 
                 process_pool = multiprocessing.Pool(numCPU)
@@ -484,13 +482,6 @@ class inputWindow_LDPM_CSL:
 
 
 
-
-
-
-
-
-
-        # Add points visualization and information here
 
 
 

@@ -22,6 +22,7 @@
 ##
 ## ===========================================================================
 
+# pyright: reportMissingImports=false
 import os
 import re
 import math
@@ -35,6 +36,21 @@ from FreeCAD import Base
 
 
 def genGeometry(dimensions,geoType,geoName,cadFile):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - dimensions: List of dimensions for the geometry
+    - geoType: Type of geometry to be created
+    - geoName: Name of the geometry
+    - cadFile: Path to the CAD file to be imported
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - geo: Geometry object
+    --------------------------------------------------------------------------
+    """  
+
 
     # Check if dimensions are positive (ignore geometries we cannot check)
     if geoType not in ['Ellipsoid', 'Dogbone', 'Custom', 'Import CAD']:

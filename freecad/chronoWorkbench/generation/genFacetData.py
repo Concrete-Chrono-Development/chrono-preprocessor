@@ -13,8 +13,7 @@
 ## Primary Authors: Matthew Troemner
 ## ================================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to generate the facet data
 ##
 ## ================================================================================
 

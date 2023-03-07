@@ -13,17 +13,30 @@
 ## Primary Authors: Matthew Troemner
 ## ================================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to generate the analysis object
 ##
 ## ================================================================================
 
+# pyright: reportMissingImports=false
 import FreeCAD as App
 import ObjectsFem
 
 
 
 def genAnalysis(analysisName,constitutiveEQ):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - analysisName: Name of the analysis
+    - constitutiveEQ: Constitutive equation to be used in the analysis
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - analysis_object: Analysis object
+    --------------------------------------------------------------------------
+    """  
+
 
     # See if analysis already exists
     try:

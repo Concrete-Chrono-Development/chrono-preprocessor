@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to generate a particle via MPI and also 
+## outputs the particle diameter and new maximum iterations.
 ##
 ## ===========================================================================
 
@@ -28,8 +28,41 @@ from freecad.chronoWorkbench.generation.particleInsideCheck     	import insideCh
 
 def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
     vertices,tets,coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,maxPar,\
-    aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,nodes,parDiameter):
-    
+    parOffset,verbose,parDiameterList,maxEdgeLength,max_dist,nodes,parDiameter):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - facePoints:       List of points on the surface of the mesh
+    - maxParNum:        Maximum number of particles to generate
+    - minC:             Minimum coordinate of the mesh
+    - maxC:             Maximum coordinate of the mesh
+    - vertices:         List of vertices of the mesh
+    - tets:             List of tetrahedrons of the mesh
+    - coord1:           Coordinate 1 of the tets
+    - coord2:           Coordinate 2 of the tets
+    - coord3:           Coordinate 3 of the tets
+    - coord4:           Coordinate 4 of the tets
+    - newMaxIter:       Maximum number of iterations to try to place a particle
+    - maxIter:          Maximum number of iterations to try to place a particle
+    - minPar:           Minimum particle diameter
+    - maxPar:           Maximum particle diameter
+    - parOffset:        Offset coefficient for particle placement
+    - verbose:          Verbose output
+    - parDiameterList:  List of particle diameters
+    - maxEdgeLength:    Maximum edge length of the mesh
+    - max_dist:         Maximum distance between particles
+    - nodes:            List of nodes
+    - parDiameter:      Particle diameter
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - node:             Node location of the particle
+    - newMaxIter:       Maximum number of iterations to try to place a particle
+    - iterReq:          Number of iterations required to place a particle
+    --------------------------------------------------------------------------
+    """  
+
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)
     i=0
@@ -64,17 +97,17 @@ def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
 
 
         # Obtain extents for floating bin
-        binMin = np.array(([node[0,0]-parDiameter/2-maxPar/2-aggOffset,\
-            node[0,1]-parDiameter/2-maxPar/2-aggOffset,node[0,2]-\
-            parDiameter/2-maxPar/2-aggOffset]))
-        binMax = np.array(([node[0,0]+parDiameter/2+maxPar/2+aggOffset,\
-            node[0,1]+parDiameter/2+maxPar/2+aggOffset,node[0,2]+\
-            parDiameter/2+maxPar/2+aggOffset]))
+        binMin = np.array(([node[0,0]-parDiameter/2-maxPar/2-parOffset,\
+            node[0,1]-parDiameter/2-maxPar/2-parOffset,node[0,2]-\
+            parDiameter/2-maxPar/2-parOffset]))
+        binMax = np.array(([node[0,0]+parDiameter/2+maxPar/2+parOffset,\
+            node[0,1]+parDiameter/2+maxPar/2+parOffset,node[0,2]+\
+            parDiameter/2+maxPar/2+parOffset]))
 
 
         # Check if particle overlapping any existing particles or bad nodes
         overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
-            binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
+            binMax,minPar,maxEdgeLength,parOffset,parDiameterList)
 
         if overlap[0] == False:
             

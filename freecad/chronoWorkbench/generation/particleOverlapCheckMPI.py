@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to check if a particle is too close to 
+## another particle
 ##
 ## ===========================================================================
 
@@ -23,6 +23,24 @@ import numpy as np
 
 
 def overlapCheckMPI(center,parDiameter,binMin,binMax,minPar,parOffset,nodes,diameters):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - center:           Center of the particle
+    - parDiameter:      Diameter of the particle
+    - binMin:           Minimum coordinates of the bin
+    - binMax:           Maximum coordinates of the bin
+    - minPar:           Minimum particle diameter
+    - parOffset:        Offset coefficient between particles
+    - nodes:            Nodes of the tets
+    - diameters:        Diameters of the particles
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - Boolean:          True if the particle is too close, False if not
+    --------------------------------------------------------------------------
+    """  
 
     # Store particle nodes that fall inside a floating bin
     binTestParticles = np.all([(nodes[:,0] > binMin[0]) , \

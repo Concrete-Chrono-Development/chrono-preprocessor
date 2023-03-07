@@ -13,8 +13,7 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to check if a particle is inside a tet
 ##
 ## ===========================================================================
 
@@ -22,6 +21,26 @@ import numpy as np
 
 def insideCheck(vertices,tets,center,parDiameter,binMin,binMax,coord1,\
     coord2,coord3,coord4):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - vertices:         Nodes of the tets
+    - tets:             Tets of the mesh
+    - center:           Center of the particle
+    - parDiameter:      Diameter of the particle
+    - binMin:           Minimum coordinates of the bin
+    - binMax:           Maximum coordinates of the bin
+    - coord1:           Coordinates of the first vertex of each tet
+    - coord2:           Coordinates of the second vertex of each tet
+    - coord3:           Coordinates of the third vertex of each tet
+    - coord4:           Coordinates of the fourth vertex of each tet
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - Boolean:          True if the particle is inside tets, False if not
+    --------------------------------------------------------------------------
+    """  
 
     # Convert center to a 1D array
     center = center.flatten()

@@ -13,8 +13,9 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to generate a particle and outputs the
+## location of the particle as well as the maximum number of iterations
+## allowed and the number of iterations required to place the particle.
 ##
 ## ===========================================================================
 
@@ -26,8 +27,37 @@ from freecad.chronoWorkbench.generation.particleInsideCheck     	import insideCh
 
 def generateParticle(facePoints,parDiameter,\
     vertices,tets,newMaxIter,maxIter,minPar,maxPar,\
-    aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes):
-    
+    parOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - facePoints:       List of points on the surface of the mesh
+    - parDiameter:      Diameter of the particle
+    - vertices:         List of vertices of the mesh
+    - tets:             List of tetrahedrons of the mesh
+    - newMaxIter:       Maximum number of iterations to try to place a particle
+    - maxIter:          Maximum number of iterations to try to place a particle
+    - minPar:           Minimum particle diameter
+    - maxPar:           Maximum particle diameter
+    - parOffset:        Offset coefficient for particle placement
+    - parDiameterList:  List of particle diameters
+    - coord1:           Coordinate 1 of the tets
+    - coord2:           Coordinate 2 of the tets
+    - coord3:           Coordinate 3 of the tets
+    - coord4:           Coordinate 4 of the tets
+    - maxEdgeLength:    Maximum edge length of the mesh
+    - max_dist:         Maximum distance from the surface
+    - nodes:            List of nodes
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - node:             Node location of the particle
+    - newMaxIter:       Maximum number of iterations to try to place a particle
+    - iterReq:          Number of iterations required to place a particle
+    --------------------------------------------------------------------------
+    """  
+
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)
     i=0
@@ -59,12 +89,12 @@ def generateParticle(facePoints,parDiameter,\
         node = node[np.newaxis,:]
 
         # Obtain extents for floating bin
-        binMin = node[0,:] - parDiameter/2 - maxPar/2 - aggOffset
-        binMax = node[0,:] + parDiameter/2 + maxPar/2 + aggOffset
+        binMin = node[0,:] - parDiameter/2 - maxPar/2 - parOffset
+        binMax = node[0,:] + parDiameter/2 + maxPar/2 + parOffset
 
         # Check if particle overlapping any existing particles or bad nodes
         overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
-            binMax,minPar,maxEdgeLength,aggOffset,parDiameterList)
+            binMax,minPar,maxEdgeLength,parOffset,parDiameterList)
 
         # If does not overlap an existing particle
         if overlap[0] == False:

@@ -31,6 +31,7 @@ def readInputs(form):
     constitutiveEQ      = form[0].constEQ.currentText()
     matParaSet          = form[0].matParaSet.currentText()
 
+    # Simulation Settings
     numCPU              = form[0].numCPUbox.value()
     numIncrements       = form[0].numPIncBox.value()
     maxIter             = form[0].numIncBox.value()

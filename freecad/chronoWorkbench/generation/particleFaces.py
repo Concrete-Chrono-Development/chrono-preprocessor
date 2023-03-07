@@ -13,7 +13,7 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
+## 
 ##
 ##
 ## ===========================================================================
@@ -27,6 +27,18 @@ import numpy as np
 # Pulls the coordinates of each external triangle in the mesh 
 # NOTE THIS WILL PRODUCE DUPLICATE NODES SO DO NOT USE ANYWHERE WHERE THAT WOULD BE AN ISSUE!!!
 def particleFaces(vertices,faces):
+
+    """
+    Variables:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    - vertices:         External nodes of the geometry
+    - faces:            External faces of the geometry
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    - facePoints:       Coordinates of each external triangle
+    --------------------------------------------------------------------------
+    """  
 
     faces = faces.astype(int)
     

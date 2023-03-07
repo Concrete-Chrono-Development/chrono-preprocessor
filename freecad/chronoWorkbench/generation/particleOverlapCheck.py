@@ -13,8 +13,8 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to check if a particle overlaps with 
+## another particle or is too close to the surface
 ##
 ## ===========================================================================
 

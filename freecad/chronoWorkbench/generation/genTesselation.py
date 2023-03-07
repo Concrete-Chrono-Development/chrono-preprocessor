@@ -13,8 +13,9 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to perform the tesselation of the mesh and
+## generate the facet connectivity, facet centers, facet areas, facet normals,
+## and other facet data.
 ##
 ## ===========================================================================
 
@@ -273,9 +274,9 @@ def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
         (np.cross(vectorAB,vectorAC),axis=1),]*3).T
 
     # Specify tet-node connectivity for facets (i.e. facet 1 connected by 
-        # node 1 and 2)
-    tetn1 = [1,1,2,0,0,2,0,0,1,0,0,1]
-    tetn2 = [2,3,3,2,3,3,1,3,3,1,2,2]
+        # node 0 and 1)
+    tetn1 = [0,0,0,0,1,1,1,1,2,2,0,0]
+    tetn2 = [1,1,2,2,2,2,3,3,3,3,3,3]
 
 
     return tetFacets, facetCenters, facetAreas, facetNormals, \
