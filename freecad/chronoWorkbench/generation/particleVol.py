@@ -257,13 +257,33 @@ def parVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
     --------------------------------------------------------------------------
     """
     
-    # Calculate volume fractions of each component in the mixture
-    volFracCement = cementC / densityCement
-    volFracFly = flyashC / flyashDensity
-    volFracSilica = silicaC / silicaDensity
-    volFracSCM = scmC / scmDensity
-    volFracFiller = fillerC / fillerDensity
-    volFracWater = wcRatio * cementC / densityWater
+    # Calculate volume fractions of each component in the mixture and make sure to ignore if density is zero
+    if densityCement != 0:
+        volFracCement = cementC / densityCement
+    else:
+        volFracCement = 0
+    if flyashDensity != 0:
+        volFracFly = flyashC / flyashDensity
+    else:
+        volFracFly = 0
+    if silicaDensity != 0:
+        volFracSilica = silicaC / silicaDensity
+    else:
+        volFracSilica = 0
+    if scmDensity != 0:
+        volFracSCM = scmC / scmDensity
+    else:
+        volFracSCM = 0
+    if fillerDensity != 0:
+        volFracFiller = fillerC / fillerDensity
+    else:
+        volFracFiller = 0
+    if densityWater != 0:
+        volFracWater = wcRatio * cementC / densityWater
+    else:
+        volFracWater = 0
+
+    # Calculate volume fraction of particles
     volFracPar = (1-volFracCement-volFracFly-volFracSilica-volFracSCM-
                   volFracFiller-volFracWater - volFracAir)
     
