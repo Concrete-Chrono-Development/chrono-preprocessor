@@ -23,8 +23,6 @@
 
 def readInputs(form):
 
-    # Generation Type
-    elementType         = "LDPM"
 
     # Basic Settings
     setupFile           = form[0].setupFile.text()
@@ -108,10 +106,12 @@ def readInputs(form):
     flyashC             = float(form[3].flyashContent.text() or 0)
     silicaC             = float(form[3].silicaContent.text() or 0)
     scmC                = float(form[3].scmContent.text() or 0)
+    fillerC             = float(form[3].fillerContent.text() or 0)
     cementDensity       = float(form[3].cementDensity.text() or 0)
     flyashDensity       = float(form[3].flyashDensity.text() or 0)
     silicaDensity       = float(form[3].silicaDensity.text() or 0)
     scmDensity          = float(form[3].scmDensity.text() or 0)
+    fillerDensity       = float(form[3].fillerDensity.text() or 0)
     airFrac1            = float(form[3].airFrac.value() or 0)
     airFrac2            = float(form[3].airFracArb.value() or 0)
 
@@ -121,11 +121,11 @@ def readInputs(form):
     # Generation Data
     outputDir           = form[5].outputDir.text()
 
-    return elementType, \
-        setupFile, constitutiveEQ, matParaSet, \
+    return setupFile, constitutiveEQ, matParaSet, \
         numCPU, numIncrements,maxIter,placementAlg,\
         geoType, dimensions, cadFile,\
         minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
-        cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
+        cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
+        fillerC, fillerDensity, airFrac2,\
         outputDir

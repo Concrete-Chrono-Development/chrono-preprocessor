@@ -130,7 +130,7 @@ class inputWindow_LDPM_CSL:
         # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generation)
         QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generation)
-        QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.generation)
+        QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
 
 
 
@@ -203,6 +203,75 @@ class inputWindow_LDPM_CSL:
 
 
 
+    def writeParameters(self):
+
+        # Read in inputs from input panel
+        [elementType, \
+            setupFile, constitutiveEQ, matParaSet, \
+            numCPU, numIncrements,maxIter,placementAlg,\
+            geoType, dimensions, cadFile,\
+            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
+            wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
+            fillerC, fillerDensity, airFrac2,\
+            outputDir] = readInputs(self.form)
+
+        # Write parameters to file
+        # Make output directory if does not exist
+        outDir =  self.form[5].outputDir.text()
+        try:
+            os.mkdir(outDir)
+        except:
+            pass
+
+        # Write parameters to file
+        with open(Path(outDir + "/chronoWorkbench.para"), "w") as f:
+            f.write("setupFile = " + setupFile + "\n")
+            f.write("constitutiveEQ = " + constitutiveEQ + "\n")
+            f.write("matParaSet = " + matParaSet + "\n")
+            f.write("numCPU = " + numCPU + "\n")
+            f.write("numIncrements = " + numIncrements + "\n")
+            f.write("maxIter = " + maxIter + "\n")
+            f.write("placementAlg = " + placementAlg + "\n")
+            f.write("geoType = " + geoType + "\n")
+            f.write("dimensions = " + dimensions + "\n")
+            f.write("cadFile = " + cadFile + "\n")
+            f.write("minPar = " + minPar + "\n")
+            f.write("maxPar = " + maxPar + "\n")
+            f.write("fullerCoef = " + fullerCoef + "\n")
+            f.write("sieveCurveDiameter = " + sieveCurveDiameter + "\n")
+            f.write("sieveCurvePassing = " + sieveCurvePassing + "\n")
+            f.write("wcRatio = " + wcRatio + "\n")
+            f.write("densityWater = " + densityWater + "\n")
+            f.write("cementC = " + cementC + "\n")
+            f.write("flyashC = " + flyashC + "\n")
+            f.write("silicaC = " + silicaC + "\n")
+            f.write("scmC = " + scmC + "\n")
+            f.write("cementDensity = " + cementDensity + "\n")
+            f.write("flyashDensity = " + flyashDensity + "\n")
+            f.write("silicaDensity = " + silicaDensity + "\n")
+            f.write("scmDensity = " + scmDensity + "\n")
+            f.write("airFrac1 = " + airFrac1 + "\n")
+            f.write("fillerC = " + fillerC + "\n")
+            f.write("fillerDensity = " + fillerDensity + "\n")
+            f.write("airFrac2 = " + airFrac2 + "\n")
+            f.write("outputDir = " + outputDir + "\n")
+
+
+    def generateLDPM(self):
+
+        self.elementType = "LDPM"
+        self.generation()
+
+
+
+    def generateCSL(self):
+
+        self.elementType = "CSL"
+        self.generation()
+
+
+
 
     def generation(self):
 
@@ -233,7 +302,7 @@ class inputWindow_LDPM_CSL:
 
         #print(new_string)
 
-
+        
 
 
 
@@ -250,15 +319,16 @@ class inputWindow_LDPM_CSL:
         Gui.runCommand('Std_PerspectiveCamera',1)
 
         # Read in inputs from input panel
-        [elementType, \
-            setupFile, constitutiveEQ, matParaSet, \
+        [setupFile, constitutiveEQ, matParaSet, \
             numCPU, numIncrements,maxIter,placementAlg,\
             geoType, dimensions, cadFile,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
-            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, airFrac2,\
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
+            fillerC, fillerDensity, airFrac2,\
             outputDir] = readInputs(self.form)
-        #sieveCurveDiameter = np.array(sieveCurveDiameter)
+
+        elementType = self.elementType
 
         try:
             sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
@@ -269,10 +339,11 @@ class inputWindow_LDPM_CSL:
 
 
 
-        #if fillerC > 0:
-        #    airFrac = airFrac2
-        #else:
-        airFrac = airFrac1
+        if fillerC > 0:
+            airFrac = airFrac2
+        else:
+            airFrac = airFrac1
+        
         aggOffsetCoeff = 0.2                                    # Minimum distance between particles factor 
         verbose = "On"
 
@@ -337,7 +408,7 @@ class inputWindow_LDPM_CSL:
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
         [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
-            flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,\
+            flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
             vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
         # Temporary to skip over sieve curve option

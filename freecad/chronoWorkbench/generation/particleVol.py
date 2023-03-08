@@ -16,7 +16,7 @@
 ## This section of code defines several functions for calculating the volume 
 ## of particles in a mesh, including the meshVolume function for calculating 
 ## the volume of a mesh composed of tetrahedrons, the sieveCurve function for 
-## shifting a total sieve curve to a specific sieve curve, and the aggVolume 
+## shifting a total sieve curve to a specific sieve curve, and the parVolume 
 ## function for calculating the total volume of particles in a mixture and 
 ## related values. The particleVol function utilizes these functions to 
 ## calculate the volume of particles in a mesh based on various inputs, such 
@@ -30,7 +30,8 @@ import numpy as np
 
 def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement, 
                 densityWater, flyashC, silicaC, scmC, flyashDensity, 
-                silicaDensity, scmDensity, vertices, tets, minPar, maxPar, 
+                silicaDensity, scmDensity, fillerC, fillerDensity,
+                vertices, tets, minPar, maxPar, 
                 sieveCurveDiameter, sieveCurvePassing):
     
     """
@@ -46,9 +47,11 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
     flyashC:            mass of fly ash
     silicaC:            mass of silica fume
     scmC:               mass of supplementary cementitious materials
+    fillerC:            mass of arbitrary filler
     flyashDensity:      density of fly ash
     silicaDensity:      density of silica fume
     scmDensity:         density of supplementary cementitious materials
+    fillerDensity:      density of arbitrary filler
     vertices:           an array of vertex coordinates for the mesh
     tets:               an array of tetrahedron vertices for the mesh
     minPar:             minimum particle size
@@ -66,7 +69,15 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
 
     # Convert density to Kg/m3
     cementC = cementC * (1.0E+12)
+    flyashC = flyashC * (1.0E+12)
+    silicaC = silicaC * (1.0E+12)
+    scmC = scmC * (1.0E+12)
+    fillerC = fillerC * (1.0E+12)
     densityCement = densityCement * (1.0E+12)
+    flyashDensity = flyashDensity * (1.0E+12)
+    silicaDensity = silicaDensity * (1.0E+12)
+    scmDensity = scmDensity * (1.0E+12)
+    fillerDensity = fillerDensity * (1.0E+12)
     densityWater = densityWater * (1.0E+12)
 
     # Gets volume of geometry
@@ -81,11 +92,11 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
         newSieveCurveD, newSieveCurveP, w_min, w_max, NewSet = 0, 0, 0, 0, 0
 
     # Calculates volume of particles needed
-    [parVolTotal, cdf, cdf1, kappa_i] = aggVolume(tetVolume, wcRatio, cementC,
+    [parVolTotal, cdf, cdf1, kappa_i] = parVolume(tetVolume, wcRatio, cementC,
                                                   volFracAir, fullerCoef, 
-                                                  flyashC, silicaC, scmC,
+                                                  flyashC, silicaC, scmC, fillerC,
                                                   flyashDensity, silicaDensity, 
-                                                  scmDensity, densityCement, 
+                                                  scmDensity, fillerDensity, densityCement,
                                                   densityWater, minPar, maxPar,
                                                   newSieveCurveD, newSieveCurveP, 
                                                   NewSet, w_min, w_max)
@@ -101,8 +112,12 @@ def meshVolume(vertices, tets):
     """
     Variables:
     --------------------------------------------------------------------------
-    vertices:   an array of vertex coordinates for the mesh
-    tets:       an array of tetrahedron vertices for the mesh
+    ### Inputs ###
+    vertices:          an array of vertex coordinates for the mesh
+    tets:              an array of tetrahedron vertices for the mesh
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    sum(tetVolume):    volume of the mesh
     --------------------------------------------------------------------------
     """
 
@@ -132,10 +147,18 @@ def sieveCurve(minPar, maxPar, sieveCurveDiameter, sieveCurvePassing):
     """
     Variables:
     --------------------------------------------------------------------------
+    ### Inputs ###
     minPar:                minimum particle size
     maxPar:                maximum particle size
     sieveCurveDiameter:    an array of particle size data
     sieveCurvePassing:     an array of cumulative percent passing data
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    newSieveCurveD:        shifted sieve curve diameter data
+    newSieveCurveP:        shifted sieve curve percent passing data
+    NewSet:                number of lines in shifted sieve curve data
+    w_min:                 minimum weight of particles
+    w_max:                 maximum weight of particles
     --------------------------------------------------------------------------
     """
 
@@ -195,13 +218,14 @@ def sieveCurve(minPar, maxPar, sieveCurveDiameter, sieveCurvePassing):
 
 # Function to calculate the total volume of particles in a mixture and related
 # values
-def aggVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
-              silicaC, scmC, flyashDensity, silicaDensity, scmDensity,
-              densityCement, densityWater, minPar, maxPar, newSieveCurveD,
-              newSieveCurveP, NewSet, w_min, w_max):
+def parVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
+              silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity,
+              fillerDensity, densityCement, densityWater, minPar, maxPar, 
+              newSieveCurveD, newSieveCurveP, NewSet, w_min, w_max):
     """
     Variables:
     --------------------------------------------------------------------------
+    ### Inputs ###
     tetVolume:      total volume of the mix
     wcRatio:        water to cement ratio
     cementC:        cement content
@@ -210,9 +234,11 @@ def aggVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
     flyashC:        mass of fly ash
     silicaC:        mass of silica fume
     scmC:           mass of supplementary cementitious materials
+    fillerC:        mass of arbitrary filler
     flyashDensity:  density of fly ash
     silicaDensity:  density of silica fume
     scmDensity:     density of supplementary cementitious materials
+    fillerDensity:  density of arbitrary filler
     densityCement:  density of cement
     densityWater:   density of water
     minPar:         minimum particle size
@@ -223,6 +249,12 @@ def aggVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
     w_min:          minimum value for a weight distribution
     w_max:          maximum value for a weight distribution
     --------------------------------------------------------------------------
+    ### Outputs ###
+    parVolSimTotal: total volume of particles in the mix
+    cdf:            cumulative distribution function
+    cdf1:           cumulative distribution function
+    kappa_i:        kappa value
+    --------------------------------------------------------------------------
     """
     
     # Calculate volume fractions of each component in the mixture
@@ -230,9 +262,10 @@ def aggVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
     volFracFly = flyashC / flyashDensity
     volFracSilica = silicaC / silicaDensity
     volFracSCM = scmC / scmDensity
+    volFracFiller = fillerC / fillerDensity
     volFracWater = wcRatio * cementC / densityWater
     volFracPar = (1-volFracCement-volFracFly-volFracSilica-volFracSCM-
-                  volFracWater - volFracAir)
+                  volFracFiller-volFracWater - volFracAir)
     
     # Check if a pre-defined particle size distribution curve is available
     if newSieveCurveD == 0:

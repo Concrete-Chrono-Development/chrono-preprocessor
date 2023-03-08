@@ -441,7 +441,7 @@
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox_2">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="title">
        <string>Arbitrary Mix Design</string>
@@ -484,6 +484,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
           <widget class="QLineEdit" name="fillerDensity">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>75</width>
@@ -517,6 +520,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QDoubleSpinBox" name="airFracArb">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
