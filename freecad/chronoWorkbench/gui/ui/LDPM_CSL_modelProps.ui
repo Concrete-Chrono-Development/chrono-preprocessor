@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>333</width>
-    <height>331</height>
+    <height>333</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons.qrc">
+   <iconset>
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
   </property>
   <property name="toolTipDuration">
@@ -40,7 +40,7 @@
     <item row="0" column="0">
      <widget class="QGroupBox" name="gb_working_dir">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="styleSheet">
        <string notr="true">border-color: rgb(182, 182, 182);</string>
@@ -58,7 +58,7 @@
        <item>
         <widget class="QLineEdit" name="setupFile">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -68,7 +68,7 @@
        <item>
         <widget class="QToolButton" name="readFileButton">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string notr="true">...</string>

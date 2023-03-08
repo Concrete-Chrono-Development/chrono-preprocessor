@@ -128,8 +128,8 @@ class inputWindow_LDPM_CSL:
         QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
-        QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generation)
-        QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generation)
+        QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generateLDPM)
+        QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generateCSL)
         QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
 
 
@@ -143,7 +143,7 @@ class inputWindow_LDPM_CSL:
     def openFilePara(self):
 
         path = App.ConfigGet("UserHomePath")
-        filetype = "CC Parameter input format (*.ccPar)"
+        filetype = "CW Parameter input format (*.cwPar)"
 
         OpenName = ""
         try:
@@ -156,6 +156,8 @@ class inputWindow_LDPM_CSL:
             App.Console.PrintMessage("Process aborted"+"\n")
         else:
             self.form[0].setupFile.setText(OpenName)
+        
+        self.readParameters()
 
     def openFileGeo(self):
 
@@ -177,7 +179,6 @@ class inputWindow_LDPM_CSL:
         else:
             self.form[1].cadName.setText("Import geometry listed below")
             self.form[1].cadFile.setText(OpenName)
-
 
 
 
@@ -206,8 +207,7 @@ class inputWindow_LDPM_CSL:
     def writeParameters(self):
 
         # Read in inputs from input panel
-        [elementType, \
-            setupFile, constitutiveEQ, matParaSet, \
+        [setupFile, constitutiveEQ, matParaSet, \
             numCPU, numIncrements,maxIter,placementAlg,\
             geoType, dimensions, cadFile,\
             minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
@@ -225,55 +225,203 @@ class inputWindow_LDPM_CSL:
             pass
 
         # Write parameters to file
-        with open(Path(outDir + "/chronoWorkbench.para"), "w") as f:
-            f.write("setupFile = " + setupFile + "\n")
+        with open(Path(outDir + "/chronoWorkbench.cwPar"), "w") as f:
             f.write("constitutiveEQ = " + constitutiveEQ + "\n")
             f.write("matParaSet = " + matParaSet + "\n")
-            f.write("numCPU = " + numCPU + "\n")
-            f.write("numIncrements = " + numIncrements + "\n")
-            f.write("maxIter = " + maxIter + "\n")
+            f.write("numCPU = " + str(numCPU) + "\n")
+            f.write("numIncrements = " + str(numIncrements) + "\n")
+            f.write("maxIter = " + str(maxIter) + "\n")
             f.write("placementAlg = " + placementAlg + "\n")
             f.write("geoType = " + geoType + "\n")
-            f.write("dimensions = " + dimensions + "\n")
+            f.write("dimensions = " + str(dimensions) + "\n")
             f.write("cadFile = " + cadFile + "\n")
-            f.write("minPar = " + minPar + "\n")
-            f.write("maxPar = " + maxPar + "\n")
-            f.write("fullerCoef = " + fullerCoef + "\n")
-            f.write("sieveCurveDiameter = " + sieveCurveDiameter + "\n")
-            f.write("sieveCurvePassing = " + sieveCurvePassing + "\n")
-            f.write("wcRatio = " + wcRatio + "\n")
-            f.write("densityWater = " + densityWater + "\n")
-            f.write("cementC = " + cementC + "\n")
-            f.write("flyashC = " + flyashC + "\n")
-            f.write("silicaC = " + silicaC + "\n")
-            f.write("scmC = " + scmC + "\n")
-            f.write("cementDensity = " + cementDensity + "\n")
-            f.write("flyashDensity = " + flyashDensity + "\n")
-            f.write("silicaDensity = " + silicaDensity + "\n")
-            f.write("scmDensity = " + scmDensity + "\n")
-            f.write("airFrac1 = " + airFrac1 + "\n")
-            f.write("fillerC = " + fillerC + "\n")
-            f.write("fillerDensity = " + fillerDensity + "\n")
-            f.write("airFrac2 = " + airFrac2 + "\n")
+            f.write("minPar = " + str(minPar) + "\n")
+            f.write("maxPar = " + str(maxPar) + "\n")
+            f.write("fullerCoef = " + str(fullerCoef) + "\n")
+            f.write("sieveCurveDiameter = " + str(sieveCurveDiameter) + "\n")
+            f.write("sieveCurvePassing = " + str(sieveCurvePassing) + "\n")
+            f.write("wcRatio = " + str(wcRatio) + "\n")
+            f.write("densityWater = " + str(densityWater) + "\n")
+            f.write("cementC = " + str(cementC) + "\n")
+            f.write("flyashC = " + str(flyashC) + "\n")
+            f.write("silicaC = " + str(silicaC) + "\n")
+            f.write("scmC = " + str(scmC) + "\n")
+            f.write("cementDensity = " + str(cementDensity) + "\n")
+            f.write("flyashDensity = " + str(flyashDensity) + "\n")
+            f.write("silicaDensity = " + str(silicaDensity) + "\n")
+            f.write("scmDensity = " + str(scmDensity) + "\n")
+            f.write("airFrac1 = " + str(airFrac1) + "\n")
+            f.write("fillerC = " + str(fillerC) + "\n")
+            f.write("fillerDensity = " + str(fillerDensity) + "\n")
+            f.write("airFrac2 = " + str(airFrac2) + "\n")
             f.write("outputDir = " + outputDir + "\n")
+
+        print("Parameters written to file")
+
+    def readParameters(self):
+
+        paraFile = self.form[0].setupFile.text()
+
+        # Read parameters from file
+        with open(Path(paraFile), "r") as f:
+            for line in f:
+                if "constitutiveEQ" in line:
+                    constitutiveEQ = line.split("=")[1].strip()
+                elif "matParaSet" in line:
+                    matParaSet = line.split("=")[1].strip()
+                elif "numCPU" in line:
+                    numCPU = int(line.split("=")[1].strip())
+                elif "numIncrements" in line:
+                    numIncrements = int(line.split("=")[1].strip())
+                elif "maxIter" in line:
+                    maxIter = int(line.split("=")[1].strip())
+                elif "placementAlg" in line:
+                    placementAlg = line.split("=")[1].strip()
+                elif "geoType" in line:
+                    geoType = line.split("=")[1].strip()
+                elif "dimensions" in line:
+                    # Change from format  ['17.00 mm', '2.00 mm', '5.00 mm'] to [17.00, 2.00, 5.00]
+                    dimensions = [float(x.split()[0].strip("'")) for x in line.split("=")[1].strip().strip("[").strip("]").split(",")]
+                elif "cadFile" in line:
+                    cadFile = line.split("=")[1].strip()
+                elif "minPar" in line:
+                    minPar = float(line.split("=")[1].strip())
+                elif "maxPar" in line:
+                    maxPar = float(line.split("=")[1].strip())
+                elif "fullerCoef" in line:
+                    fullerCoef = float(line.split("=")[1].strip())
+                elif "sieveCurveDiameter" in line:
+                    sieveCurveDiameter = line.split("=")[1].strip()
+                elif "sieveCurvePassing" in line:
+                    sieveCurvePassing = line.split("=")[1].strip()
+                elif "wcRatio" in line:
+                    wcRatio = float(line.split("=")[1].strip())
+                elif "densityWater" in line:
+                    densityWater = float(line.split("=")[1].strip())
+                elif "cementC" in line:
+                    cementC = float(line.split("=")[1].strip())
+                elif "flyashC" in line:
+                    flyashC = float(line.split("=")[1].strip())
+                elif "silicaC" in line:
+                    silicaC = float(line.split("=")[1].strip())
+                elif "scmC" in line:
+                    scmC = float(line.split("=")[1].strip())
+                elif "cementDensity" in line:
+                    cementDensity = float(line.split("=")[1].strip())
+                elif "flyashDensity" in line:
+                    flyashDensity = float(line.split("=")[1].strip())
+                elif "silicaDensity" in line:
+                    silicaDensity = float(line.split("=")[1].strip())
+                elif "scmDensity" in line:
+                    scmDensity = float(line.split("=")[1].strip())
+                elif "airFrac1" in line:
+                    airFrac1 = float(line.split("=")[1].strip())
+                elif "fillerC" in line:
+                    fillerC = float(line.split("=")[1].strip())
+                elif "fillerDensity" in line:
+                    fillerDensity = float(line.split("=")[1].strip())
+                elif "airFrac2" in line:
+                    airFrac2 = float(line.split("=")[1].strip())
+                elif "outputDir" in line:
+                    outputDir = line.split("=")[1].strip()
+
+        # Write parameters to input panel
+        self.form[0].constEQ.setCurrentText(constitutiveEQ)
+        self.form[0].matParaSet.setCurrentText(matParaSet)
+        self.form[0].numCPUbox.setValue(numCPU)
+        self.form[0].numPIncBox.setValue(numIncrements)
+        self.form[0].numIncBox.setValue(maxIter)
+        self.form[0].placementAlg.setCurrentText(placementAlg)
+        self.form[1].geometryType.setCurrentText(geoType)
+        if geoType == "Box":
+            self.form[1].boxLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].boxWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].boxHeight.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Cylinder":
+            self.form[1].cylinderHeight.setProperty('rawValue',(dimensions[0]))
+            self.form[1].cylinderRadius.setProperty('rawValue',(dimensions[1]))
+        elif geoType == "Cone":
+            self.form[1].coneHeight.setProperty('rawValue',(dimensions[0]))
+            self.form[1].coneRadius1.setProperty('rawValue',(dimensions[1]))
+            self.form[1].coneRadius2.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Sphere":
+            self.form[1].sphereRadius.setProperty('rawValue',(dimensions[0]))
+        elif geoType == "Ellipsoid":
+            self.form[1].ellipsoidRadius1.setProperty('rawValue',(dimensions[0]))
+            self.form[1].ellipsoidRadius2.setProperty('rawValue',(dimensions[1]))
+            self.form[1].ellipsoidRadius3.setProperty('rawValue',(dimensions[2]))
+            self.form[1].ellipsoidAngle1.setProperty('rawValue',(dimensions[3]))
+            self.form[1].ellipsoidAngle2.setProperty('rawValue',(dimensions[4]))
+            self.form[1].ellipsoidAngle3.setProperty('rawValue',(dimensions[5]))
+        elif geoType == "Prism":
+            self.form[1].prismCircumradius.setProperty('rawValue',(dimensions[0]))
+            self.form[1].prismHeight.setProperty('rawValue',(dimensions[1]))
+            self.form[1].prismPolygon.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Notched Prism - Square":
+            self.form[1].notchBoxLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].notchBoxWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].notchBoxHeight.setProperty('rawValue',(dimensions[2]))
+            self.form[1].notchWidth.setProperty('rawValue',(dimensions[3]))
+            self.form[1].notchDepth.setProperty('rawValue',(dimensions[4]))
+        elif geoType == "Notched Prism - Semi Circle":
+            self.form[1].notchSCBoxLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].notchSCBoxWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].notchSCBoxHeight.setProperty('rawValue',(dimensions[2]))
+            self.form[1].notchSCWidth.setProperty('rawValue',(dimensions[3]))
+            self.form[1].notchSCDepth.setProperty('rawValue',(dimensions[4]))
+        elif geoType == "Notched Prism - Semi Ellipse":
+            self.form[1].notchSEBoxLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].notchSEBoxWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].notchSEBoxHeight.setProperty('rawValue',(dimensions[2]))
+            self.form[1].notchSEWidth.setProperty('rawValue',(dimensions[3]))
+            self.form[1].notchSEDepth.setProperty('rawValue',(dimensions[4]))
+        elif geoType == "Dogbone":
+            self.form[1].dogboneLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].dogboneWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].dogboneThickness.setProperty('rawValue',(dimensions[2]))
+            self.form[1].gaugeLength.setProperty('rawValue',(dimensions[3]))
+            self.form[1].gaugeWidth.setProperty('rawValue',(dimensions[4]))
+            self.form[1].dogboneType.setCurrentText(dimensions[5])
+        self.form[1].cadFile.setText(cadFile)
+        self.form[2].minPar.setValue(minPar)
+        self.form[2].maxPar.setValue(maxPar)
+        self.form[2].fullerCoef.setValue(fullerCoef)
+        self.form[2].sieveDiameters.setText(str(sieveCurveDiameter))
+        self.form[2].sievePassing.setText(str(sieveCurvePassing))
+        self.form[3].wcRatio.setValue(wcRatio)
+        self.form[3].waterDensity.setText(str(densityWater))
+        self.form[3].cementContent.setText(str(cementC))
+        self.form[3].flyashContent.setText(str(flyashC))
+        self.form[3].silicaContent.setText(str(silicaC))
+        self.form[3].scmContent.setText(str(scmC))
+        self.form[3].cementDensity.setText(str(cementDensity))
+        self.form[3].flyashDensity.setText(str(flyashDensity))
+        self.form[3].silicaDensity.setText(str(silicaDensity))
+        self.form[3].scmDensity.setText(str(scmDensity))
+        self.form[3].airFrac.setValue(airFrac1)
+        self.form[3].fillerContent.setText(str(fillerC))
+        self.form[3].fillerDensity.setText(str(fillerDensity))
+        self.form[3].airFracArb.setValue(airFrac2)
+        self.form[5].outputDir.setText(outputDir)
+
+
+
 
 
     def generateLDPM(self):
 
-        self.elementType = "LDPM"
-        self.generation()
+        self.generation("LDPM")
 
 
 
     def generateCSL(self):
 
-        self.elementType = "CSL"
-        self.generation()
+        self.generation("CSL")
 
 
 
 
-    def generation(self):
+    def generation(self, elementType):
 
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
@@ -327,8 +475,6 @@ class inputWindow_LDPM_CSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             outputDir] = readInputs(self.form)
-
-        elementType = self.elementType
 
         try:
             sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
