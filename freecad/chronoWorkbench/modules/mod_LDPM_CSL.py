@@ -216,7 +216,6 @@ class inputWindow_LDPM_CSL:
             fillerC, fillerDensity, airFrac2,\
             outputDir] = readInputs(self.form)
 
-        # Write parameters to file
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
         try:
@@ -226,6 +225,25 @@ class inputWindow_LDPM_CSL:
 
         # Write parameters to file
         with open(Path(outDir + "/chronoWorkbench.cwPar"), "w") as f:
+            f.write("""
+// ================================================================================
+// CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+//
+// Copyright (c) 2023 
+// All rights reserved. 
+//
+// Use of the code that generated this file is governed by a BSD-style license that
+// can be found in the LICENSE file at the top level of the distribution and at
+// github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+//
+// ================================================================================
+// Chrono Workbench Parameter File
+// ================================================================================
+// 
+// Chrono Workbench developed by Northwestern University
+//
+// ================================================================================
+            \n\n""")
             f.write("constitutiveEQ = " + constitutiveEQ + "\n")
             f.write("matParaSet = " + matParaSet + "\n")
             f.write("numCPU = " + str(numCPU) + "\n")
