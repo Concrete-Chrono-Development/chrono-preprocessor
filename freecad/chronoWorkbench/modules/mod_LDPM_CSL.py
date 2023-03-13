@@ -68,8 +68,10 @@ from freecad.chronoWorkbench.generation.particleOverlapCheck     import overlapC
 from freecad.chronoWorkbench.generation.particleOverlapCheckMPI  import overlapCheckMPI
 from freecad.chronoWorkbench.generation.readTetgen               import readTetgen
 from freecad.chronoWorkbench.generation.genTetrahedralization    import genTetrahedralization
-from freecad.chronoWorkbench.generation.genTesselation           import genTesselation
+from freecad.chronoWorkbench.generation.genTesselationLDPM       import genTesselationLDPM
+from freecad.chronoWorkbench.generation.genTesselationCSL        import genTesselationCSL
 from freecad.chronoWorkbench.generation.genFacetData             import genFacetData
+from freecad.chronoWorkbench.generation.genProperties            import genProperties
 
 from freecad.chronoWorkbench.input.readInputsLDPM                import readInputs
 
@@ -345,7 +347,22 @@ class inputWindow_LDPM_CSL:
 
         # Write parameters to input panel
         self.form[0].constEQ.setCurrentText(constitutiveEQ)
-        self.form[0].matParaSet.setCurrentText(matParaSet)
+        if self.form[0].constEQ.currentIndex() == 0:
+            self.form[0].matParaSet4EQ1.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 1:
+            self.form[0].matParaSet4EQ2.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 2:
+            self.form[0].matParaSet4EQ3.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 3:
+            self.form[0].matParaSet4EQ4.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 4:
+            self.form[0].matParaSet4EQ5.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 5:
+            self.form[0].matParaSet4EQ6.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 6:
+            self.form[0].matParaSet4EQ7.setCurrentText(matParaSet)
+        elif self.form[0].constEQ.currentIndex() == 7:
+            self.form[0].matParaSet4EQ8.setCurrentText(matParaSet)
         self.form[0].numCPUbox.setValue(numCPU)
         self.form[0].numPIncBox.setValue(numIncrements)
         self.form[0].numIncBox.setValue(maxIter)
@@ -454,21 +471,6 @@ class inputWindow_LDPM_CSL:
         # Make a temporary path location
         tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
         os.mkdir(tempPath)
-
-
-
-        #with open(Path(tempPath + "file.txt"), "w") as f:
-        #    path = "where python > " + str(Path(tempPath + "file.txt"))
-        #    os.system(path)
-
-        #with open(Path(tempPath + "file.txt"), "r") as f:
-        #    output = f.readline()
-
-        #new_string = output.replace("python", "pythonw")
-
-        #print(new_string)
-
-        
 
 
 
@@ -724,24 +726,28 @@ class inputWindow_LDPM_CSL:
 
         tetTessTimeStart = time.time()
 
-
+        # Generate tetrahedralization
         self.form[5].statusWindow.setText("Status: Forming tetrahedralization.") 
         tetGen = genTetrahedralization(nodes,vertices,\
             faces,geoName,verbose,tempPath)
         self.form[5].progressBar.setValue(89) 
 
 
-
+        # Read in tetrahedralization
         [allNodes,allTets] = readTetgen(Path(tempPath + geoName \
         + '.node'),Path(tempPath + geoName + '.ele'))
         self.form[5].progressBar.setValue(90) 
 
 
-
+        # Generate tesselation
         self.form[5].statusWindow.setText("Status: Forming tesselation.") 
-        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-            genTesselation(allNodes,allTets,parDiameterList,minPar,\
-            geoName)
+        if elementType == 'LDPM':
+            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
+                genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName)
+        elif elementType == 'CSL':
+            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
+                genTesselationCSL(allNodes,allTets,parDiameterList,minPar,geoName)
+
         self.form[5].progressBar.setValue(95) 
         tetTessTime = round(time.time() - tetTessTimeStart,2)   
 
@@ -980,55 +986,10 @@ class inputWindow_LDPM_CSL:
 
 
 
-
-        # Store material properties
-
-        # Property list from:
-        #--- Smith, J., & Cusatis, G. (2017). Numerical analysis of projectile penetration and perforation of plain and fiber reinforced concrete slabs. 
-        #--- International Journal for Numerical and Analytical Methods in Geomechanics, 41(3), 315-337.
+        # Set material properties, descriptions, and values based on selected constitutive equation set and material parameter set
+        [materialProps, materialPropDesc, materialPropsVal] = genProperties(constitutiveEQ, matParaSet)
 
 
-        
-        materialProps = [\
-            "Density",\
-            "CompressiveNormalModulus",\
-            "PoissonsRatio",\
-            "InitialHardeningModulusRatio",\
-            "DensificationRatio",\
-            "TransitionalStrainRatio",\
-            "ShearStrengthRatio",\
-            "InitialFriction",\
-            "SofteningExponent",\
-            "DeviatoricStrainThresholdRatio",\
-            "DeviatoricDamageParameter",\
-            "AsymptoticFriction",\
-            "TransitionalStress",\
-            "TensileStrength",\
-            "TensileCharacteristicLength",\
-            "ShearSofteningModulusRatio",\
-            ]
-
-
-
-
-        materialPropDesc = [\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            "Description coming soon...",\
-            ]
 
 
         simProps = [\
@@ -1055,14 +1016,16 @@ class inputWindow_LDPM_CSL:
         # Remove unused material properties
         #App.getDocument(App.ActiveDocument.Name).getObject(materialName).removeProperty("References")
 
-        # Add appropriate material properties
+        # Add appropriate constitutive equation set
         App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",'ConstitutiveEquationSet','Base','Set of constitutive equations.').ConstitutiveEquationSet=constitutiveEQ
 
 
 
-
+        # Add appropriate material properties
         for x in range(len(materialProps)):
-            App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyFloat",materialProps[x],elementType+" Parameters",materialPropDesc[x])#.Density=0.25
+            App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",materialProps[x],elementType+" Parameters",materialPropDesc[x])
+            print(materialPropsVal[x])
+            setattr(App.getDocument(App.ActiveDocument.Name).getObject(materialName),materialProps[x],str(materialPropsVal[x]))
 
 
         # Add appropriate simulation properties

@@ -246,7 +246,7 @@ class genWindow_LDPM_CSL:
 
 
 
-
+   
 
 
         materialProps = [\
@@ -267,6 +267,10 @@ class genWindow_LDPM_CSL:
             "TensileCharacteristicLength",\
             "ShearSofteningModulusRatio",\
             ]
+        
+        
+        materialPropsDesc = []
+        
         materialPropsValues = []
 
         simProps = [\
@@ -296,7 +300,7 @@ class genWindow_LDPM_CSL:
 
 
         # Make Project Chrono input file
-        mkChronoInput(elementType, analysisName, materialProps, materialPropsValues, simProps, simPropsValues, \
+        mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, materialPropsValues, simProps, simPropsValues, \
             nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName)
 
 

@@ -14,15 +14,15 @@
 ## ===========================================================================
 ##
 ## This file contains the function to perform the tesselation of the mesh and
-## generate the facet connectivity, facet centers, facet areas, facet normals,
-## and other facet data.
+## generates the facet connectivity, facet centers, facet areas, facet normals,
+## and other facet data for LDPM.
 ##
 ## ===========================================================================
 
 import numpy as np
 
 
-def genTesselation(allNodes,allTets,parDiameter,minPar,geoName):
+def genTesselationLDPM(allNodes,allTets,parDiameter,minPar,geoName):
     
     """
     Variable List:

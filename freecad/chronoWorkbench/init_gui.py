@@ -19,10 +19,10 @@
 ## ===========================================================================
 
 import os
-import FreeCADGui as Gui
-import FreeCAD as App
-from PySide import QtGui
-from FreeCADGui import Workbench
+import FreeCADGui as Gui #type: ignore
+import FreeCAD as App #type: ignore
+from PySide import QtGui #type: ignore
+from FreeCADGui import Workbench #type: ignore
 
 # Paths to Import
 from freecad.chronoWorkbench import ICONPATH

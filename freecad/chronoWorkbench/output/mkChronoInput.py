@@ -22,7 +22,7 @@ from pathlib import Path
 import FreeCAD as App
 from femtools import membertools
 
-def mkChronoInput(elementType, analysisName, materialProps, materialPropsVals, simProps, simPropsValues, \
+def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, materialPropsVals, simProps, simPropsValues, \
     nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName):
 
     """
@@ -98,7 +98,7 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsVals, s
         # Store material parameters
         output_file.write('    // ' + elementType + ' Material Parameters\n')
         for x in range(len(materialProps)):
-            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsVals[x]) + ';\n')
+            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsVals[x]) + ';    // ' + materialPropsDesc[x] + '\n')
         output_file.write('\n')
 
         # Store files to read

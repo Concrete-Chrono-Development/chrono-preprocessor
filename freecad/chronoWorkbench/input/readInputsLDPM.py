@@ -13,21 +13,35 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Description coming soon...
-##
+## This file contains the function to read the inputs from the GUI and return
+## them to the main script.
 ##
 ## ===========================================================================
 
 
-
-
 def readInputs(form):
-
 
     # Basic Settings
     setupFile           = form[0].setupFile.text()
+
+    # Constitutive Equation Settings
     constitutiveEQ      = form[0].constEQ.currentText()
-    matParaSet          = form[0].matParaSet.currentText()
+    if form[0].constEQ.currentIndex() == 0:
+        matParaSet      = form[0].matParaSet4EQ1.currentText()
+    if form[0].constEQ.currentIndex() == 1:
+        matParaSet      = form[0].matParaSet4EQ2.currentText()
+    if form[0].constEQ.currentIndex() == 2:
+        matParaSet      = form[0].matParaSet4EQ3.currentText()
+    if form[0].constEQ.currentIndex() == 3:
+        matParaSet      = form[0].matParaSet4EQ4.currentText()
+    if form[0].constEQ.currentIndex() == 4:
+        matParaSet      = form[0].matParaSet4EQ5.currentText()
+    if form[0].constEQ.currentIndex() == 5:
+        matParaSet      = form[0].matParaSet4EQ6.currentText()
+    if form[0].constEQ.currentIndex() == 6:
+        matParaSet      = form[0].matParaSet4EQ7.currentText()
+    if form[0].constEQ.currentIndex() == 7:
+        matParaSet      = form[0].matParaSet4EQ8.currentText()
 
     # Simulation Settings
     numCPU              = form[0].numCPUbox.value()
@@ -90,7 +104,6 @@ def readInputs(form):
         dimensions.append(form[1].dogboneType.currentText())
 
     cadFile             = form[1].cadFile.toPlainText()
-
 
     # Particle Settings
     minPar              = float(form[2].minPar.value() or 0)
