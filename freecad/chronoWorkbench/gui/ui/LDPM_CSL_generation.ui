@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>572</width>
-    <height>275</height>
+    <width>636</width>
+    <height>674</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -151,7 +151,7 @@
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="2">
+         <item row="1" column="2">
           <widget class="QPushButton" name="writePara">
            <property name="enabled">
             <bool>true</bool>
@@ -176,7 +176,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QPushButton" name="generateLDPM">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -198,7 +198,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="1" column="1">
           <widget class="QPushButton" name="generateCSL">
            <property name="enabled">
             <bool>false</bool>
@@ -223,6 +223,16 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QCheckBox" name="checkBox">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Generate Single Tetrahedron and Cell Files</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
@@ -235,7 +245,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>572</width>
+     <width>636</width>
      <height>21</height>
     </rect>
    </property>
