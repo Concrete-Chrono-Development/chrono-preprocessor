@@ -39,8 +39,8 @@ def genTesselationLDPM(allNodes,allTets,parDiameter,minPar,geoName):
     facetCenters:    An array of coordinates for the center of each facet in the mesh.
     facetAreas:      An array of the area of each facet in the mesh.
     facetNormals:    An array of the normal vector of each facet in the mesh.
-    tetNodeA:           An array of indices for the first node of each tetrahedron in the mesh.
-    tetNodeB:           An array of indices for the second node of each tetrahedron in the mesh.
+    tetNodeA:        An array of indices for the first node of each tetrahedron in the mesh.
+    tetNodeB:        An array of indices for the second node of each tetrahedron in the mesh.
     tetPoints:       An array of coordinates for the center of each tetrahedron in the mesh.
     allDiameters:    An array of diameters for each node in the mesh.
     facetPointData:  Condensed array of facet nodes

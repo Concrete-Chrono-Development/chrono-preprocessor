@@ -748,6 +748,10 @@ class inputWindow_LDPM_CSL:
             [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
                 genTesselationCSL(allNodes,allTets,parDiameterList,minPar,geoName)
 
+
+
+
+
         self.form[5].progressBar.setValue(95) 
         tetTessTime = round(time.time() - tetTessTimeStart,2)   
 
