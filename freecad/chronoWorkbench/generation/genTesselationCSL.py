@@ -21,7 +21,7 @@
 
 import numpy as np
 
-def genTesselationLDPM(allNodes,allTets,parDiameter,minPar,geoName):
+def genTesselationCSL(allNodes,allTets,parDiameter,minPar,geoName):
     
     """
     Variable List:
