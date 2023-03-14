@@ -22,7 +22,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkVtkFacets(geoName,tempPath,facetPointData,facetCellData):
+def mkVtksingleTetFacets(geoName,tempPath,tetFacets):
 
     """
     Variables:
@@ -30,46 +30,41 @@ def mkVtkFacets(geoName,tempPath,facetPointData,facetCellData):
     ### Inputs ###
     - geoName:          Name of the geometry file
     - tempPath:         Path to the temporary directory
-    - facetPointData:   List of facet point data
-    - facetCellData:    List of facet cell data
+    - tetFacets:        Facet data from the tetrahedral mesh
     --------------------------------------------------------------------------
     ### Outputs ###
     - A VTK file that can be visualized in Paraview
     --------------------------------------------------------------------------
     """
 
-    while facetPointData.shape[0] % 3 != 0:
-        facetPointData = np.concatenate((facetPointData, np.zeros((1, facetPointData.shape[1]))), axis=0)
-
-    facetPointData = np.around(facetPointData.reshape(-1,9), decimals=6) # reshape and condense to save memory/space
+    # Facets for a single tet (12)
+    singleTetFacetPoints = tetFacets.reshape(-1,3)[0:36,:]
+    singleTetFacetCells = np.array([[0,1,2],\
+                                     [3,4,5],\
+                                     [6,7,8],\
+                                     [9,10,11],\
+                                     [12,13,14],\
+                                     [15,16,17],\
+                                     [18,19,20],\
+                                     [21,22,23],\
+                                     [24,25,26],\
+                                     [27,28,29],\
+                                     [30,31,32],\
+                                     [33,34,35]])
 
     with open(Path(tempPath + geoName + \
-        '-para-facets.000.vtk'),"w") as f:                                                                          
+        '-para-singleTetFacets.000.vtk'),"w") as f:                                                                          
         f.write('# vtk DataFile Version 2.0\n')
         f.write('Facet Visual File\n') 
         f.write('ASCII\n')    
         f.write('DATASET POLYDATA\n')        
 
-        f.write('POINTS ' + str(len(facetPointData)*3) + ' float \n') 
-        f.write("\n".join(" ".join(map(str, x)) for x in facetPointData))
+        f.write('POINTS ' + str(len(singleTetFacetPoints)) + ' float \n') 
+        f.write("\n".join(" ".join(map(str, x)) for x in singleTetFacetPoints))
         f.write('\n\n')  
 
-        f.write('POLYGONS ' + str(len(facetCellData)) + ' ' \
-            + str(round(len(facetCellData)*4)) +'\n3 ')
-        f.write("\n3 ".join(" ".join(map(str, x)) for x in facetCellData))
+        f.write('POLYGONS ' + str(len(singleTetFacetCells)) + ' ' \
+            + str(round(len(singleTetFacetCells)*4)) +'\n3 ')
+        f.write("\n3 ".join(" ".join(map(str, x)) for x in singleTetFacetCells))
 
         f.write('\n\n')  
-
-        ## NEED TO FIX BELOW FOR MULTI-MATERIAL IMPLEMENTATION
-        #if multiMaterial in ['on','On','Y','y','Yes','yes']:  
-        #    f.write('\nCELL_DATA ' + str(len(facetMaterial)) + '\n')
-        #    f.write('FIELD FieldData 1\n')
-        #    f.write('material 1 ' + str(len(facetMaterial)) + ' float\n')
-        #    for x in facetMaterial:
-        #        f.write("%s\n" % x)
-        #if cementStructure in ['on','On','Y','y','Yes','yes']:  
-        #    f.write('\nCELL_DATA ' + str(len(facetMaterial)) + '\n')
-        #    f.write('FIELD FieldData 1\n')
-        #    f.write('material 1 ' + str(len(facetMaterial)) + ' float\n')
-        #    for x in facetMaterial:
-        #        f.write("%s\n" % x) 

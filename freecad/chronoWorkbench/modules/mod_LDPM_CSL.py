@@ -77,6 +77,7 @@ from freecad.chronoWorkbench.input.readInputsLDPM                import readInpu
 
 from freecad.chronoWorkbench.output.mkVtkParticles               import mkVtkParticles
 from freecad.chronoWorkbench.output.mkVtkFacets                  import mkVtkFacets
+from freecad.chronoWorkbench.output.mkVtksingleTetFacets         import mkVtksingleTetFacets
 from freecad.chronoWorkbench.output.mkDataNodes                  import mkDataNodes
 from freecad.chronoWorkbench.output.mkDataTets                   import mkDataTets
 from freecad.chronoWorkbench.output.mkDataFacets                 import mkDataFacets
@@ -846,7 +847,7 @@ class inputWindow_LDPM_CSL:
 
         # If visuals requested, generate Facet VTK File
         mkVtkFacets(geoName,tempPath,facetPointData,facetCellData)
-
+        #mkVtksingleTetFacets(geoName,tempPath,tetFacets)
 
 
         writeTime = round(time.time() - writeTimeStart,2)
@@ -963,18 +964,18 @@ class inputWindow_LDPM_CSL:
 
 
         # Insert facet visualization and link facet VTK file
-        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk')),App.ActiveDocument.Name)        
-        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000')
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk')),App.ActiveDocument.Name)        
+        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000')
         LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
         App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMfacetsVTK)
-        LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facet.000.vtk'))
+        LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk'))
 
 
         # Set visualization properties for facets
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').DisplayMode = u"Wireframe"
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').MaxFacesShowInner = 0
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').BackfaceCulling = False
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facet_000').ShapeColor = (0.36,0.36,0.36)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').DisplayMode = u"Wireframe"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').ShapeColor = (0.36,0.36,0.36)
 
 
         # Set visualization properties for particle centers
@@ -1028,7 +1029,6 @@ class inputWindow_LDPM_CSL:
         # Add appropriate material properties
         for x in range(len(materialProps)):
             App.getDocument(App.ActiveDocument.Name).getObject(materialName).addProperty("App::PropertyString",materialProps[x],elementType+" Parameters",materialPropDesc[x])
-            print(materialPropsVal[x])
             setattr(App.getDocument(App.ActiveDocument.Name).getObject(materialName),materialProps[x],str(materialPropsVal[x]))
 
 

@@ -245,14 +245,13 @@ def genTesselationLDPM(allNodes,allTets,parDiameter,minPar,geoName):
     facetCellData12 = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(4*len(tetPoints)+1,5*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
 
     facetCellData = np.concatenate(([facetCellData1,facetCellData2,facetCellData3,facetCellData4,facetCellData5,facetCellData6,\
-        facetCellData7,facetCellData8,facetCellData9,facetCellData10,facetCellData11,facetCellData12]),axis=0)
+        facetCellData7,facetCellData8,facetCellData9,facetCellData10,facetCellData11,facetCellData12]),axis=0)-1
 
 
     # Combination of nonrepeating facets for general tet (12)
     tetFacets = np.concatenate(([facet1,facet2,facet3,facet4,facet5,facet6,\
         facet7,facet8,facet9,facet10,facet11,facet12]),axis=1)
     facets = tetFacets.reshape(-1,9)
-
 
     threes = 3*np.array([np.ones((len(facets)))]).T
 
