@@ -893,7 +893,7 @@ class inputWindow_LDPM_CSL:
 
 
 
-
+        print("Generated files written to: " + outDir + outName)
 
 
 
