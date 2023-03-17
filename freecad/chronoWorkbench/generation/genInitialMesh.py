@@ -89,49 +89,25 @@ def genInitialMesh(analysisName, geoName, meshName, minPar, maxPar):
     meshTets = (meshTets).astype(int)
 
 
-    # Set up Gmsh
-    #femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName + "2D")
-    # Set minimum and maximum characteristic lengths for the mesh
-    #App.ActiveDocument.getObject(meshName + "2D").CharacteristicLengthMin = minPar
-    #App.ActiveDocument.getObject(meshName + "2D").CharacteristicLengthMax = 2 * minPar
-    #App.ActiveDocument.getObject(meshName + "2D").MeshSizeFromCurvature = 0
-    #App.ActiveDocument.getObject(meshName + "2D").ElementOrder = u"1st"
-    #App.ActiveDocument.getObject(meshName + "2D").Algorithm2D = u"Delaunay"
-    #App.ActiveDocument.getObject(meshName + "2D").Algorithm3D = u"Delaunay"
-    #App.ActiveDocument.getObject(meshName + "2D").ElementDimension = u"2D"
-    #App.ActiveDocument.getObject(meshName + "2D").CoherenceMesh = True
-    # Assign the geometry object to the mesh object
-    #App.ActiveDocument.ActiveObject.Part = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(meshName)[0]
-    #App.ActiveDocument.recompute()
-    # Run Gmsh to create the mesh
-    #gmsh_mesh = gmsh(femmesh_obj)
-    #error = gmsh_mesh.create_mesh()
-    #print(error)
-    #App.ActiveDocument.recompute()
 
     out_mesh = mesh2mesh.femmesh_2_mesh(App.ActiveDocument.getObject(meshName).FemMesh)
     out_mesh = Mesh.Mesh(out_mesh)
-    Mesh.show(Mesh.Mesh(out_mesh))
 
 
     # Get mesh and initialize lists
-    #femmesh = App.ActiveDocument.getObject(meshName + "2D").FemMesh
     surfaceNodes = []
     surfaceFaces = []
 
 
     # Get the vertex coordinates from the mesh  
-    for v in range(len(out_mesh.getFaces(0)[0])):
+    for v in range(len(out_mesh.getPoints(0)[0])):
         surfaceNodes.append(out_mesh.getFaces(0)[0][v])
     surfaceNodes = np.asarray(surfaceNodes)
-    print(surfaceNodes)
+
     # Get the faces information from the mesh
     for v in range(len(out_mesh.getFaces(0)[1])):
         surfaceFaces.append(out_mesh.getFaces(0)[1][v])
     surfaceFaces = np.asarray(surfaceFaces)
-    print(surfaceFaces)
-    # Remove the second mesh object
-    #App.ActiveDocument.removeObject(out_mesh)
 
 
     return meshVertices, meshTets, surfaceNodes, surfaceFaces
