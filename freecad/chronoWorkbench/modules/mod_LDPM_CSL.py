@@ -892,7 +892,7 @@ class inputWindow_LDPM_CSL:
             
         os.rename(Path(tempPath),Path(outDir + outName))
         os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
-        #os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
+        os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
         os.remove(Path(outDir + outName + '/' + geoName + '.node'))
         os.remove(Path(outDir + outName + '/' + geoName + '.ele'))
 
