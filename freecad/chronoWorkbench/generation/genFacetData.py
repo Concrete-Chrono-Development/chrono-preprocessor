@@ -33,7 +33,7 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
     ### Inputs ###
     - allNodes:        (x, y, z) coordinates of each node
     - allTets:         (n1, n2, n3, n4) node numbers of each tet
-    - tetFacets:       (n1, n2, n3, n4, n5, n6, n7, n8, n9) node numbers of each facet
+    - tetFacets:       Coordinates of each facet
     - facetCenters:    (x, y, z) coordinates of each facet center
     - facetAreas:      area of each facet
     - facetNormals:    (x, y, z) direction of each facet normal
