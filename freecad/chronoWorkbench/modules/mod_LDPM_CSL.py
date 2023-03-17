@@ -130,8 +130,7 @@ class inputWindow_LDPM_CSL:
         QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
-        QtCore.QObject.connect(self.form[5].generateLDPM, QtCore.SIGNAL("clicked()"), self.generateLDPM)
-        QtCore.QObject.connect(self.form[5].generateCSL, QtCore.SIGNAL("clicked()"), self.generateCSL)
+        QtCore.QObject.connect(self.form[5].generate, QtCore.SIGNAL("clicked()"), self.generation)
         QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
 
 
@@ -443,20 +442,10 @@ class inputWindow_LDPM_CSL:
 
 
 
-    def generateLDPM(self):
-
-        self.generation("LDPM")
 
 
 
-    def generateCSL(self):
-
-        self.generation("CSL")
-
-
-
-
-    def generation(self, elementType):
+    def generation(self):
 
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
@@ -494,7 +483,7 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir, singleTetGen] = readInputs(self.form)
+            outputDir, singleTetGen, modelType] = readInputs(self.form)
 
         try:
             sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
@@ -502,7 +491,11 @@ class inputWindow_LDPM_CSL:
         except:
             pass
 
-
+        if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
+                         "Confinement Shear Lattice (CSL) - Original"]:
+            elementType = "CSL"
+        else:
+            elementType = "LDPM"
 
 
         if fillerC > 0:

@@ -134,6 +134,7 @@ def readInputs(form):
     # Generation Data
     outputDir           = form[5].outputDir.text()
     singleTetGen        = form[5].singleTetGen.isChecked()
+    modelType           = form[5].modelType.currentText()
 
     return setupFile, constitutiveEQ, matParaSet, \
         numCPU, numIncrements,maxIter,placementAlg,\
@@ -142,4 +143,4 @@ def readInputs(form):
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
-        outputDir, singleTetGen
+        outputDir, singleTetGen, modelType
