@@ -37,8 +37,8 @@ def mkVtkSingleTet(allNodes,allTets,geoName,tempPath):
     --------------------------------------------------------------------------
     """
     
-    # Extract the first tetrahedron
-    tet = allTets[0,:]-1
+    # Use the tet in the middle of the list so that it is not on the boundary
+    tet = allTets[round(len(allTets)/2),:]-1
 
     # Extract the nodes for the first tetrahedron
     allNodes = [allNodes[int(tet[0])],\

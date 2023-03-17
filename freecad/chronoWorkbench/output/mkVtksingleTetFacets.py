@@ -37,8 +37,8 @@ def mkVtkSingleTetFacets(geoName,tempPath,tetFacets):
     --------------------------------------------------------------------------
     """
 
-    # Facets for a single tet (12)
-    singleTetFacetPoints = tetFacets.reshape(-1,3)[0:36,:]
+    # Facets for the tet in the middle of the tet list (less likely to be on surface)
+    singleTetFacetPoints = tetFacets.reshape(-1,3)[round(len(tetFacets.reshape(-1,3))/2)*36:round(len(tetFacets.reshape(-1,3))/2)*36+36,:]
     singleTetFacetCells = np.array([[0,1,2],\
                                      [3,4,5],\
                                      [6,7,8],\

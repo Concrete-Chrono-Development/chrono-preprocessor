@@ -92,7 +92,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     # Definition of Face Points faceNPoint[Coordinates]
 
-    # Face 0 (Nodes: 1,2,3) 
+    # Face 1 (Nodes: 2,3,4) 
     faceNodalDistance = np.vstack((np.linalg.norm(allNodes[(allTets[:,1]-1).astype(int),:]-edgePoints[:,15:18], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,2]-1).astype(int),:]-edgePoints[:,12:15], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,3]-1).astype(int),:]-edgePoints[:,9:12], axis=1))).T
@@ -117,7 +117,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     face1Point = np.vstack((face1x,face1y,face1z)).T
 
-    # Face 1 (Nodes: 0,2,3)
+    # Face 2 (Nodes: 1,3,4)
     faceNodalDistance = np.vstack((np.linalg.norm(allNodes[(allTets[:,3]-1).astype(int),:]-edgePoints[:,3:6], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,2]-1).astype(int),:]-edgePoints[:,6:9], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,0]-1).astype(int),:]-edgePoints[:,15:18], axis=1))).T
@@ -142,7 +142,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     face2Point = np.vstack((face1x,face1y,face1z)).T
 
-    # Face 2 (Nodes: 0,1,3)
+    # Face 3 (Nodes: 1,2,4)
     faceNodalDistance = np.vstack((np.linalg.norm(allNodes[(allTets[:,0]-1).astype(int),:]-edgePoints[:,12:15], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,1]-1).astype(int),:]-edgePoints[:,6:9], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,3]-1).astype(int),:]-edgePoints[:,0:3], axis=1))).T
@@ -167,7 +167,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     face3Point = np.vstack((face1x,face1y,face1z)).T
 
-    # Face 3 (Nodes: 0,1,2)
+    # Face 4 (Nodes: 1,2,3)
     faceNodalDistance = np.vstack((np.linalg.norm(allNodes[(allTets[:,2]-1).astype(int),:]-edgePoints[:,0:3], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,1]-1).astype(int),:]-edgePoints[:,3:6], axis=1),\
         np.linalg.norm(allNodes[(allTets[:,0]-1).astype(int),:]-edgePoints[:,9:12], axis=1))).T
@@ -222,7 +222,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     tetPoints = np.vstack((tetx,tety,tetz)).T
 
-    #### THIS SECTION CURRENTLY IN PROGRESS FOR UPDATING
+
     # Coordinates for each facet in each tet. Using facet indexing from Cusatis et al. (2011a)
     # Note that edges are defined as:
     # E1 = E12 or edgePoints[:,0:3]
@@ -231,34 +231,34 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
     # E4 = E23 or edgePoints[:,9:12]
     # E5 = E24 or edgePoints[:,12:15]
     # E6 = E34 or edgePoints[:,15:18]
-    #facet1  = np.concatenate(([tetPoints,face3Point,edgePoints[:,0:3]]),axis=1)     #(T, F3, E1)
-    #facet2  = np.concatenate(([tetPoints,face4Point,edgePoints[:,0:3]]),axis=1)     #(T, F4, E1)
-    #facet3  = np.concatenate(([tetPoints,face2Point,edgePoints[:,3:6]]),axis=1)     #(T, F2, E2)
-    #facet4  = np.concatenate(([tetPoints,face4Point,edgePoints[:,3:6]]),axis=1)     #(T, F4, E2)
-    #facet5  = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)     #(T, F2, E3)
-    #facet6  = np.concatenate(([tetPoints,face3Point,edgePoints[:,6:9]]),axis=1)     #(T, F3, E3)
-    #facet7  = np.concatenate(([tetPoints,face1Point,edgePoints[:,9:12]]),axis=1)    #(T, F1, E4)
-    #facet8  = np.concatenate(([tetPoints,face4Point,edgePoints[:,9:12]]),axis=1)    #(T, F4, E4)
-    #facet9  = np.concatenate(([tetPoints,face1Point,edgePoints[:,12:15]]),axis=1)   #(T, F1, E5)
-    #facet10 = np.concatenate(([tetPoints,face3Point,edgePoints[:,12:15]]),axis=1)   #(T, F3, E5)
-    #facet11 = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)   #(T, F1, E6)
-    #facet12 = np.concatenate(([tetPoints,face2Point,edgePoints[:,15:18]]),axis=1)   #(T, F2, E6)
+    facet1  = np.concatenate(([tetPoints,face3Point,edgePoints[:,0:3]]),axis=1)     #(T, F3, E1)
+    facet2  = np.concatenate(([tetPoints,face4Point,edgePoints[:,0:3]]),axis=1)     #(T, F4, E1)
+    facet3  = np.concatenate(([tetPoints,face2Point,edgePoints[:,3:6]]),axis=1)     #(T, F2, E2)
+    facet4  = np.concatenate(([tetPoints,face4Point,edgePoints[:,3:6]]),axis=1)     #(T, F4, E2)
+    facet5  = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)     #(T, F2, E3)
+    facet6  = np.concatenate(([tetPoints,face3Point,edgePoints[:,6:9]]),axis=1)     #(T, F3, E3)
+    facet7  = np.concatenate(([tetPoints,face1Point,edgePoints[:,9:12]]),axis=1)    #(T, F1, E4)
+    facet8  = np.concatenate(([tetPoints,face4Point,edgePoints[:,9:12]]),axis=1)    #(T, F4, E4)
+    facet9  = np.concatenate(([tetPoints,face1Point,edgePoints[:,12:15]]),axis=1)   #(T, F1, E5)
+    facet10 = np.concatenate(([tetPoints,face3Point,edgePoints[:,12:15]]),axis=1)   #(T, F3, E5)
+    facet11 = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)   #(T, F1, E6)
+    facet12 = np.concatenate(([tetPoints,face2Point,edgePoints[:,15:18]]),axis=1)   #(T, F2, E6)
 
 
 
     # Old version below. Keep for historical purposes for now.
-    facet1  = np.concatenate(([tetPoints,face1Point,edgePoints[:,9:12]]),axis=1)
-    facet2  = np.concatenate(([tetPoints,face1Point,edgePoints[:,12:15]]),axis=1)
-    facet3  = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)
-    facet4  = np.concatenate(([tetPoints,face2Point,edgePoints[:,3:6]]),axis=1)
-    facet5  = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)
-    facet6  = np.concatenate(([tetPoints,face2Point,edgePoints[:,15:18]]),axis=1)
-    facet7  = np.concatenate(([tetPoints,face3Point,edgePoints[:,0:3]]),axis=1)
-    facet8  = np.concatenate(([tetPoints,face3Point,edgePoints[:,6:9]]),axis=1)
-    facet9  = np.concatenate(([tetPoints,face3Point,edgePoints[:,12:15]]),axis=1)
-    facet10 = np.concatenate(([tetPoints,face4Point,edgePoints[:,0:3]]),axis=1)
-    facet11 = np.concatenate(([tetPoints,face4Point,edgePoints[:,3:6]]),axis=1)
-    facet12 = np.concatenate(([tetPoints,face4Point,edgePoints[:,9:12]]),axis=1)
+    #facet1  = np.concatenate(([tetPoints,face1Point,edgePoints[:,9:12]]),axis=1)
+    #facet2  = np.concatenate(([tetPoints,face1Point,edgePoints[:,12:15]]),axis=1)
+    #facet3  = np.concatenate(([tetPoints,face1Point,edgePoints[:,15:18]]),axis=1)
+    #facet4  = np.concatenate(([tetPoints,face2Point,edgePoints[:,3:6]]),axis=1)
+    #facet5  = np.concatenate(([tetPoints,face2Point,edgePoints[:,6:9]]),axis=1)
+    #facet6  = np.concatenate(([tetPoints,face2Point,edgePoints[:,15:18]]),axis=1)
+    #facet7  = np.concatenate(([tetPoints,face3Point,edgePoints[:,0:3]]),axis=1)
+    #facet8  = np.concatenate(([tetPoints,face3Point,edgePoints[:,6:9]]),axis=1)
+    #facet9  = np.concatenate(([tetPoints,face3Point,edgePoints[:,12:15]]),axis=1)
+    #facet10 = np.concatenate(([tetPoints,face4Point,edgePoints[:,0:3]]),axis=1)
+    #facet11 = np.concatenate(([tetPoints,face4Point,edgePoints[:,3:6]]),axis=1)
+    #facet12 = np.concatenate(([tetPoints,face4Point,edgePoints[:,9:12]]),axis=1)
 
     facetPointData = np.concatenate(([tetPoints,face1Point,face2Point,face3Point,face4Point,edgePoints[:,0:3],edgePoints[:,3:6],edgePoints[:,6:9],edgePoints[:,9:12],edgePoints[:,12:15],edgePoints[:,15:18]]),axis=0)
 
