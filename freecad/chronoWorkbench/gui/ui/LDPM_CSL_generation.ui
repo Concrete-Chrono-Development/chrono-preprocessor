@@ -224,12 +224,18 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="3">
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="singleTetGen">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Generate Single Tetrahedron and Cell Files</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <property name="tristate">
+            <bool>false</bool>
            </property>
           </widget>
          </item>

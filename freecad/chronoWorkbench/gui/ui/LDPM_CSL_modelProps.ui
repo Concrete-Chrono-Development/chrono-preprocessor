@@ -305,21 +305,6 @@
                     <string>Custom Parameters</string>
                    </property>
                   </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 3</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 4</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 5.1</string>
-                   </property>
-                  </item>
                  </widget>
                 </item>
                 <item>
@@ -489,21 +474,6 @@
                   <item>
                    <property name="text">
                     <string>Custom Parameters</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 3</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 4</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Cusatis et al. 2011 Section 5.1</string>
                    </property>
                   </item>
                  </widget>

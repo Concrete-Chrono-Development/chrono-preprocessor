@@ -1,0 +1,137 @@
+## ===========================================================================
+## CHRONO WORKBENCH:github.com/Concrete-Chrono-Development/chrono-preprocessor
+##
+## Copyright (c) 2023 
+## All rights reserved. 
+##
+## Use of this source code is governed by a BSD-style license that can be
+## found in the LICENSE file at the top level of the distribution and at
+## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+##
+## ===========================================================================
+## Developed by Northwestern University
+## Primary Authors: Matthew Troemner
+## ===========================================================================
+##
+## Generate initial mesh using Gmsh and extract the meshVertices, meshEdges, meshFaces, 
+## and tetrahedra information from the mesh.
+##
+## ===========================================================================
+
+import FreeCAD as App
+import ObjectsFem #type: ignore
+import numpy as np
+from femmesh.gmshtools import GmshTools as gmsh #type: ignore
+import femmesh.femmesh2mesh as mesh2mesh #type: ignore
+import Mesh #type: ignore
+
+
+def genInitialMesh(analysisName, geoName, meshName, minPar, maxPar):
+
+    """
+    Variable List:
+    --------------------------------------------------------------------------
+    ### Inputs ###
+    analysisName: Name of the analysis object in the FreeCAD document.
+    geoName:      Name of the geometry object in the FreeCAD document.
+    meshName:     Name of the mesh object to be created in the document.
+    minPar:       Minimum characteristic length parameter for the mesh.
+    maxPar:       Maximum characteristic length parameter for the mesh.
+    --------------------------------------------------------------------------
+    ### Outputs ###
+    meshVertices:     Array of vertex coordinates (shape: (num_meshVertices, 3))
+    meshEdges:        Array of edge node indices (shape: (num_meshEdges, 2))
+    meshFaces:        Array of face node indices (shape: (num_meshFaces, 3))
+    meshTets:         Array of tetrahedron node indices (shape: (num_meshTets, 4))
+    --------------------------------------------------------------------------
+    """
+    
+    # Set up Gmsh
+    femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName)
+    # Set minimum and maximum characteristic lengths for the mesh
+    App.ActiveDocument.getObject(meshName).CharacteristicLengthMin = minPar
+    App.ActiveDocument.getObject(meshName).CharacteristicLengthMax = 2 * minPar
+    App.ActiveDocument.getObject(meshName).MeshSizeFromCurvature = 0
+    App.ActiveDocument.getObject(meshName).ElementOrder = u"1st"
+    App.ActiveDocument.getObject(meshName).Algorithm2D = u"Delaunay"
+    App.ActiveDocument.getObject(meshName).Algorithm3D = u"Delaunay"
+    App.ActiveDocument.getObject(meshName).ElementDimension = u"3D"
+    App.ActiveDocument.getObject(meshName).CoherenceMesh = True
+    # Assign the geometry object to the mesh object
+    App.ActiveDocument.ActiveObject.Part = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0]
+    App.ActiveDocument.recompute()
+    # Adjust relative links
+    App.ActiveDocument.getObject(meshName).adjustRelativeLinks(App.ActiveDocument.getObject(analysisName))
+    App.ActiveDocument.getObject(analysisName).addObject(App.ActiveDocument.getObject(meshName))
+
+    # Run Gmsh to create the mesh
+    gmsh_mesh = gmsh(femmesh_obj)
+    error = gmsh_mesh.create_mesh()
+    print(error)
+    App.ActiveDocument.recompute()
+
+    # Get mesh and initialize lists
+    femmesh = App.ActiveDocument.getObject(meshName).FemMesh
+    meshVertices = []
+    meshEdges = []
+    meshFaces = []
+    meshTets = []
+
+    # Get the vertex coordinates from the mesh  
+    for v in femmesh.Nodes:
+        meshVertices.append(femmesh.Nodes[v])
+    meshVertices = np.asarray(meshVertices)
+
+    # Get the tetrahedra information from the mesh
+    for v in femmesh.Volumes:
+        meshTets.append(femmesh.getElementNodes(v))
+    meshTets = np.asarray(meshTets)
+    meshTets = (meshTets).astype(int)
+
+
+    # Set up Gmsh
+    #femmesh_obj = ObjectsFem.makeMeshGmsh(App.ActiveDocument, meshName + "2D")
+    # Set minimum and maximum characteristic lengths for the mesh
+    #App.ActiveDocument.getObject(meshName + "2D").CharacteristicLengthMin = minPar
+    #App.ActiveDocument.getObject(meshName + "2D").CharacteristicLengthMax = 2 * minPar
+    #App.ActiveDocument.getObject(meshName + "2D").MeshSizeFromCurvature = 0
+    #App.ActiveDocument.getObject(meshName + "2D").ElementOrder = u"1st"
+    #App.ActiveDocument.getObject(meshName + "2D").Algorithm2D = u"Delaunay"
+    #App.ActiveDocument.getObject(meshName + "2D").Algorithm3D = u"Delaunay"
+    #App.ActiveDocument.getObject(meshName + "2D").ElementDimension = u"2D"
+    #App.ActiveDocument.getObject(meshName + "2D").CoherenceMesh = True
+    # Assign the geometry object to the mesh object
+    #App.ActiveDocument.ActiveObject.Part = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(meshName)[0]
+    #App.ActiveDocument.recompute()
+    # Run Gmsh to create the mesh
+    #gmsh_mesh = gmsh(femmesh_obj)
+    #error = gmsh_mesh.create_mesh()
+    #print(error)
+    #App.ActiveDocument.recompute()
+
+    out_mesh = mesh2mesh.femmesh_2_mesh(App.ActiveDocument.getObject(meshName).FemMesh)
+    out_mesh = Mesh.Mesh(out_mesh)
+    Mesh.show(Mesh.Mesh(out_mesh))
+
+
+    # Get mesh and initialize lists
+    #femmesh = App.ActiveDocument.getObject(meshName + "2D").FemMesh
+    surfaceNodes = []
+    surfaceFaces = []
+
+
+    # Get the vertex coordinates from the mesh  
+    for v in range(len(out_mesh.getFaces(0)[0])):
+        surfaceNodes.append(out_mesh.getFaces(0)[0][v])
+    surfaceNodes = np.asarray(surfaceNodes)
+    print(surfaceNodes)
+    # Get the faces information from the mesh
+    for v in range(len(out_mesh.getFaces(0)[1])):
+        surfaceFaces.append(out_mesh.getFaces(0)[1][v])
+    surfaceFaces = np.asarray(surfaceFaces)
+    print(surfaceFaces)
+    # Remove the second mesh object
+    #App.ActiveDocument.removeObject(out_mesh)
+
+
+    return meshVertices, meshTets, surfaceNodes, surfaceFaces

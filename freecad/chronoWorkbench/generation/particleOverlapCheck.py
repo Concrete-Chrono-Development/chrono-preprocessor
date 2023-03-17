@@ -76,11 +76,13 @@ def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
     # Check if the new particle is too close to the surface
     if existingSurf.shape[0] > 0:
         surfNodalDistance = np.linalg.norm(center - existingSurf, axis=1)
-        if (surfNodalDistance**2 <= (maxEdgeLength * np.sqrt(3) / 3)**2 + (parDiameter / 2)**2).any():
-            return False, True
+        #if (surfNodalDistance**2 <= (maxEdgeLength * np.sqrt(3) / 3)**2 + (parDiameter / 2)**2).any():
+        #    return False, True
         if (surfNodalDistance - parDiameter/2 - 1.1 * minPar / 2 < 0).any():
             return True, "NA"
     else:
         parSurfaceDist = np.array([1])
 
-    return False, False
+
+    # Temporary fix to always check surface particles. This will be removed in the future and switched to False, False when the critical check is fixed. 
+    return False, True

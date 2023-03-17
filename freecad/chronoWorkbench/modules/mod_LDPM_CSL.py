@@ -47,24 +47,19 @@ import femmesh.femmesh2mesh
 from PySide import QtCore, QtGui
 
 from freecad.chronoWorkbench                                     import ICONPATH
-from freecad.chronoWorkbench                                     import GUIPATH
-from freecad.chronoWorkbench                                     import TETGENPATH
 
 from freecad.chronoWorkbench.util.cwloadUIfile                   import cwloadUIfile
 from freecad.chronoWorkbench.util.cwloadUIicon                   import cwloadUIicon
 
 from freecad.chronoWorkbench.generation.genAnalysis              import genAnalysis
 from freecad.chronoWorkbench.generation.genGeometry              import genGeometry
-from freecad.chronoWorkbench.generation.genSurfaceMesh           import genSurfMesh
+from freecad.chronoWorkbench.generation.genInitialMesh           import genInitialMesh
 from freecad.chronoWorkbench.generation.particleVol              import particleVol
 from freecad.chronoWorkbench.generation.particleList             import particleList
-from freecad.chronoWorkbench.generation.particleFaces            import particleFaces
 from freecad.chronoWorkbench.generation.surfMeshSize             import surfMeshSize
 from freecad.chronoWorkbench.generation.surfMeshExtents          import surfMeshExtents
 from freecad.chronoWorkbench.generation.genParticle              import generateParticle
 from freecad.chronoWorkbench.generation.genParticleMPI           import generateParticleMPI
-from freecad.chronoWorkbench.generation.particleInsideCheck      import insideCheck
-from freecad.chronoWorkbench.generation.particleOverlapCheck     import overlapCheck
 from freecad.chronoWorkbench.generation.particleOverlapCheckMPI  import overlapCheckMPI
 from freecad.chronoWorkbench.generation.readTetgen               import readTetgen
 from freecad.chronoWorkbench.generation.genTetrahedralization    import genTetrahedralization
@@ -77,10 +72,14 @@ from freecad.chronoWorkbench.input.readInputsLDPM                import readInpu
 
 from freecad.chronoWorkbench.output.mkVtkParticles               import mkVtkParticles
 from freecad.chronoWorkbench.output.mkVtkFacets                  import mkVtkFacets
-from freecad.chronoWorkbench.output.mkVtksingleTetFacets         import mkVtksingleTetFacets
+from freecad.chronoWorkbench.output.mkVtkSingleTetFacets         import mkVtkSingleTetFacets
+from freecad.chronoWorkbench.output.mkVtkSingleTetParticles      import mkVtkSingleTetParticles
+from freecad.chronoWorkbench.output.mkVtkSingleTet               import mkVtkSingleTet
+from freecad.chronoWorkbench.output.mkVtkSingleCell              import mkVtkSingleCell
 from freecad.chronoWorkbench.output.mkDataNodes                  import mkDataNodes
 from freecad.chronoWorkbench.output.mkDataTets                   import mkDataTets
 from freecad.chronoWorkbench.output.mkDataFacets                 import mkDataFacets
+from freecad.chronoWorkbench.output.mkDataParticles              import mkDataParticles
 
 
 
@@ -217,7 +216,7 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir] = readInputs(self.form)
+            outputDir, singleTetGen] = readInputs(self.form)
 
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
@@ -495,7 +494,7 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir] = readInputs(self.form)
+            outputDir, singleTetGen] = readInputs(self.form)
 
         try:
             sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
@@ -564,19 +563,18 @@ class inputWindow_LDPM_CSL:
 
         # Generate surface mesh
         self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
-        [vertices,edges,faces,tets] = genSurfMesh(analysisName,geoName,meshName,minPar,maxPar)
+        [meshVertices,meshTets, surfaceNodes,surfaceFaces] = genInitialMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
 
-
         # Gets extents of geometry
-        [minC,maxC] = surfMeshExtents(vertices)
+        [minC,maxC] = surfMeshExtents(meshVertices)
 
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
         [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
-            vertices,tets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
+            meshVertices,meshTets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
         # Temporary to skip over sieve curve option
         newSieveCurveD = 0
@@ -588,32 +586,30 @@ class inputWindow_LDPM_CSL:
             cdf,kappa_i,NewSet,fullerCoef)
 
         # Calculation of surface mesh size
-        maxEdgeLength = surfMeshSize(vertices,faces)
+        maxEdgeLength = surfMeshSize(meshVertices,surfaceFaces)
 
-        # Generates points for all external triangles
-        facePoints = particleFaces(vertices,faces)
 
         # Basic Calcs
         aggOffset = aggOffsetCoeff*minPar
 
         
-        # Store coordinates of tets in new format
-        coord1 = vertices[tets[:,0]-1]
-        coord2 = vertices[tets[:,1]-1]
-        coord3 = vertices[tets[:,2]-1]
-        coord4 = vertices[tets[:,3]-1]
+        # Store coordinates of meshTets in new format
+        coord1 = meshVertices[meshTets[:,0]-1]
+        coord2 = meshVertices[meshTets[:,1]-1]
+        coord3 = meshVertices[meshTets[:,2]-1]
+        coord4 = meshVertices[meshTets[:,3]-1]
 
 
 
 
-        verts = vertices[np.array(tets).flatten()-1]
+        verts = meshVertices[np.array(meshTets).flatten()-1]
         max_dist = np.max(np.sqrt(np.sum(verts**2, axis=1)))
 
 
 
 
         # Initialize empty particle nodes list outside geometry
-        nodes = (np.zeros((len(parDiameterList),3))+2)*maxC
+        internalNodes = (np.zeros((len(parDiameterList),3))+2)*maxC
 
 
 
@@ -635,9 +631,9 @@ class inputWindow_LDPM_CSL:
 
                 process_pool = multiprocessing.Pool(numCPU)
 
-                outputMPI = process_pool.map(functools.partial(generateParticleMPI, facePoints,maxParNum, minC, maxC, vertices, \
-                    tets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,nodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
+                outputMPI = process_pool.map(functools.partial(generateParticleMPI, surfaceNodes,maxParNum, minC, maxC, meshVertices, \
+                    meshTets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,internalNodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
 
                 nodeMPI = np.array(outputMPI)[:,0:3]
                 diameter = np.array(outputMPI)[:,3]
@@ -649,7 +645,7 @@ class inputWindow_LDPM_CSL:
                 for x in range(len(nodeMPI)):
 
                     # Store placed particles from this increment
-                    nodes[particlesPlaced+x,:] = nodeMPI[x,:]
+                    internalNodes[particlesPlaced+x,:] = nodeMPI[x,:]
 
                     # Obtain extents for floating bin for node to test
                     binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxPar/2-aggOffset,\
@@ -667,12 +663,12 @@ class inputWindow_LDPM_CSL:
 
                         if overlap == True:
 
-                            [newMaxIter,node,iterReq] = generateParticle(facePoints,\
-                                parDiameterList[particlesPlaced+x], vertices, \
-                                tets,newMaxIter,maxIter,minPar,\
-                                maxPar,aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes)
+                            [newMaxIter,node,iterReq] = generateParticle(surfaceNodes,\
+                                parDiameterList[particlesPlaced+x], meshVertices, \
+                                meshTets,newMaxIter,maxIter,minPar,\
+                                maxPar,aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
                             
-                            nodes[particlesPlaced+x,:] = node[0,:]
+                            internalNodes[particlesPlaced+x,:] = node[0,:]
 
 
                 self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
@@ -683,8 +679,8 @@ class inputWindow_LDPM_CSL:
         for x in range(particlesPlaced,len(parDiameterList)):
 
             # Generate particle
-            [newMaxIter,node,iterReq] = generateParticle(facePoints,parDiameterList[x],vertices,tets,newMaxIter,maxIter,minPar,maxPar,\
-                aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes)
+            [newMaxIter,node,iterReq] = generateParticle(surfaceNodes,parDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,minPar,maxPar,\
+                aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
 
             # Update progress bar every 1% of placement
             if x % np.rint(len(parDiameterList)/100) == 0:
@@ -703,7 +699,7 @@ class inputWindow_LDPM_CSL:
                 if x % np.rint(len(parDiameterList)/10000) == 0:
                     self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
-            nodes[x,:] = node
+            internalNodes[x,:] = node
 
         self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
 
@@ -729,8 +725,8 @@ class inputWindow_LDPM_CSL:
 
         # Generate tetrahedralization
         self.form[5].statusWindow.setText("Status: Forming tetrahedralization.") 
-        tetGen = genTetrahedralization(nodes,vertices,\
-            faces,geoName,verbose,tempPath)
+        tetGen = genTetrahedralization(internalNodes,surfaceNodes,\
+            surfaceFaces,geoName,tempPath)
         self.form[5].progressBar.setValue(89) 
 
 
@@ -789,7 +785,7 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText("Status: Writing external facet data file.") 
         # Create file of external triangle facets for plotting of cells
-        #externalFacetsFile = externalFacetFile(facetData,vertices,faces,geoName)
+        #externalFacetsFile = externalFacetFile(facetData,meshVertices,surfaceFaces,geoName)
 
 
 
@@ -819,36 +815,44 @@ class inputWindow_LDPM_CSL:
         App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName))
 
 
-        print('Writing Node Data file.')
+        self.form[5].statusWindow.setText("Status: Writing node data file.")
 
         mkDataNodes(geoName,tempPath,allNodes)
 
-        print('Writing Tet Data file.')
+        self.form[5].statusWindow.setText("Status: Writing tet data file.")
 
         mkDataTets(geoName,tempPath,allTets)
 
-        print('Writing Facet Data file.')
+        self.form[5].statusWindow.setText("Status: Writing facet data file.")
 
         # If data files requested, generate Facet File
         mkDataFacets(geoName,tempPath,facetData,facetPointData)
 
 
 
-        print('Writing Particle Data file.')
+        self.form[5].statusWindow.setText("Status: Writing particle data file.")
 
         # If data files requested, generate Particle Data File
-        #particleData(allNodes,allTets,parDiameterList,minPar,geoName)
+        mkDataParticles(allNodes,parDiameterList,geoName,tempPath)
 
 
-        print('Writing visual files.')
+        self.form[5].statusWindow.setText("Status: Writing visualization files.")
+
+
+
+
 
         # If visuals requested, generate Particle VTK File
-        mkVtkParticles(nodes,parDiameterList,materialList,geoName,tempPath)
+        mkVtkParticles(internalNodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
         mkVtkFacets(geoName,tempPath,facetPointData,facetCellData)
-        #mkVtksingleTetFacets(geoName,tempPath,tetFacets)
-
+        
+        if singleTetGen == True:
+            mkVtkSingleTetFacets(geoName,tempPath,tetFacets)
+            mkVtkSingleTetParticles(allNodes,allTets,allDiameters,geoName,tempPath)
+            mkVtkSingleTet(allNodes,allTets,geoName,tempPath)
+            mkVtkSingleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
 
         writeTime = round(time.time() - writeTimeStart,2)
 
@@ -888,13 +892,13 @@ class inputWindow_LDPM_CSL:
             
         os.rename(Path(tempPath),Path(outDir + outName))
         os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
-        os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
+        #os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
         os.remove(Path(outDir + outName + '/' + geoName + '.node'))
         os.remove(Path(outDir + outName + '/' + geoName + '.ele'))
 
 
 
-        print("Generated files written to: " + outDir + outName)
+        print("Generated files written to: " + str(Path(outDir + outName)))
 
 
 
