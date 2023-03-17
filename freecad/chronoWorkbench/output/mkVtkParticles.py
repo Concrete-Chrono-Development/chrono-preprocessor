@@ -20,15 +20,14 @@
 
 from pathlib import Path
 
-
-def mkVtkParticles(center,parDiameter,materialList,geoName,tempPath):
+def mkVtkParticles(internalNodes,parDiameterList,materialList,geoName,tempPath):
 
     """
     Variables:
     --------------------------------------------------------------------------
     ### Inputs ###
-    - center:       List of particle centers
-    - parDiameter:  List of particle diameters
+    - internalNodes:List of particle centers
+    - parDiameterList:  List of particle diameters
     - materialList: List of particle materials
     - geoName:      Name of the geometry
     - tempPath:     Path to the temporary directory
@@ -46,13 +45,13 @@ def mkVtkParticles(center,parDiameter,materialList,geoName,tempPath):
         f.write('ASCII\n')    
         f.write('\n')  
         f.write('DATASET UNSTRUCTURED_GRID\n')        
-        f.write('POINTS ' + str(len(center)) + ' double \n')  
-        f.write("\n".join(" ".join(map(str, x)) for x in center))
+        f.write('POINTS ' + str(len(internalNodes)) + ' double \n')  
+        f.write("\n".join(" ".join(map(str, x)) for x in internalNodes))
         f.write('\n\n')  
-        f.write('POINT_DATA ' + str(len(center)) + '\n')
+        f.write('POINT_DATA ' + str(len(internalNodes)) + '\n')
         f.write('SCALARS Diameter double\n')
         f.write('LOOKUP_TABLE default\n')
-        for x in parDiameter:
+        for x in parDiameterList:
             f.write("%s\n" % x)
         f.write('\n')  
         f.write('SCALARS Material double\n')
