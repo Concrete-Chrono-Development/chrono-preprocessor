@@ -14,7 +14,7 @@
 ## ===========================================================================
 ##
 ## Function to generate VTK file for visualization in Paraview of facets
-## and their corresponding material for LDPM models.
+## and LDPM and CSL models.
 ##
 ## ===========================================================================
 
@@ -22,7 +22,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkVtksingleTetFacets(geoName,tempPath,tetFacets):
+def mkVtkSingleTetFacets(geoName,tempPath,tetFacets):
 
     """
     Variables:
