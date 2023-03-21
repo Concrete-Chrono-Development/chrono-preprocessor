@@ -15,7 +15,8 @@
 ##
 ## This file contains the function to perform the tesselation of the mesh and
 ## generates the facet connectivity, facet centers, facet areas, facet normals,
-## and other facet data for LDPM.
+## and other facet data for LDPM-style tesselations (used in LDPM and LDPM-
+## style CSL).
 ##
 ## ===========================================================================
 
@@ -262,6 +263,7 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     facetPointData = np.concatenate(([tetPoints,face1Point,face2Point,face3Point,face4Point,edgePoints[:,0:3],edgePoints[:,3:6],edgePoints[:,6:9],edgePoints[:,9:12],edgePoints[:,12:15],edgePoints[:,15:18]]),axis=0)
 
+    # Cell data for each facet in each tet
     facetCellData1  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(8*len(tetPoints)+1,9*len(tetPoints)+1))).T
     facetCellData2  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(9*len(tetPoints)+1,10*len(tetPoints)+1))).T
     facetCellData3  = np.vstack((np.arange(1,len(tetPoints)+1),np.arange(len(tetPoints)+1,2*len(tetPoints)+1),np.arange(10*len(tetPoints)+1,11*len(tetPoints)+1))).T
@@ -286,10 +288,12 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
 
     threes = 3*np.array([np.ones((len(facets)))]).T
 
+    # Calculate the center of each facet
     facetCenters = np.array((facets[:,0]+facets[:,3]+facets[:,6],\
         facets[:,1]+facets[:,4]+facets[:,7],\
         facets[:,2]+facets[:,5]+facets[:,8])).T/threes
 
+    # Calculate the area of each facet
     vectorAB = np.array((tetFacets.reshape(-1,9)[:,3]-\
         tetFacets.reshape(-1,9)[:,0],tetFacets.reshape(-1,9)[:,4]-\
         tetFacets.reshape(-1,9)[:,1],tetFacets.reshape(-1,9)[:,5]-\
@@ -298,8 +302,9 @@ def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
         tetFacets.reshape(-1,9)[:,0],tetFacets.reshape(-1,9)[:,7]-\
         tetFacets.reshape(-1,9)[:,1],tetFacets.reshape(-1,9)[:,8]-\
         tetFacets.reshape(-1,9)[:,2])).T
-
     facetAreas = 0.5 * np.linalg.norm(np.cross(vectorAB,vectorAC),axis=1)
+    
+    # Calculate the normal of each facet
     facetNormals = np.cross(vectorAB,vectorAC)/np.array([np.linalg.norm\
         (np.cross(vectorAB,vectorAC),axis=1),]*3).T
 

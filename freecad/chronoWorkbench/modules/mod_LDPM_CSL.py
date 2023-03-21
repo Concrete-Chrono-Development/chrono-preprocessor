@@ -65,7 +65,8 @@ from freecad.chronoWorkbench.generation.readTetgen               import readTetg
 from freecad.chronoWorkbench.generation.genTetrahedralization    import genTetrahedralization
 from freecad.chronoWorkbench.generation.genTesselationLDPM       import genTesselationLDPM
 from freecad.chronoWorkbench.generation.genTesselationCSL        import genTesselationCSL
-from freecad.chronoWorkbench.generation.genFacetData             import genFacetData
+from freecad.chronoWorkbench.generation.genFacetDataLDPM         import genFacetDataLDPM
+from freecad.chronoWorkbench.generation.genFacetDataCSL          import genFacetDataCSL
 from freecad.chronoWorkbench.generation.genProperties            import genProperties
 
 from freecad.chronoWorkbench.input.readInputsLDPM                import readInputs
@@ -724,19 +725,21 @@ class inputWindow_LDPM_CSL:
 
 
         # Read in tetrahedralization
-        [allNodes,allTets] = readTetgen(Path(tempPath + geoName \
-        + '.node'),Path(tempPath + geoName + '.ele'))
+        [allNodes,allTets,allEdges] = readTetgen(Path(tempPath + geoName \
+        + '.node'),Path(tempPath + geoName + '.ele'),Path(tempPath + geoName + '.edge'))
         self.form[5].progressBar.setValue(90) 
 
 
         # Generate tesselation
         self.form[5].statusWindow.setText("Status: Forming tesselation.") 
-        if elementType == 'LDPM':
-            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-                genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName)
-        elif elementType == 'CSL':
+        
+        if modelType in ["Confinement Shear Lattice (CSL) - Original"]:
             [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
                 genTesselationCSL(allNodes,allTets,parDiameterList,minPar,geoName)
+        else:
+            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
+                genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName)    
+
 
 
 
@@ -765,9 +768,17 @@ class inputWindow_LDPM_CSL:
 
      
         self.form[5].statusWindow.setText("Status: Generating facet data information.") 
-        [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetData(\
-            allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+
+        if elementType == "LDPM":
+            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetDataLDPM(\
+                allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
+                tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+        elif elementType == "CSL":
+            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetDataCSL(\
+                allNodes,allEdges,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
+                tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+
+
         self.form[5].progressBar.setValue(98) 
 
 
@@ -819,7 +830,7 @@ class inputWindow_LDPM_CSL:
         self.form[5].statusWindow.setText("Status: Writing facet data file.")
 
         # If data files requested, generate Facet File
-        mkDataFacets(geoName,tempPath,facetData,facetPointData)
+        mkDataFacets(geoName,tempPath,facetData)
 
 
 
@@ -888,6 +899,7 @@ class inputWindow_LDPM_CSL:
         os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
         os.remove(Path(outDir + outName + '/' + geoName + '.node'))
         os.remove(Path(outDir + outName + '/' + geoName + '.ele'))
+        os.remove(Path(outDir + outName + '/' + geoName + '.edge'))
 
 
 

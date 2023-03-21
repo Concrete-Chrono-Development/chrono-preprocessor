@@ -163,11 +163,6 @@
              <string>Confinement Shear Lattice (CSL) - LDPM Style </string>
             </property>
            </item>
-           <item>
-            <property name="text">
-             <string>Confinement Shear Lattice (CSL) - Original</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item>

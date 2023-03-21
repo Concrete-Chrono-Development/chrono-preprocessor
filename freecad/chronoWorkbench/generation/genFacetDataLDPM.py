@@ -23,7 +23,7 @@ import numpy as np
 
 
 
-def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
+def genFacetDataLDPM(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList,facetCellData):
   
@@ -98,6 +98,7 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
         np.expand_dims(pn.reshape(-1,3), axis=1)).T
     R = identity + ssc + (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
     (np.dot(np.linalg.norm(v),np.linalg.norm(v)))
+
 
     # Clear not needed variables from memory
     del Check
@@ -202,6 +203,9 @@ def genFacetData(allNodes,allTets,tetFacets,facetCenters,\
             facetData[12*x+y,12:15] = ptan1[12*x+y,:]         # Projected Tangent 1
             facetData[12*x+y,15:18] = ptan2[12*x+y,:]         # Projected Tangent 2
             facetData[12*x+y,18]    = 0                       # Material Flag (Coming Soon)
-               
+
+    # Calculate the coordinates of the 12 projected facets for tet 1
+    # TO DO
+    
 
     return facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial

@@ -76,7 +76,17 @@ def genTetrahedralization(internalNodes,surfaceNodes,surfaceFaces,geoName,tempPa
 
 
     # Run Tetgen with appropriate switches
-    tetgenCommand = str(Path(TETGENPATH + '/tetgen')) + ' -pYiO0/1S0kQ ' \
+    # The used switches are:
+    # -p:    Tetrahedralize a piecewise linear complex
+    # -Y:    Preserves the input surface mesh
+    # -i:    Inserts a list of additional points
+    # -O0/1: Specifies the level of mesh optimization - only flips with default optimization
+    # -S0:   Specifies the maximum number of Steiner points
+    # -k:    Refines mesh to produce a better quality mesh
+    # -Q:    Quiet mode
+    # -e:    Outputs also internal mesh edges
+
+    tetgenCommand = str(Path(TETGENPATH + '/tetgen')) + ' -pYiO0/1S0kQe ' \
         + str(Path(tempPath + geoName + '2D.mesh'))
     os.system(tetgenCommand)
 
@@ -88,10 +98,10 @@ def genTetrahedralization(internalNodes,surfaceNodes,surfaceFaces,geoName,tempPa
         print("Tetgen failed during tetrahedralization.")
         print("If this issue persists, you may need to use another geometry or particle distribution.")
         
-    try:
-        os.remove(Path(tempPath + geoName + '2D.1.edge'))
-    except:
-        pass
+    #try:
+    #    os.remove(Path(tempPath + geoName + '2D.1.edge'))
+    #except:
+    #    pass
     try:
         os.remove(Path(tempPath + geoName + '2D.1.face'))
     except:
@@ -105,3 +115,5 @@ def genTetrahedralization(internalNodes,surfaceNodes,surfaceFaces,geoName,tempPa
         + '.ele'))
     os.rename(Path(tempPath + geoName + '2D.1.node'),Path(tempPath + geoName \
         + '.node')) 
+    os.rename(Path(tempPath + geoName + '2D.1.edge'),Path(tempPath + geoName \
+        + '.edge')) 

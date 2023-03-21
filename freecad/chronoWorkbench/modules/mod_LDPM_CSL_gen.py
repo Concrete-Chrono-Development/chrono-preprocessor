@@ -76,6 +76,14 @@ class genWindow_LDPM_CSL:
         # Set initial output directory
         self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
+
+
+        #### TO DO: Add in the ability to read in the LDPM/CSL input data for the side panel "Confirm Output" ####
+        # Display all LDPM/CSL input data in the side panel "Confirm Output"
+        self.form[0].statusWindow.setText("Display Model Data here...")
+            
+
+
         # Connect Open File Buttons
         QtCore.QObject.connect(self.form[1].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
