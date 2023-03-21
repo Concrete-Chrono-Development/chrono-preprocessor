@@ -88,17 +88,33 @@ def genFacetDataLDPM(allNodes,allTets,tetFacets,facetCenters,\
     facetNormals=InitialNormal
     facets = coords.reshape(-1,9)
 
+    # OLD VERSION WITH ISSUE IN PROJECTED TANGENT 1
+    # Formation of rotation stacked matrix (3 x 3 x nFacets)
+    #v = np.cross(facetNormals,pn.reshape(-1,3))
+    #zeros = np.zeros(len(v),)
+    #ssc = np.array(([[zeros, -v[:,2], v[:,1]],[ v[:,2], zeros, -v[:,0]],\
+    #    [ -v[:,1], v[:,0], zeros]]))
+    #identity = np.dstack([np.eye(3)]*len(v))
+    #mulNormalsPn = np.matmul(np.expand_dims(facetNormals, axis=2),\
+    #    np.expand_dims(pn.reshape(-1,3), axis=1)).T
+    #R = identity + ssc + (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
+    #(np.dot(np.linalg.norm(v),np.linalg.norm(v)))
+
     # Formation of rotation stacked matrix (3 x 3 x nFacets)
     v = np.cross(facetNormals,pn.reshape(-1,3))
     zeros = np.zeros(len(v),)
     ssc = np.array(([[zeros, -v[:,2], v[:,1]],[ v[:,2], zeros, -v[:,0]],\
         [ -v[:,1], v[:,0], zeros]]))
     identity = np.dstack([np.eye(3)]*len(v))
-    mulNormalsPn = np.matmul(np.expand_dims(facetNormals, axis=2),\
-        np.expand_dims(pn.reshape(-1,3), axis=1)).T
-    R = identity + ssc + (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
-    (np.dot(np.linalg.norm(v),np.linalg.norm(v)))
+    mulNormalsPn = np.matmul(np.expand_dims(pn.reshape(-1,3), axis=1),np.expand_dims(facetNormals, axis=2)).T
+    used_for_R = (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
+        (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T)
 
+    
+
+    used_for_R[np.isnan(used_for_R)]=0
+
+    R = identity + ssc + used_for_R
 
     # Clear not needed variables from memory
     del Check
