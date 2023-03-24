@@ -79,7 +79,9 @@ from freecad.chronoWorkbench.output.mkVtkSingleTet               import mkVtkSin
 from freecad.chronoWorkbench.output.mkVtkSingleCell              import mkVtkSingleCell
 from freecad.chronoWorkbench.output.mkDataNodes                  import mkDataNodes
 from freecad.chronoWorkbench.output.mkDataTets                   import mkDataTets
+from freecad.chronoWorkbench.output.mkDataEdges                  import mkDataEdges
 from freecad.chronoWorkbench.output.mkDataFacets                 import mkDataFacets
+from freecad.chronoWorkbench.output.mkDataFacetsVertices         import mkDataFacetsVertices
 from freecad.chronoWorkbench.output.mkDataParticles              import mkDataParticles
 
 
@@ -827,11 +829,16 @@ class inputWindow_LDPM_CSL:
 
         mkDataTets(geoName,tempPath,allTets)
 
+        if elementType == "CSL":
+            self.form[5].statusWindow.setText("Status: Writing edge data file.")
+            mkDataEdges(geoName,tempPath,allEdges)
+
+
         self.form[5].statusWindow.setText("Status: Writing facet data file.")
 
         # If data files requested, generate Facet File
         mkDataFacets(geoName,tempPath,facetData)
-
+        mkDataFacetsVertices(geoName,tempPath,facetPointData)
 
 
         self.form[5].statusWindow.setText("Status: Writing particle data file.")

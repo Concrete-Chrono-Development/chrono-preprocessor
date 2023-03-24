@@ -108,9 +108,7 @@ def genFacetDataLDPM(allNodes,allTets,tetFacets,facetCenters,\
     identity = np.dstack([np.eye(3)]*len(v))
     mulNormalsPn = np.matmul(np.expand_dims(pn.reshape(-1,3), axis=1),np.expand_dims(facetNormals, axis=2)).T
     used_for_R = (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
-        (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T)
-
-    
+        (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T) 
 
     used_for_R[np.isnan(used_for_R)]=0
 

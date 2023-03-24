@@ -110,6 +110,10 @@ def genFacetDataCSL(allNodes,allEdges,allTets,tetFacets,facetCenters,\
     used_for_R = (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)/\
         (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T)
 
+    used_for_R[np.isnan(used_for_R)]=0
+
+    R = identity + ssc + used_for_R
+
 
     # Clear not needed variables from memory
     del Check
@@ -202,8 +206,6 @@ def genFacetDataCSL(allNodes,allEdges,allTets,tetFacets,facetCenters,\
 
     edges = np.concatenate(((allTets[:, tetn1] - 1).astype(int).reshape(-1, 1),(allTets[:, tetn2] - 1).astype(int).reshape(-1, 1)),axis=1)
 
-    ####################### Check the Edge IDs some might be wrong, we're getting more than 4 edges with the same tet
-
     for x in range(0,len(allTets)):
 
         for y in range(0,12):
@@ -213,21 +215,36 @@ def genFacetDataCSL(allNodes,allEdges,allTets,tetFacets,facetCenters,\
             b=list(np.where((allEdges.astype(int)-1 == np.flip(edges[12*x+y,:])).all(axis=1))[0])
             edgeID = int(np.asarray(a+b).astype(int))
             
-            # [Tet Edge Nodes:(IDx IDy IDz) Vol pArea Centers:(cx cy cz) pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
+            # [Edge Tet Vertices:(IDx IDy IDz) Vol pArea Centers:(cx cy cz) pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
             # Note that the order of the facets is Tet 1 (Facet 1-12),Tet 2 (Facet 1-12),...,Tet N (Facet 1-12)
-            facetData[12*x+y,0]     = x                       # Tet ID  
-            facetData[12*x+y,1]     = edgeID                  # Edge ID
-            facetData[12*x+y,2:5]   = facetCellData[12*x+y,:] # Global Facet Vertex ID (reference facet VTK file)
+            facetData[12*x+y,0]     = edgeID                  # Edge ID  
+            facetData[12*x+y,1]     = x                       # Tet ID
+            facetData[12*x+y,2:5]   = facetCellData[12*x+y,:] # Global Facet Vertex ID
             facetData[12*x+y,5]     = subtetVol[12*x+y]       # Subtet Volume
             facetData[12*x+y,6]     = pArea[12*x+y]           # Projected Facet Area
             facetData[12*x+y,7:10]  = facetCenters[12*x+y,:]  # Facet Centroid
-            facetData[12*x+y,10:13] = 0                       # Centroid of all edge facets           ###################################  TO DO ###################################
+            facetData[12*x+y,10:13] = 0                       # Centroid of all edge facets (goes here, calculated below)         
             facetData[12*x+y,13:16] = pn[12*x+y,:]            # Projected Facet Normal
             facetData[12*x+y,16:19] = ptan1[12*x+y,:]         # Projected Tangent 1
             facetData[12*x+y,19:22] = ptan2[12*x+y,:]         # Projected Tangent 2
             facetData[12*x+y,22]    = 0                       # Material Flag (Coming Soon)
 
+    # Sort the facet data by edge ID
+    facetData = facetData[facetData[:, 0].argsort()]
 
-    
+    # Find maximum Edge ID
+    maxEdgeID = int(np.max(facetData[:,0]))
+
+    # Find the number of facets per edge
+    #numFacetsPerEdge = np.zeros([maxEdgeID+1,])
+    #for x in range(0,maxEdgeID+1):
+    #    numFacetsPerEdge[x] = len(np.where(facetData[:,1] == x)[0])
+    #facetData[0:12,10:13] = np.mean(facetData[0:12,7:10],axis=0)
+
+    # Calculate the centroid of all facets for each edge
+    for x in range(0,maxEdgeID+1):
+        facetData[np.where(facetData[:,0] == x)[0],10:13] = \
+            np.mean(facetData[np.where(facetData[:,0] == x)[0],7:10],axis=0)
+        
 
     return facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial

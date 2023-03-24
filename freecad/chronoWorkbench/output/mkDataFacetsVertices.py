@@ -13,33 +13,32 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Function to generate and write a data file of all tetrahedra in an LDPM/CSL
-## model, for later use in Project Chrono.
+## Function to write a data file of all facet vertices.
 ##
 ## ===========================================================================
 
-from pathlib import Path
 import numpy as np
+from pathlib import Path
 
-def mkDataTets(geoName,tempPath,allTets):
-    
+
+def mkDataFacetsVertices(geoName,tempPath,facetPointData):
+
     """
     Variables:
     --------------------------------------------------------------------------
     ### Inputs ###
-    - geoName:      Name of the geometry file
-    - tempPath:     Path to the temporary directory
-    - allTets:      Array of all tetrahedra in the model
+    - geoName:          Name of the geometry file
+    - tempPath:         Path to the temporary directory
+    - facetPointData:   List of facet vertex points
     --------------------------------------------------------------------------
     ### Outputs ###
-    - A data file of all tetrahedra in the model
+    - A data file of facet vertices
     --------------------------------------------------------------------------
     """
-    
-    allTets = allTets-1
+
 
     np.savetxt(Path(tempPath + geoName + \
-        '-data-tets.dat'), allTets.astype(int), fmt='%i', delimiter=' ', comments=''\
+        '-data-facetsVertices.dat'), facetPointData, fmt='%.10g', delimiter=' ', comments=''\
         ,header='\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\
@@ -52,21 +51,10 @@ def mkDataTets(geoName,tempPath,allTets):
 // github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE\n\
 //\n\
 // ================================================================================\n\
-// Tetrahedra Data File\n\
+// Facet Vertex Data File\n\
 // ================================================================================\n\
 //\n\
 // Data Structure:\n\
-// Node 1 Node 2 Node 3 Node 4\n\
-// Note: Node numbers are zero-indexed\n\
+// X Y Z\n\
 //\n\
 // ================================================================================')
-
-
-#    with open(Path(tempPath + geoName + \
-#        '-data-tets.dat'),"w") as f:                                            
-#        f.write('// Mesh Data Generated with LDPM Mesh Generation Tool\n')
-#        f.write('\n') 
-#        f.write('// Number of Tets: ' + str(len(allTets)) + '\n')  
-#        f.write("\n".join(" ".join(map(str, x)) for x in \
-#            allTets.astype(int)))   
-#        f.write('\n')

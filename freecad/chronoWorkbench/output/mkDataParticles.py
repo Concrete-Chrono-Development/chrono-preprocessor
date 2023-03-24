@@ -34,10 +34,11 @@ def mkDataParticles(allNodes,parDiameterList,geoName,tempPath):
         '-data-particles.dat'),"w") as f:                                       
         f.write('# Particle Data Generated with LDPM Mesh Generation Tool\n')
         f.write('# [n x y z d]\n')
+        f.write('# Note: Node numbers are zero-indexed\n')
         f.write('\n')            
         f.write('# Number of Nodes: ' + str(len(allDiameters)) + '\n')    
         f.write('# Number of Aggregates: ' + str(len(parDiameterList)) + '\n')    
         for x in range(0,len(allDiameters)):
-            f.write(str(x+1) + ' ' + str(allNodes[x,0]) + ' ' + str(allNodes[x,1]) \
+            f.write(str(x) + ' ' + str(allNodes[x,0]) + ' ' + str(allNodes[x,1]) \
                 + ' ' + str(allNodes[x,2]) + ' ' + str(allDiameters[x]) + '\n')
         f.write('\n')  
