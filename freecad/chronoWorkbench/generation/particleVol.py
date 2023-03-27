@@ -92,7 +92,7 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
         newSieveCurveD, newSieveCurveP, w_min, w_max, NewSet = 0, 0, 0, 0, 0
 
     # Calculates volume of particles needed
-    [parVolTotal, cdf, cdf1, kappa_i] = parVolume(tetVolume, wcRatio, cementC,
+    [volFracPar, parVolTotal, cdf, cdf1, kappa_i] = parVolume(tetVolume, wcRatio, cementC,
                                                   volFracAir, fullerCoef, 
                                                   flyashC, silicaC, scmC, fillerC,
                                                   flyashDensity, silicaDensity, 
@@ -101,7 +101,7 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
                                                   newSieveCurveD, newSieveCurveP, 
                                                   NewSet, w_min, w_max)
 
-    return parVolTotal, cdf, cdf1, kappa_i
+    return volFracPar, tetVolume, parVolTotal, cdf, cdf1, kappa_i
 
 
 
@@ -333,7 +333,7 @@ def parVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
     parVolSimTotal = volFracParSim * tetVolume
 
     # Return total particle volume, CDF, and other related values
-    return parVolSimTotal, cdf, cdf1, kappa_i
+    return volFracPar, parVolSimTotal, cdf, cdf1, kappa_i
 
 
 

@@ -569,7 +569,7 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
-        [parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
             meshVertices,meshTets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
@@ -1073,7 +1073,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Display sieve curve data
-        dispSieveCurves(fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
+        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
 
         # Switch back to model window
         mw=Gui.getMainWindow()
