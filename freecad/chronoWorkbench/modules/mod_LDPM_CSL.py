@@ -68,6 +68,7 @@ from freecad.chronoWorkbench.generation.genTesselationCSL        import genTesse
 from freecad.chronoWorkbench.generation.genFacetDataLDPM         import genFacetDataLDPM
 from freecad.chronoWorkbench.generation.genFacetDataCSL          import genFacetDataCSL
 from freecad.chronoWorkbench.generation.genProperties            import genProperties
+from freecad.chronoWorkbench.generation.dispSieveCurves          import dispSieveCurves
 
 from freecad.chronoWorkbench.input.readInputsLDPM                import readInputs
 
@@ -580,6 +581,8 @@ class inputWindow_LDPM_CSL:
         # Calculate list of particle diameters for placement
         [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
             cdf,kappa_i,NewSet,fullerCoef)
+        
+        
 
         # Calculation of surface mesh size
         maxEdgeLength = surfMeshSize(meshVertices,surfaceFaces)
@@ -1069,8 +1072,13 @@ class inputWindow_LDPM_CSL:
 
 
 
+        # Display sieve curve data
+        dispSieveCurves(fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
 
-
+        # Switch back to model window
+        mw=Gui.getMainWindow()
+        mdi=mw.findChild(QtGui.QMdiArea)
+        mdi.activatePreviousSubWindow()
 
         # Switch to FEM GUI
         App.ActiveDocument.recompute()
