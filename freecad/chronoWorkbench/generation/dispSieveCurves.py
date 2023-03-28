@@ -29,7 +29,7 @@ from matplotlib.font_manager import FontProperties
 from matplotlib.ticker import StrMethodFormatter
 import matplotlib.ticker as mticker
 
-def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
+def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,newSieveCurveD,newSieveCurveP,parDiameterList):
 
     """
     Variable List:
@@ -40,8 +40,8 @@ def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveD
     minPar:                  Minimum particle diameter
     maxPar:                  Maximum particle diameter
     fullerCoef:              Fuller coefficient of the input particle size distribution
-    sieveCurveDiameter:      List of diameters for the input sieve curve
-    sieveCurvePassing:       List of percent passing for the input sieve curve
+    newSieveCurveD:          List of diameters for the input sieve curve
+    newSieveCurveP:          List of percent passing for the input sieve curve
     parDiameterList:         List of diameters for the generated particle size distribution
     --------------------------------------------------------------------------
     ### Outputs ###
@@ -85,6 +85,11 @@ def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveD
         for x in range(len(parDiameterList)):
             passing[x] = sum(4/3*math.pi*(parDiameterList[0:(len(parDiameterList)-x)]/2)**3)/totalVol*100
         Plot.plot(parDiameterList, passing, 'Simulated Data') 
+
+        newSieveCurveD = np.asarray(newSieveCurveD, dtype=np.float32)
+        newSieveCurveP = np.asarray([x*100 for x in newSieveCurveP], dtype=np.float32)
+      
+        Plot.plot(newSieveCurveD, newSieveCurveP, 'Theoretical Curve (Adjusted)')
 
         ############################################ TO DO ############################################
         ####### Update to include plotting of discrete sieve curve    

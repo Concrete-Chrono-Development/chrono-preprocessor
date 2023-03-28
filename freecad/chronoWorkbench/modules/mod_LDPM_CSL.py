@@ -219,7 +219,8 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir, singleTetGen] = readInputs(self.form)
+            outputDir, singleTetGen, modelType] = readInputs(self.form)
+
 
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
@@ -569,13 +570,13 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
-        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i,newSieveCurveD, newSieveCurveP, NewSet] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
             meshVertices,meshTets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
         # Temporary to skip over sieve curve option
-        newSieveCurveD = 0
-        NewSet = 0
+        #newSieveCurveD = 0
+        #NewSet = 0
 
         self.form[5].statusWindow.setText("Status: Calculating list of particles.") 
         # Calculate list of particle diameters for placement
@@ -1073,7 +1074,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Display sieve curve data
-        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
+        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,newSieveCurveD,newSieveCurveP,parDiameterList)
 
         # Switch back to model window
         mw=Gui.getMainWindow()

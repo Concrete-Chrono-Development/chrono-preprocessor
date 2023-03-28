@@ -101,7 +101,7 @@ def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement,
                                                   newSieveCurveD, newSieveCurveP, 
                                                   NewSet, w_min, w_max)
 
-    return volFracPar, tetVolume, parVolTotal, cdf, cdf1, kappa_i
+    return volFracPar, tetVolume, parVolTotal, cdf, cdf1, kappa_i, newSieveCurveD, newSieveCurveP, NewSet
 
 
 
