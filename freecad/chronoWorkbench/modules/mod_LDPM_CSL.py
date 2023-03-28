@@ -1074,7 +1074,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Display sieve curve data
-        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,newSieveCurveD,newSieveCurveP,parDiameterList)
+        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
 
         # Switch back to model window
         mw=Gui.getMainWindow()
