@@ -25,9 +25,7 @@ except ImportError:
     from freecad.plot import Plot
 import numpy as np
 import math
-from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import StrMethodFormatter
-import matplotlib.ticker as mticker
+
 
 def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
 
@@ -52,7 +50,6 @@ def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveD
     # Generate plot of sieve curve
     Plot.figure("Particle Sieve Curve")
 
-
     # Get volume of small particles and generated particles
     totalVol = sum(4/3*math.pi*(parDiameterList/2)**3)
     volParticles=volFracPar*tetVolume;
@@ -61,53 +58,48 @@ def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveD
     # Initialize Diameters
     parDiameterList = np.flip(parDiameterList)
     diameters = np.linspace(0,maxPar,num=1000)
-    passingPercent=np.zeros(len(diameters))
+    passingPercent=np.zeros(1000)
+    passingPercentTheory=np.zeros(1000)
 
     # Get Passing Percent of Placed Particles
-    for x in range(len(diameters)):
+    for x in range(1000):
         passing=parDiameterList[parDiameterList<diameters[x]]
         vol=sum(4/3*math.pi*(passing/2)**3)+volExtra
         passingPercent[x]=vol/volParticles*100
 
-
-
-
-
-
-
-
-
     # Calculations for sieve curve plotting for shifted generated particle size distribution (for comparison with Fuller Curve)
     if fullerCoef != 0:
-
-
-
         # Generate values for small particles
-        passingPercent[0:500]=100*(diameters[0:500]/maxPar)**fullerCoef
-
-        # Plotting
-        Plot.plot(diameters[500:1000], passingPercent[500:1000], 'Simulated Data (Shifted)') 
-        Plot.plot(diameters[0:500], passingPercent[0:500], 'Theoretical Curve') 
+        diametersTheory = diameters
+        passingPercentTheory=100*(diametersTheory/maxPar)**fullerCoef
 
     else:
+        # Reformat sieve curve into numpy arrays for interpolation
+        diametersTheory = np.asarray(sieveCurveDiameter, dtype=np.float32)
+        passingPercentTheory = np.asarray([x*100 for x in sieveCurvePassing], dtype=np.float32)
 
+        # Get Interpolated passingPercentTheory value for largest diameter in generated particle size distribution
+        # This is used to shift the generated particle size distribution to match the input sieve curve
+        for x in range(len(diametersTheory)):
+            if diametersTheory[x+1] == maxPar:
+                shiftValue = passingPercent[999]-passingPercentTheory[x+1]
+                break
+            elif (diametersTheory[x] <= maxPar) and (diametersTheory[x+1] >= maxPar):
+                shiftValue = passingPercent[999]-(passingPercentTheory[x] + (passingPercentTheory[x+1]-passingPercentTheory[x])/(diametersTheory[x+1]-diametersTheory[x])*(maxPar-diametersTheory[x]))
+                break
+            else:
+                shiftValue = 0
 
-        Plot.plot(diameters[500:1000], passingPercent[500:1000], 'Simulated Data (Shifted)') 
+        # Shift passingPercent by shiftValue
+        passingPercent = passingPercent - shiftValue
 
-        sieveCurveDiameter = np.asarray(sieveCurveDiameter, dtype=np.float32)
-        sieveCurvePassing = np.asarray([x*100 for x in sieveCurvePassing], dtype=np.float32)
-      
-        Plot.plot(sieveCurveDiameter, sieveCurvePassing, 'Theoretical Curve (Adjusted)')
+    # Plotting
+    Plot.plot(diametersTheory, passingPercentTheory, 'Theoretical Curve') 
+    Plot.plot(diameters[passingPercent>min(passingPercent)], passingPercent[passingPercent>min(passingPercent)], 'Simulated Data (Shifted)') 
 
-        ############################################ TO DO ############################################
-        ####### Update to include plotting of discrete sieve curve    
-    
-
-
-
+    # Plotting Formatting
     Plot.xlabel('Particle Diameter, $d$ (mm)') 
     Plot.ylabel('Percent Passing, $P$ (%)')
-
     Plot.grid(True)
     Plot.legend() 
 
