@@ -864,10 +864,18 @@ class inputWindow_LDPM_CSL:
         mkVtkFacets(geoName,tempPath,facetPointData,facetCellData)
         
         if singleTetGen == True:
-            mkVtkSingleTetFacets(geoName,tempPath,tetFacets)
-            mkVtkSingleTetParticles(allNodes,allTets,allDiameters,geoName,tempPath)
-            mkVtkSingleTet(allNodes,allTets,geoName,tempPath)
-            mkVtkSingleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
+            if elementType == "LDPM":
+                mkVtkSingleTetFacets(geoName,tempPath,tetFacets)
+                mkVtkSingleTetParticles(allNodes,allTets,allDiameters,geoName,tempPath)
+                mkVtkSingleTet(allNodes,allTets,geoName,tempPath)
+                mkVtkSingleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
+            elif elementType == "CSL":
+                pass
+                #mkVtkSingleEdgeFacets(geoName,tempPath,tetFacets)
+                #mkVtkSingleEdgeParticles(allNodes,allEdges,allTets,allDiameters,geoName,tempPath)
+                #mkVtkSingleEdge(allNodes,allEdges,allTets,geoName,tempPath)
+            else:
+                pass
 
         writeTime = round(time.time() - writeTimeStart,2)
 
