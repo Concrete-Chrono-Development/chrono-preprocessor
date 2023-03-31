@@ -27,7 +27,7 @@ import numpy as np
 import math
 
 
-def dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
+def mkDispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
 
     """
     Variable List:

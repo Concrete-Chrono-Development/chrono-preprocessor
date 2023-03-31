@@ -21,7 +21,7 @@
 import numpy as np
 
 
-def overlapCheck(nodes, center, parDiameter, facePoints, binMin, binMax,
+def checkParticleOverlap(nodes, center, parDiameter, facePoints, binMin, binMax,
     minPar, maxEdgeLength, parOffset, parDiameterList):
 
     """

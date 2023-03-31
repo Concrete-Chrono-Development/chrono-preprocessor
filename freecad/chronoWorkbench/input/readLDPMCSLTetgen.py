@@ -21,7 +21,7 @@
 import numpy as np
 
 
-def readTetgen(nodeFile, tetFile, edgeFile):                                       
+def readLDPMCSLTetgen(nodeFile, tetFile, edgeFile):                                       
 
     """
     Variable List:

@@ -19,6 +19,8 @@
 ## ===========================================================================
 
 # pyright: reportMissingImports=false
+
+# Importing: standard
 import os
 import sys
 import time
@@ -30,6 +32,7 @@ import functools
 import math
 import ast
 
+# Importing: FreeCAD
 import FreeCADGui as Gui
 import FreeCAD as App
 import Part
@@ -43,35 +46,38 @@ import ObjectsFem
 import FemGui
 import Fem
 import femmesh.femmesh2mesh
-
 from PySide import QtCore, QtGui
 
+# Importing: paths
 from freecad.chronoWorkbench                                     import ICONPATH
 
+# Importing: util
 from freecad.chronoWorkbench.util.cwloadUIfile                   import cwloadUIfile
 from freecad.chronoWorkbench.util.cwloadUIicon                   import cwloadUIicon
 
+# Importing: generation
+from freecad.chronoWorkbench.generation.calcParticleVol          import calcParticleVol
+from freecad.chronoWorkbench.generation.calcSurfMeshSize         import calcSurfMeshSize
+from freecad.chronoWorkbench.generation.calcSurfMeshExtents      import calcSurfMeshExtents
+from freecad.chronoWorkbench.generation.checkParticleOverlapMPI  import checkParticleOverlapMPI
+from freecad.chronoWorkbench.generation.genCSLFacetData          import genCSLFacetData
+from freecad.chronoWorkbench.generation.genCSLTesselation        import genCSLTesselation
+from freecad.chronoWorkbench.generation.genLDPMTesselation       import genLDPMTesselation
+from freecad.chronoWorkbench.generation.genLDPMFacetData         import genLDPMFacetData
 from freecad.chronoWorkbench.generation.genAnalysis              import genAnalysis
 from freecad.chronoWorkbench.generation.genGeometry              import genGeometry
 from freecad.chronoWorkbench.generation.genInitialMesh           import genInitialMesh
-from freecad.chronoWorkbench.generation.particleVol              import particleVol
-from freecad.chronoWorkbench.generation.particleList             import particleList
-from freecad.chronoWorkbench.generation.surfMeshSize             import surfMeshSize
-from freecad.chronoWorkbench.generation.surfMeshExtents          import surfMeshExtents
 from freecad.chronoWorkbench.generation.genParticle              import generateParticle
 from freecad.chronoWorkbench.generation.genParticleMPI           import generateParticleMPI
-from freecad.chronoWorkbench.generation.particleOverlapCheckMPI  import overlapCheckMPI
-from freecad.chronoWorkbench.generation.readTetgen               import readTetgen
-from freecad.chronoWorkbench.generation.genTetrahedralization    import genTetrahedralization
-from freecad.chronoWorkbench.generation.genTesselationLDPM       import genTesselationLDPM
-from freecad.chronoWorkbench.generation.genTesselationCSL        import genTesselationCSL
-from freecad.chronoWorkbench.generation.genFacetDataLDPM         import genFacetDataLDPM
-from freecad.chronoWorkbench.generation.genFacetDataCSL          import genFacetDataCSL
+from freecad.chronoWorkbench.generation.genParticleList          import genParticleList
 from freecad.chronoWorkbench.generation.genProperties            import genProperties
-from freecad.chronoWorkbench.generation.dispSieveCurves          import dispSieveCurves
+from freecad.chronoWorkbench.generation.genTetrahedralization    import genTetrahedralization
 
-from freecad.chronoWorkbench.input.readInputsLDPM                import readInputs
+# Importing: input
+from freecad.chronoWorkbench.input.readLDPMCSLInputs             import readLDPMCSLInputs
+from freecad.chronoWorkbench.input.readLDPMCSLTetgen             import readLDPMCSLTetgen
 
+# Importing: output
 from freecad.chronoWorkbench.output.mkVtkParticles               import mkVtkParticles
 from freecad.chronoWorkbench.output.mkVtkFacets                  import mkVtkFacets
 from freecad.chronoWorkbench.output.mkVtkSingleTetFacets         import mkVtkSingleTetFacets
@@ -84,7 +90,7 @@ from freecad.chronoWorkbench.output.mkDataEdges                  import mkDataEd
 from freecad.chronoWorkbench.output.mkDataFacets                 import mkDataFacets
 from freecad.chronoWorkbench.output.mkDataFacetsVertices         import mkDataFacetsVertices
 from freecad.chronoWorkbench.output.mkDataParticles              import mkDataParticles
-
+from freecad.chronoWorkbench.output.mkDispSieveCurves            import mkDispSieveCurves
 
 
 # Turn off error for divide by zero and invalid operations
@@ -97,18 +103,18 @@ multiprocessing.set_executable(str(Path(App.ConfigGet('AppHomePath') + '/bin/pyt
 
 
 
-class inputWindow_LDPM_CSL:
+class inputWindow_LDPMCSL:
     def __init__(self):
 
         self.form = []
 
         # Load UI's for Side Panel
-        self.form.append(cwloadUIfile("LDPM_CSL_modelProps.ui"))
-        self.form.append(cwloadUIfile("LDPM_CSL_geometry.ui"))
-        self.form.append(cwloadUIfile("LDPM_CSL_particles.ui"))        
-        self.form.append(cwloadUIfile("LDPM_CSL_mixDesign.ui"))          
-        self.form.append(cwloadUIfile("LDPM_CSL_additionalPara.ui"))       
-        self.form.append(cwloadUIfile("LDPM_CSL_generation.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_modelProps.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_geometry.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_particles.ui"))        
+        self.form.append(cwloadUIfile("ui_LDPMCSL_mixDesign.ui"))          
+        self.form.append(cwloadUIfile("ui_LDPMCSL_additionalPara.ui"))       
+        self.form.append(cwloadUIfile("ui_LDPMCSL_generation.ui"))
 
         # Label, Load Icons, and Initialize Panels
         self.form[0].setWindowTitle("Model Settings")
@@ -219,7 +225,7 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir, singleTetGen, modelType] = readInputs(self.form)
+            outputDir, singleTetGen, modelType] = readLDPMCSLInputs(self.form)
 
 
         # Make output directory if does not exist
@@ -488,7 +494,7 @@ class inputWindow_LDPM_CSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
-            outputDir, singleTetGen, modelType] = readInputs(self.form)
+            outputDir, singleTetGen, modelType] = readLDPMCSLInputs(self.form)
 
         try:
             sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
@@ -566,11 +572,11 @@ class inputWindow_LDPM_CSL:
 
 
         # Gets extents of geometry
-        [minC,maxC] = surfMeshExtents(meshVertices)
+        [minC,maxC] = calcSurfMeshExtents(meshVertices)
 
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
         # Calculate required volume of particles and sieve curve data
-        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i,newSieveCurveD, newSieveCurveP, NewSet] = particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
+        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i,newSieveCurveD, newSieveCurveP, NewSet] = calcParticleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
             flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
             meshVertices,meshTets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
 
@@ -580,13 +586,13 @@ class inputWindow_LDPM_CSL:
 
         self.form[5].statusWindow.setText("Status: Calculating list of particles.") 
         # Calculate list of particle diameters for placement
-        [maxParNum,parDiameterList] = particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
+        [maxParNum,parDiameterList] = genParticleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
             cdf,kappa_i,NewSet,fullerCoef)
         
         
 
         # Calculation of surface mesh size
-        maxEdgeLength = surfMeshSize(meshVertices,surfaceFaces)
+        maxEdgeLength = calcSurfMeshSize(meshVertices,surfaceFaces)
 
 
         # Basic Calcs
@@ -658,7 +664,7 @@ class inputWindow_LDPM_CSL:
                     # Check if particle overlapping any just added particles (ignore first one placed)
                     if x > 0:
 
-                        overlap = overlapCheckMPI(nodeMPI[x,:],diameter[x],binMin,\
+                        overlap = checkParticleOverlapMPI(nodeMPI[x,:],diameter[x],binMin,\
                             binMax,minPar,aggOffset,nodeMPI[0:x],diameter[0:x])
 
                         if overlap == True:
@@ -731,7 +737,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Read in tetrahedralization
-        [allNodes,allTets,allEdges] = readTetgen(Path(tempPath + geoName \
+        [allNodes,allTets,allEdges] = readLDPMCSLTetgen(Path(tempPath + geoName \
         + '.node'),Path(tempPath + geoName + '.ele'),Path(tempPath + geoName + '.edge'))
         self.form[5].progressBar.setValue(90) 
 
@@ -741,10 +747,10 @@ class inputWindow_LDPM_CSL:
         
         if modelType in ["Confinement Shear Lattice (CSL) - Original"]:
             [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-                genTesselationCSL(allNodes,allTets,parDiameterList,minPar,geoName)
+                genCSLTesselation(allNodes,allTets,parDiameterList,minPar,geoName)
         else:
             [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-                genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName)    
+                genLDPMTesselation(allNodes,allTets,parDiameterList,minPar,geoName)    
 
 
 
@@ -776,11 +782,11 @@ class inputWindow_LDPM_CSL:
         self.form[5].statusWindow.setText("Status: Generating facet data information.") 
 
         if elementType == "LDPM":
-            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetDataLDPM(\
+            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genLDPMFacetData(\
                 allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
                 tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
         elif elementType == "CSL":
-            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genFacetDataCSL(\
+            [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = genCSLFacetData(\
                 allNodes,allEdges,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
                 tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
 
@@ -1082,7 +1088,7 @@ class inputWindow_LDPM_CSL:
 
 
         # Display sieve curve data
-        dispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
+        mkDispSieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList)
 
         # Switch back to model window
         mw=Gui.getMainWindow()
@@ -1123,7 +1129,7 @@ class IconViewProviderToFile:                                       # Class View
         return self.icone        
 
 
-class input_LDPM_CSL_Class():
+class input_LDPMCSL_Class():
     """My new command"""
 
     def GetResources(self):
@@ -1133,7 +1139,7 @@ class input_LDPM_CSL_Class():
 
     def Activated(self):
 
-        Gui.Control.showDialog(inputWindow_LDPM_CSL())
+        Gui.Control.showDialog(inputWindow_LDPMCSL())
 
         return
 
@@ -1142,4 +1148,4 @@ class input_LDPM_CSL_Class():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand("mod_LDPM_CSL", input_LDPM_CSL_Class())
+Gui.addCommand("mod_LDPMCSL", input_LDPMCSL_Class())

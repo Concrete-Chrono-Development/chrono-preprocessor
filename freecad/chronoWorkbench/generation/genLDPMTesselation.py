@@ -23,7 +23,7 @@
 import numpy as np
 
 
-def genTesselationLDPM(allNodes,allTets,parDiameterList,minPar,geoName):
+def genLDPMTesselation(allNodes,allTets,parDiameterList,minPar,geoName):
     
     """
     Variable List:

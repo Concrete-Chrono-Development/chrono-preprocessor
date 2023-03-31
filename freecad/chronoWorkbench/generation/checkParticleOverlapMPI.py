@@ -21,7 +21,7 @@
 import numpy as np
 
 
-def overlapCheckMPI(center,parDiameter,binMin,binMax,minPar,parOffset,nodes,diameters):
+def checkParticleOverlapMPI(center,parDiameter,binMin,binMax,minPar,parOffset,nodes,diameters):
 
     """
     Variables:

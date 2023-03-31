@@ -23,7 +23,7 @@ import math
 import numpy as np
 
 
-def particleList(parVolTotal, minPar, maxPar, newSieveCurveD, cdf, kappa_i, 
+def genParticleList(parVolTotal, minPar, maxPar, newSieveCurveD, cdf, kappa_i, 
                  NewSet, fullerCoef):
     
     """

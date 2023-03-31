@@ -56,14 +56,14 @@ from freecad.chronoWorkbench.output.mkChronoInput                  import mkChro
 
 
 
-class genWindow_LDPM_CSL:
+class genWindow_LDPMCSL:
     def __init__(self):
 
         self.form = []
 
         # Load UI's for Side Panel
-        self.form.append(cwloadUIfile("LDPM_CSL_writeSimInfo.ui"))
-        self.form.append(cwloadUIfile("LDPM_CSL_writeSimFiles.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_writeSimInfo.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_writeSimFiles.ui"))
 
         # Label, Load Icons, and Initialize Panels
         self.form[0].setWindowTitle("Confirm Output")
@@ -330,7 +330,7 @@ class genWindow_LDPM_CSL:
 
 
 
-class gen_LDPM_CSL_Class():
+class gen_LDPMCSL_Class():
     """My new command"""
 
     def GetResources(self):
@@ -340,7 +340,7 @@ class gen_LDPM_CSL_Class():
 
     def Activated(self):
 
-        Gui.Control.showDialog(genWindow_LDPM_CSL())
+        Gui.Control.showDialog(genWindow_LDPMCSL())
 
         return
 
@@ -349,4 +349,4 @@ class gen_LDPM_CSL_Class():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand("mod_LDPM_CSL_gen", gen_LDPM_CSL_Class())
+Gui.addCommand("mod_LDPMCSL_gen", gen_LDPMCSL_Class())

@@ -65,18 +65,14 @@ multiprocessing.set_executable(str(Path(App.ConfigGet('AppHomePath') + '/bin/pyt
 
 
 
-class inputWindow_SPH_DEM:
+class inputWindow_SPHDEM:
     def __init__(self):
 
         self.form = []
 
         # Load UI's for Side Panel
-        #self.form.append(cwloadUIfile("SPH_DEM_modelProps.ui"))
-        self.form.append(cwloadUIfile("SPH_DEM_geometry.ui"))
-        #self.form.append(cwloadUIfile("SPH_DEM_particles.ui"))        
-        #self.form.append(cwloadUIfile("SPH_DEM_mixDesign.ui"))          
-        #self.form.append(cwloadUIfile("SPH_DEM_additionalPara.ui"))       
-        self.form.append(cwloadUIfile("SPH_DEM_generation.ui"))
+        self.form.append(cwloadUIfile("ui_SPHDEM_geometry.ui"))
+        self.form.append(cwloadUIfile("ui_SPHDEM_generation.ui"))
 
         # Label, Load Icons, and Initialize Panels
         #self.form[0].setWindowTitle("Model Settings")
@@ -274,7 +270,7 @@ class IconViewProviderToFile:                                       # Class View
         return self.icone        
 
 
-class input_SPH_DEM_Class():
+class input_SPHDEM_Class():
     """My new command"""
 
     def GetResources(self):
@@ -284,7 +280,7 @@ class input_SPH_DEM_Class():
 
     def Activated(self):
 
-        Gui.Control.showDialog(inputWindow_SPH_DEM())
+        Gui.Control.showDialog(inputWindow_SPHDEM())
 
         return
 
@@ -293,4 +289,4 @@ class input_SPH_DEM_Class():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand("mod_SPH_DEM", input_SPH_DEM_Class())
+Gui.addCommand("mod_SPHDEM", input_SPHDEM_Class())

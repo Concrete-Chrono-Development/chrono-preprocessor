@@ -20,7 +20,7 @@
 
 import numpy as np
 
-def surfMeshSize(vertices, faces):
+def calcSurfMeshSize(vertices, faces):
 
     """
     Variable List:

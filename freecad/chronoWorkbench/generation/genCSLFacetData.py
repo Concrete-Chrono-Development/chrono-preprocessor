@@ -23,7 +23,7 @@ import numpy as np
 
 
 
-def genFacetDataCSL(allNodes,allEdges,allTets,tetFacets,facetCenters,\
+def genCSLFacetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList,facetCellData):
   

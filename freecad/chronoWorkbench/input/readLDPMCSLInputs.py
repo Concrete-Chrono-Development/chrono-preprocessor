@@ -19,7 +19,7 @@
 ## ===========================================================================
 
 
-def readInputs(form):
+def readLDPMCSLInputs(form):
 
     # Basic Settings
     setupFile           = form[0].setupFile.text()

@@ -28,7 +28,7 @@
 import numpy as np
 
 
-def particleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement, 
+def calcParticleVol(wcRatio, volFracAir, fullerCoef, cementC, densityCement, 
                 densityWater, flyashC, silicaC, scmC, flyashDensity, 
                 silicaDensity, scmDensity, fillerC, fillerDensity,
                 vertices, tets, minPar, maxPar, 

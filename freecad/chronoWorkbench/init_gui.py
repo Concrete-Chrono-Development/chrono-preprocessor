@@ -29,9 +29,9 @@ from freecad.chronoWorkbench import ICONPATH
 from freecad.chronoWorkbench import GUIPATH
 
 # Chrono Scripts to Import
-from freecad.chronoWorkbench.modules import mod_LDPM_CSL
-from freecad.chronoWorkbench.modules import mod_LDPM_CSL_gen
-from freecad.chronoWorkbench.modules import mod_SPH_DEM
+from freecad.chronoWorkbench.modules import mod_LDPMCSL
+from freecad.chronoWorkbench.modules import mod_LDPMCSL_gen
+from freecad.chronoWorkbench.modules import mod_SPHDEM
 
 
 
@@ -43,7 +43,7 @@ class ChronoWorkbench(Gui.Workbench):
     MenuText = "Chrono Workbench"
     ToolTip = "A workbench for building LDPM, CSL, DEM, and SPH models for Project Chrono"
     Icon = os.path.join(ICONPATH, "ldpm.svg")
-    toolbox = ["mod_LDPM_CSL","mod_LDPM_CSL_gen","mod_SPH_DEM"] # a list of command names 
+    toolbox = ["mod_LDPMCSL","mod_LDPMCSL_gen","mod_SPHDEM"] # a list of command names 
 
 
     def Initialize(self):
@@ -53,7 +53,7 @@ class ChronoWorkbench(Gui.Workbench):
         """
         
         App.Console.PrintMessage("Switching to Chrono Workbench\n")
-        App.Console.PrintMessage("A workbench for building LDPM, CSL, DEM, and SPH models for Project Chrono\n")
+        App.Console.PrintMessage("A workbench for building LDPM, CSL, DEM, and SPH models for Project Chrono and other solvers.\n")
 
         self.appendToolbar("Tools", self.toolbox) # creates a new toolbar with your commands
         self.appendMenu("Tools", self.toolbox) # creates a new menu

@@ -21,7 +21,7 @@
 import numpy as np
 
 
-def surfMeshExtents(vertices):
+def calcSurfMeshExtents(vertices):
 
     """
     Variable List:

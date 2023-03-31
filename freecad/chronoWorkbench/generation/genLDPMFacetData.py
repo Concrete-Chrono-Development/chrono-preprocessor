@@ -23,7 +23,7 @@ import numpy as np
 
 
 
-def genFacetDataLDPM(allNodes,allTets,tetFacets,facetCenters,\
+def genLDPMFacetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
     multiMaterial,cementStructure,edgeMaterialList,facetCellData):
   

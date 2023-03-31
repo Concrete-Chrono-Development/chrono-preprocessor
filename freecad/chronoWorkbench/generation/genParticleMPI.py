@@ -22,8 +22,8 @@
 
 import numpy as np
 
-from freecad.chronoWorkbench.generation.particleOverlapCheck     import overlapCheck
-from freecad.chronoWorkbench.generation.particleInsideCheck     	import insideCheck
+from freecad.chronoWorkbench.generation.checkParticleOverlap     import checkParticleOverlap
+from freecad.chronoWorkbench.generation.checkParticleInside      import checkParticleInside
 
 
 def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
@@ -106,7 +106,7 @@ def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
 
 
         # Check if particle overlapping any existing particles or bad nodes
-        overlap = overlapCheck(nodes,node,parDiameter,facePoints,binMin,\
+        overlap = checkParticleOverlap(nodes,node,parDiameter,facePoints,binMin,\
             binMax,minPar,maxEdgeLength,parOffset,parDiameterList)
 
         if overlap[0] == False:
@@ -116,7 +116,7 @@ def generateParticleMPI(facePoints,maxParNum,minC,maxC,\
 
 
                 # Check if particle is inside the mesh if critically close          
-                inside = insideCheck(vertices,tets,node,parDiameter,binMin,binMax,coord1,\
+                inside = checkParticleInside(vertices,tets,node,parDiameter,binMin,binMax,coord1,\
                                     coord2,coord3,coord4)
 
             else:
