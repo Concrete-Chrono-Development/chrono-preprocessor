@@ -18,6 +18,8 @@
 ##
 ## ===========================================================================
 
+# pyright: reportMissingImports=false
+
 import os
 import sys
 import time
@@ -117,7 +119,7 @@ class inputWindow_SPHDEM:
 
         OpenName = ""
         try:
-            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file parameter file"),path,             filetype) # PyQt4
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a file parameter file"),path,             filetype)# type: ignore
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         except Exception:
             OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a file parameter file", path,             filetype) #PySide
@@ -137,7 +139,7 @@ class inputWindow_SPHDEM:
 
         OpenName = ""
         try:
-            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a geometry file"),path,             filetype) # PyQt4
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a geometry file"),path,             filetype)# type: ignore
         #                                                                     "here the text displayed on windows" "here the filter (extension)"   
         except Exception:
             OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a geometry file", path,             filetype) #PySide
