@@ -13,22 +13,23 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Function to generate a VTK file for visualization in Paraview of a single
-## tetrahedron for LDPM models.
+## Function to generate a VTK file for visualization in Paraview of particles
+## and their corresponding diameter for LDPM and CSL models.
 ##
 ## ===========================================================================
 
 from pathlib import Path
 
 
-def mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath):
+def mkVtk_LDPM_singleEdgeParticles(allNodes,allEdges,allDiameters,geoName,tempPath):
 
     """
     Variables:
     --------------------------------------------------------------------------
     ### Inputs ###
     - allNodes:     List of all nodes
-    - allTets:      List of all tetrahedra
+    - allDiameters: List of all particle diameters (including fictitious)
+    - allEdges:      List of all edges
     - geoName:      Name of the geometry
     - tempPath:     Path to the temporary directory
     --------------------------------------------------------------------------
@@ -37,28 +38,31 @@ def mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath):
     --------------------------------------------------------------------------
     """
     
-    # Use the tet in the middle of the list so that it is not on the boundary
-    tet = allTets[round(len(allTets)/2),:]-1
+    # Use the edge in the middle of the list so that it is not on the boundary
+    edge = allEdges[round(len(allEdges)/2),:]-1
 
-    # Extract the nodes for the first tetrahedron
-    allNodes = [allNodes[int(tet[0])],\
-              allNodes[int(tet[1])],\
-              allNodes[int(tet[2])],\
-              allNodes[int(tet[3])]]
+    # Extract the nodes for that edge
+    allNodes = [allNodes[int(edge[0])],\
+                allNodes[int(edge[1])]]
+
+    # Extract the particle diameters for that edge
+    allDiameters = [allDiameters[int(edge[0])],\
+                    allDiameters[int(edge[1])]]
 
     # Generate VTK file for visualizing particles
     with open(Path(tempPath + geoName + \
-        '-para-singleTet.000.vtk'),"w") as f:                                       
+        '-para-singleEdgeParticles.000.vtk'),"w") as f:                                       
         f.write('# vtk DataFile Version 2.0\n')
-        f.write('Unstructured grid\n')            
+        f.write('Unstructured grid legacy vtk file with point scalar data\n')            
         f.write('ASCII\n')    
         f.write('\n')  
         f.write('DATASET UNSTRUCTURED_GRID\n')        
         f.write('POINTS ' + str(len(allNodes)) + ' double \n')  
         f.write("\n".join(" ".join(map(str, x)) for x in allNodes))
         f.write('\n\n')  
-        f.write('CELLS 1 5\n')
-        f.write("4 0 1 2 3\n")
+        f.write('POINT_DATA ' + str(len(allNodes)) + '\n')
+        f.write('SCALARS Diameter double\n')
+        f.write('LOOKUP_TABLE default\n')
+        for x in allDiameters:
+            f.write("%s\n" % x)
         f.write('\n')  
-        f.write('CELL_TYPES 1\n')
-        f.write('10\n')  

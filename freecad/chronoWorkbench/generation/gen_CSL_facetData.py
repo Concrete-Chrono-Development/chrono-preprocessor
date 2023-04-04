@@ -211,6 +211,8 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
         for y in range(0,12):
 
             # Find the edge ID        ###################################  TO DO: MAKE THIS MORE EFFICIENT  ###################################
+            
+            ################# There is a bug here, the edge ID is not being found correctly #################
             a=list(np.where((allEdges.astype(int)-1 == edges[12*x+y,:]).all(axis=1))[0])
             b=list(np.where((allEdges.astype(int)-1 == np.flip(edges[12*x+y,:])).all(axis=1))[0])
             edgeID = int(np.asarray(a+b).astype(int))

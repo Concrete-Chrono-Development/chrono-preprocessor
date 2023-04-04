@@ -14,41 +14,39 @@
 ## ===========================================================================
 ##
 ## Function to generate a VTK file for visualization in Paraview of a single
-## tetrahedron for LDPM models.
+## edge CSL models.
 ##
 ## ===========================================================================
 
 from pathlib import Path
 
 
-def mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath):
+def mkVtk_LDPM_singleEdge(allNodes,allEdges,geoName,tempPath):
 
     """
     Variables:
     --------------------------------------------------------------------------
     ### Inputs ###
     - allNodes:     List of all nodes
-    - allTets:      List of all tetrahedra
+    - allEdges:     List of all edges
     - geoName:      Name of the geometry
     - tempPath:     Path to the temporary directory
     --------------------------------------------------------------------------
     ### Outputs ###
-    - A VTK file for visualizing particles
+    - A VTK file for visualizing a single edge
     --------------------------------------------------------------------------
     """
     
-    # Use the tet in the middle of the list so that it is not on the boundary
-    tet = allTets[round(len(allTets)/2),:]-1
+    # Use the edge in the middle of the list so that it is not on the boundary
+    edge = allEdges[round(len(allEdges)/2),:]-1
 
-    # Extract the nodes for the first tetrahedron
-    allNodes = [allNodes[int(tet[0])],\
-              allNodes[int(tet[1])],\
-              allNodes[int(tet[2])],\
-              allNodes[int(tet[3])]]
+    # Extract the nodes for that edge
+    allNodes = [allNodes[int(edge[0])],\
+                allNodes[int(edge[1])]]
 
     # Generate VTK file for visualizing particles
     with open(Path(tempPath + geoName + \
-        '-para-singleTet.000.vtk'),"w") as f:                                       
+        '-para-singleEdge.000.vtk'),"w") as f:                                       
         f.write('# vtk DataFile Version 2.0\n')
         f.write('Unstructured grid\n')            
         f.write('ASCII\n')    
@@ -57,8 +55,8 @@ def mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath):
         f.write('POINTS ' + str(len(allNodes)) + ' double \n')  
         f.write("\n".join(" ".join(map(str, x)) for x in allNodes))
         f.write('\n\n')  
-        f.write('CELLS 1 5\n')
-        f.write("4 0 1 2 3\n")
+        f.write('CELLS 1 3\n')
+        f.write("2 0 1\n")
         f.write('\n')  
         f.write('CELL_TYPES 1\n')
-        f.write('10\n')  
+        f.write('3\n')  

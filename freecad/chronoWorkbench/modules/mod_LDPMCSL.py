@@ -81,8 +81,11 @@ from freecad.chronoWorkbench.input.read_LDPMCSL_tetgen                    import
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_particles               import mkVtk_LDPMCSL_particles
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_facets                  import mkVtk_LDPMCSL_facets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetFacets            import mkVtk_LDPM_singleTetFacets
+from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdgeFacets           import mkVtk_LDPM_singleEdgeFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetParticles         import mkVtk_LDPM_singleTetParticles
+from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdgeParticles        import mkVtk_LDPM_singleEdgeParticles
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTet                  import mkVtk_LDPM_singleTet
+from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdge                 import mkVtk_LDPM_singleEdge
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleCell                 import mkVtk_LDPM_singleCell
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_nodes                  import mkData_LDPMCSL_nodes
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_tets                   import mkData_LDPMCSL_tets
@@ -877,9 +880,9 @@ class inputWindow_LDPMCSL:
                 mkVtk_LDPM_singleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
             elif elementType == "CSL":
                 pass
-                #mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,tetFacets)
-                #mkVtk_LDPM_singleEdgeParticles(allNodes,allEdges,allTets,allDiameters,geoName,tempPath)
-                #mkVtk_LDPM_singleEdge(allNodes,allEdges,allTets,geoName,tempPath)
+                mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,facetPointData)
+                mkVtk_LDPM_singleEdgeParticles(allNodes,allEdges,allDiameters,geoName,tempPath)
+                mkVtk_LDPM_singleEdge(allNodes,allEdges,geoName,tempPath)
             else:
                 pass
 
