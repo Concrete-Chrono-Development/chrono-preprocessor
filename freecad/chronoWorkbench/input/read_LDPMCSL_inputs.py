@@ -19,7 +19,7 @@
 ## ===========================================================================
 
 
-def read_LDPMCSL_nputs(form):
+def read_LDPMCSL_inputs(form):
 
     # Basic Settings
     setupFile           = form[0].setupFile.text()
