@@ -23,7 +23,7 @@ import FreeCAD as App
 from femtools import membertools
 
 def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, materialPropsVals, simProps, simPropsValues, \
-    nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName):
+    nodesFilename, elemFilename, facetsFilename, geoName, outDir, outName):
 
     """
     Variables:
@@ -36,7 +36,7 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, m
     - simProps:         The names of the simulation properties
     - simPropsValues:   The values of the simulation properties
     - nodesFilename:    The name of the file containing the nodes
-    - tetsFilename:     The name of the file containing the tets
+    - elemFilename:     The name of the file containing the tets
     - facetsFilename:   The name of the file containing the facets
     - geoName:          The name of the geometry
     - outDir:           The output directory
@@ -49,7 +49,11 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, m
 
 
     doc = App.ActiveDocument
-    analysis = doc.getObject("LDPManalysis")
+
+    if elementType == 'LDPM':
+        analysis = doc.getObject("LDPManalysis")
+    elif elementType == 'CSL':
+        analysis = doc.getObject("CSLanalysis")
 
     with open(Path(outDir + outName + '/' + geoName + '-chrono.cpp'),"w") as output_file:
 
@@ -73,21 +77,34 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, m
 // ================================================================================
         \n""")
 
+        output_file.write("""
+#include <chrono/physics/ChSystemSMC.h>
+#include <chrono/physics/ChLinkMate.h>
+#include <chrono/physics/ChBodyEasy.h>
+#include <chrono/solver/ChIterativeSolverLS.h>
+#include <chrono/timestepper/ChTimestepper.h>
 
-        output_file.write("#include <chrono_multicore/physics/ChSystemParallel.h>\n")
-        output_file.write("#include <chrono_multicore/solver/ChSolverMulticore.h>\n")
-        output_file.write("#include <chrono/fea/ChMesh.h>\n")
-        output_file.write("#include <chrono/fea/ChElementShellANCoutput_file.h>\n")
-        output_file.write("#include <chrono/fea/ChVisualizationFEAmesh.h>\n")
-        output_file.write("#include <chrono/fea/ChElementLDPM.h>\n")
-        output_file.write("#include <fstream>\n")
-        output_file.write("#include <iostream>\n")
-        output_file.write("\n")
-        output_file.write("using namespace chrono;\n")
-        output_file.write("using namespace chrono::fea;\n")
-        output_file.write("\n")
-        output_file.write("int main(int argc, char** argv) {\n\n")
+#include "chrono/fea/ChElementBeamEuler.h"
+#include "chrono/fea/ChBuilderBeam.h"
+#include "chrono/fea/ChMesh.h"
+#include "chrono/fea/ChLinkPointFrame.h"
+#include "chrono/fea/ChLinkDirFrame.h"
+#include "chrono/assets/ChVisualShapeFEA.h"
+#include <chrono_irrlicht/ChVisualSystemIrrlicht.h>
+#include <chrono/core/ChStream.h>
+#include <chrono/fea/ChMeshExporter.h>
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <string>
+#include <typeinfo>
 
+
+using namespace chrono;
+using namespace chrono::fea;
+
+int main(int argc, char** argv) {
+        \n""")
 
         # Store solver parameters
         output_file.write('\n    // Solver Parameters\n')
@@ -98,58 +115,150 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, m
         # Store material parameters
         output_file.write('    // ' + elementType + ' Material Parameters\n')
         for x in range(len(materialProps)):
-            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsVals[x]) + ';    // ' + materialPropsDesc[x] + '\n')
+            output_file.write('    double ' + materialProps[x] + ' = ' + str(materialPropsVals[x]) + ';\n')
         output_file.write('\n')
 
         # Store files to read
         output_file.write('    // Reference Data Files\n')
-        output_file.write('    std::ifstream nodesFilename = "' + nodesFilename + '";\n')
-        output_file.write('    std::ifstream tetsFilename = "' + tetsFilename + '";\n')
-        output_file.write('    std::ifstream facetsFilename = "' + facetsFilename + '";\n')
+        output_file.write('    std::stream nodesFilename = "' + nodesFilename + '";\n')
+        output_file.write('    std::stream elemFilename = "' + elemFilename + '";\n')
+        output_file.write('    std::stream facetsFilename = "' + facetsFilename + '";\n')
+        output_file.write('    std::ifstream nodesFile(nodesFilename);\n')
+        output_file.write('    std::ifstream elemFile(elemFilename);\n')
+        output_file.write('    std::ifstream facetsFile(facetsFilename);\n')
         output_file.write('\n')
 
-
         # Create the LDPM element mesh
-        output_file.write("""
+        if elementType == 'LDPM':
+            
+            output_file.write("""
     // Create a tetrahedra mesh object
     std::shared_ptr<ChMesh> mesh(new ChMesh);
 
-    // Add nodes to the mesh
-    ChVector<> pos;
-    while (nodesFilename >> pos.x >> pos.y >> pos.z) {
-        mesh->AddNode(std::make_shared<ChNodeFEAxyz>(pos));
+    // Add nodes to the mesh 
+    if (nodesFile.is_open()) {	
+        ChVector<> pos;
+        double x, y, z;
+        unsigned int idnode=0;
+        while (nodesFile >> pos[0] >> pos[1]>> pos[2]) {
+            auto mnode= chrono_types::make_shared<ChNodeFEAxyzrot>(ChFrame<>(ChVector<>(pos[0], pos[1], pos[2])));
+            //auto mnode = chrono_types::make_shared<ChNodeFEAxyzrot>(ChFrame<>(pos));
+                mnode->SetIndex(idnode);
+                my_mesh->AddNode(mnode);
+                ++idnode;    		
+        }
+    }
+    else{
+        throw ChException("ERROR opening nodes info file: " + std::string(nodesFilename) + ");
+        exit(EXIT_FAILURE);
+    }
+    auto nodenum=my_mesh->GetNnodes();
+    std::cout << "nodenum " << nodenum<<std::endl;
+    for (int i=0; i<nodenum; ++i){
+        auto node = std::dynamic_pointer_cast<ChNodeFEAxyzrot>(my_mesh->GetNode(i));    	
+        auto x=node->GetPos().x();
+        auto y=node->GetPos().y();
+        auto z=node->GetPos().z();
+        std::cout<<i<<".Node "<< node->GetIndex()<<" x : "<< x <<" y : "<< y <<" z : "<< z << std::endl;
     }
 
     // Add elements to the mesh
     int n1, n2, n3, n4;
-    while (tetsFilename >> n1 >> n2 >> n3 >> n4) {
+    while (elemFilename >> n1 >> n2 >> n3 >> n4) {
         auto node1 = std::static_pointer_cast<ChNodeFEAxyz>(mesh->GetNode(n1));
         auto node2 = std::static_pointer_cast<ChNodeFEAxyz>(mesh->GetNode(n2));
         auto node3 = std::static_pointer_cast<ChNodeFEAxyz>(mesh->GetNode(n3));
         auto node4 = std::static_pointer_cast<ChNodeFEAxyz>(mesh->GetNode(n4));
         mesh->AddElement(std::make_shared<ChElementLDPM>(node1, node2, node3, node4));
     }
+            \n""")
 
-       
-        // Read the facets from the file facetsFilename
-        std::vector<ChVector<> > facets;
-        std::ifstream facetsFile(facetsFilename);
-        if (!facetsFile.is_open()) {
-            std::cerr << \"ERROR: Could not open facets file\";
-            return 0;
+
+        # Create the CSL element mesh
+        elif elementType == 'CSL':
+            
+            output_file.write("""
+
+
+    auto msection = chrono_types::make_shared<ChBeamSectionEulerAdvanced>();
+
+    double beam_wy = 0.1;
+    double beam_wz = 0.50;    
+    //msection->SetAsRectangularSection(beam_wy, beam_wz);
+    double radius=1.;
+    msection->SetAsCircularSection(radius);
+    msection->SetYoungModulus(3.0e4);
+    msection->SetGshearModulus(3.0e4/(1.+0.2)/2.0);
+    msection->SetBeamRaleyghDamping(0.1);
+    msection->SetDensity(2.400E-9);
+    msection->SetSectionRotation(90*CH_C_DEG_TO_RAD);
+
+
+
+    ChBuilderBeamEuler builder;
+    if (elemFile.is_open()) {	
+        ChVector<> pos;
+        int elid;
+        int node1, node2;       	
+        unsigned int idelem=0;
+        while (elemFile >> node1>> node2) { 
+            std::cout<<idelem<<". element "<<node1<<" "<<node2<<std::endl; 
+            auto nodeA = std::dynamic_pointer_cast<ChNodeFEAxyzrot>(my_mesh->GetNode(node1)); 		
+            auto nodeB = std::dynamic_pointer_cast<ChNodeFEAxyzrot>(my_mesh->GetNode(node2)); 
+                
+            builder.BuildBeam(my_mesh,   // the mesh where to put the created nodes and elements
+                    msection,  // the ChBeamSectionEulerAdvanced to use for the ChElementBeamEuler elements
+                    1,         // the number of ChElementBeamEuler to create
+                    nodeA,    // the 'A' point in space (beginning of beam)
+                    nodeB,  // the 'B' point in space (end of beam)
+                    ChVector<>(0, 0, 1));      // the 'Y' up direction of the section for the beam                		
         }
-        int Tet, IDx, IDy, IDz, mF;
-        double Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz;
-        std::string line;
-        while (std::getline(facetsFile, line)) {
-            if (line[0] == ''\"//\"'')
-                continue;
-            std::istringstream iss(line);
-            if (!(iss >> Tet >> IDx >> IDy >> IDz >> Vol >> pArea >> cx >> cy >> cz >> px >> py >> pz >> qx >> qy >> qz >> sx >> sy >> sz >> mF))
-                break;
-            facets.push_back(ChVector<>(Tet, IDx, IDy, IDz, Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz, mF));
-        }
-        facetsFile.close();
+    }
+    else{
+        throw ChException("ERROR opening element info file: " + std::string(elemFilename) + "\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    
+    auto elnum=my_mesh->GetNelements();
+    std::cout << "elnum " << elnum<<std::endl;
+    
+    
+    for (int i=0; i<elnum; ++i){
+        auto elem = std::dynamic_pointer_cast<ChElementBeamEuler>(my_mesh->GetElement(i));    	
+        auto node1=elem->GetNodeA();
+        auto node2=elem->GetNodeB();
+        
+        std::cout<<"element : "<< i <<" node1 : "<< node1->GetPos() <<" node2 : "<< node2->GetPos() << std::endl;
+    }
+            \n""")
+
+
+
+
+
+
+
+        # Read the facets from file
+        output_file.write("""       
+    // Read the facets from the file facetsFilename
+    std::vector<ChVector<> > facets;
+    if (!facetsFile.is_open()) {
+        std::cerr << \"ERROR: Could not open facets file\";
+        return 0;
+    }
+    int Tet, IDx, IDy, IDz, mF;
+    double Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz;
+    std::string line;
+    while (std::getline(facetsFile, line)) {
+        if (line[0] == ''\"//\"'')
+            continue;
+        std::istringstream iss(line);
+        if (!(iss >> Tet >> IDx >> IDy >> IDz >> Vol >> pArea >> cx >> cy >> cz >> px >> py >> pz >> qx >> qy >> qz >> sx >> sy >> sz >> mF))
+            break;
+        facets.push_back(ChVector<>(Tet, IDx, IDy, IDz, Vol, pArea, cx, cy, cz, px, py, pz, qx, qy, qz, sx, sy, sz, mF));
+    }
+    facetsFile.close();
 
         \n""")
         output_file.write('    mesh->SetMaterialProperties(')
@@ -246,16 +355,17 @@ def mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, m
 
 
         output_file.write("""\n
-    // Create a Chrono system
-    ChSystemParallelNSC system;
-
     // Create a Chrono solver and set solver settings
-    auto solver = std::make_shared<ChSolverMulticore>();
-    system.SetSolver(solver);
-    solver->SetMaxIterations(100);
-    solver->SetTolerance(1e-4);
-    solver->SetOmega(0.8);
-    solver->SetSharpnessAngle(45);
+    auto solver = chrono_types::make_shared<ChSolverMINRES>();
+    sys.SetSolver(solver);
+    sys.SetSolverType(ChSolver::Type::SPARSE_LU);
+    solver->SetMaxIterations(500);
+    solver->SetTolerance(1e-15);
+    solver->EnableDiagonalPreconditioner(true);
+    solver->EnableWarmStart(true);  // IMPORTANT for convergence when using EULER_IMPLICIT_LINEARIZED
+    solver->SetVerbose(false);
+    sys.SetSolverForceTolerance(1e-14);
+    sys.SetTimestepperType(ChTimestepper::Type::EULER_IMPLICIT_PROJECTED);
 
     // Use the parallel processing capabilities of Chrono to run the simulation on multiple cores\n""") 
         output_file.write("    int num_threads = " + str(int(analysis.NumberOfThreads)) + ";\n")

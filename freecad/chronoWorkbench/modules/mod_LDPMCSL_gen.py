@@ -258,21 +258,22 @@ class genWindow_LDPMCSL:
 
         materialProps = [\
             "Density",\
-            "CompressiveNormalModulus",\
-            "PoissonsRatio",\
+            "CompressiveStrength",\
+            "ShearNormalCoupling",\
             "InitialHardeningModulusRatio",\
+            "FinalHardeningModulusRatio",\
             "DensificationRatio",\
             "TransitionalStrainRatio",\
-            "ShearStrengthRatio",\
-            "InitialFriction",\
+            "ShearTensileStrengthRatio",\
+            "InitialInternalFrictionCoefficient",\
             "SofteningExponent",\
-            "DeviatoricStrainThresholdRatio",\
-            "DeviatoricDamageParameter",\
-            "AsymptoticFriction",\
-            "TransitionalStress",\
+            "DeviatoricStrainRatio",\
+            "DeviatoricDamage",\
+            "FinalInternalFrictionCoefficient",\
+            "TransitionalNormalStress",\
             "TensileStrength",\
             "TensileCharacteristicLength",\
-            "ShearSofteningModulusRatio",\
+            "NormalModulus",\
             ]
         
         
@@ -299,7 +300,9 @@ class genWindow_LDPMCSL:
             simPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(analysisName).getPropertyByName(simProps[x]))
 
 
-
+        print(len(materialProps))
+        print(len(materialPropsValues))
+        print(len(materialPropsDesc))
 
 
 
