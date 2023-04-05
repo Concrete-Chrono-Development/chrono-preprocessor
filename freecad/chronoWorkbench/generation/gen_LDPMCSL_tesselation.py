@@ -15,15 +15,14 @@
 ##
 ## This file contains the function to perform the tesselation of the mesh and
 ## generates the facet connectivity, facet centers, facet areas, facet normals,
-## and other facet data for LDPM-style tesselations (used in LDPM and LDPM-
-## style CSL).
+## and other facet data for LDPM tesselations
 ##
 ## ===========================================================================
 
 import numpy as np
 
 
-def gen_LDPM_tesselation(allNodes,allTets,parDiameterList,minPar,geoName):
+def gen_LDPMCSL_tesselation(allNodes,allTets,parDiameterList,minPar,geoName):
     
     """
     Variable List:
@@ -246,7 +245,6 @@ def gen_LDPM_tesselation(allNodes,allTets,parDiameterList,minPar,geoName):
     facet12 = np.concatenate(([tetPoints,face2Point,edgePoints[:,15:18]]),axis=1)   #(T, F2, E6)
 
 
-
     # Old version below. Keep for historical purposes for now.
     #facet1  = np.concatenate(([tetPoints,face1Point,edgePoints[:,9:12]]),axis=1)
     #facet2  = np.concatenate(([tetPoints,face1Point,edgePoints[:,12:15]]),axis=1)
@@ -310,9 +308,10 @@ def gen_LDPM_tesselation(allNodes,allTets,parDiameterList,minPar,geoName):
 
     # Specify tet-node connectivity for facets (i.e. facet 1 connected by 
         # node 0 and 1)
-    tetNodeA = [0,0,0,0,1,1,1,1,2,2,0,0]
-    tetNodeB = [1,1,2,2,2,2,3,3,3,3,3,3]
-
+    #tetNodeA = [0,0,0,0,1,1,1,1,2,2,0,0]
+    #tetNodeB = [1,1,2,2,2,2,3,3,3,3,3,3]
+    tetNodeA = [0,0,0,0,0,0,1,1,1,1,2,2]
+    tetNodeB = [1,1,2,2,3,3,2,2,3,3,3,3]
 
     return tetFacets, facetCenters, facetAreas, facetNormals, \
         tetNodeA, tetNodeB, tetPoints, allDiameters, facetPointData, facetCellData

@@ -61,8 +61,7 @@ from freecad.chronoWorkbench.generation.calc_LDPMCSL_surfMeshSize         import
 from freecad.chronoWorkbench.generation.calc_LDPMCSL_surfMeshExtents      import calc_LDPMCSL_surfMeshExtents
 from freecad.chronoWorkbench.generation.check_LDPMCSL_particleOverlapMPI  import check_LDPMCSL_particleOverlapMPI
 from freecad.chronoWorkbench.generation.gen_CSL_facetData                 import gen_CSL_facetData
-from freecad.chronoWorkbench.generation.gen_CSL_tesselation               import gen_CSL_tesselation
-from freecad.chronoWorkbench.generation.gen_LDPM_tesselation              import gen_LDPM_tesselation
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_tesselation           import gen_LDPMCSL_tesselation
 from freecad.chronoWorkbench.generation.gen_LDPM_facetData                import gen_LDPM_facetData
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_analysis              import gen_LDPMCSL_analysis
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_geometry              import gen_LDPMCSL_geometry
@@ -748,12 +747,9 @@ class inputWindow_LDPMCSL:
         # Generate tesselation
         self.form[5].statusWindow.setText("Status: Forming tesselation.") 
         
-        if modelType in ["Confinement Shear Lattice (CSL) - Original"]:
-            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-                gen_CSL_tesselation(allNodes,allTets,parDiameterList,minPar,geoName)
-        else:
-            [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
-                gen_LDPM_tesselation(allNodes,allTets,parDiameterList,minPar,geoName)    
+
+        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
+            gen_LDPMCSL_tesselation(allNodes,allTets,parDiameterList,minPar,geoName)    
 
 
 
@@ -851,7 +847,7 @@ class inputWindow_LDPMCSL:
 
         # If data files requested, generate Facet File
         mkData_LDPMCSL_facets(geoName,tempPath,facetData)
-        mkData_LDPMCSL_facetsVertices(geoName,tempPath,facetPointData)
+        mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
 
 
         self.form[5].statusWindow.setText("Status: Writing particle data file.")
@@ -880,7 +876,7 @@ class inputWindow_LDPMCSL:
                 mkVtk_LDPM_singleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
             elif elementType == "CSL":
                 pass
-                mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,facetPointData)
+                mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,tetFacets)
                 mkVtk_LDPM_singleEdgeParticles(allNodes,allEdges,allDiameters,geoName,tempPath)
                 mkVtk_LDPM_singleEdge(allNodes,allEdges,geoName,tempPath)
             else:

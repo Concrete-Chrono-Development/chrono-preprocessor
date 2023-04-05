@@ -22,7 +22,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,facetPointData):
+def mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,tetFacets):
 
     """
     Variables:
@@ -38,14 +38,15 @@ def mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,facetPointDa
     """
 
 
-    # Find the lines in facetData that correspond to the edge (have the first colume equal to the edge)
-    edgeFacets = np.where(facetData[:,0] == round(len(allEdges)/2))[0]
+    # Find the lines in facetData that correspond to the edge (have the first column equal to the edge)
+    edgeFacets = np.where(facetData[:,0] == 0)[0]
 
     # Get facet vertices (columns 3-5 of the facetData) for the edge facets
     edgeFacetVertices = facetData[edgeFacets,2:5]
 
     # Get the coordinates for these vertices
-    singleEdgeFacetPoint = facetPointData[edgeFacetVertices.astype(int),:]
+    tetFacets = tetFacets.reshape(-1,3)
+    singleEdgeFacetPoint = tetFacets[edgeFacetVertices.astype(int),:]   #facetPointData[edgeFacetVertices.astype(int),:]
 
     singleEdgeFacetPoints = []
 

@@ -21,7 +21,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkData_LDPMCSL_facetsVertices(geoName,tempPath,facetPointData):
+def mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets):
 
     """
     Variables:
@@ -36,9 +36,10 @@ def mkData_LDPMCSL_facetsVertices(geoName,tempPath,facetPointData):
     --------------------------------------------------------------------------
     """
 
+    facetPoints = tetFacets.reshape(-1,3)
 
     np.savetxt(Path(tempPath + geoName + \
-        '-data-facetsVertices.dat'), facetPointData, fmt='%.10g', delimiter=' ', comments=''\
+        '-data-facetsVertices.dat'), facetPoints, fmt='%.10g', delimiter=' ', comments=''\
         ,header='\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\

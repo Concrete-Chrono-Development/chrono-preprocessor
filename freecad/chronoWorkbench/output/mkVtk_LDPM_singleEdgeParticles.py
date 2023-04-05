@@ -39,7 +39,7 @@ def mkVtk_LDPM_singleEdgeParticles(allNodes,allEdges,allDiameters,geoName,tempPa
     """
     
     # Use the edge in the middle of the list so that it is not on the boundary
-    edge = allEdges[round(len(allEdges)/2),:]-1
+    edge = allEdges[0,:]-1
 
     # Extract the nodes for that edge
     allNodes = [allNodes[int(edge[0])],\

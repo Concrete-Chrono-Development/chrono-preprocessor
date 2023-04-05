@@ -209,7 +209,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
             # [Tet Nodes:(IDx IDy IDz) Vol pArea Centers:(cx cy cz) pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
             # Note that the order of the facets is Tet 1 (Facet 1-12),Tet 2 (Facet 1-12),...,Tet N (Facet 1-12)
             facetData[12*x+y,0]     = x                       # Tet ID      
-            facetData[12*x+y,1:4]   = facetCellData[12*x+y,:] # Global Facet ID
+            facetData[12*x+y,1:4]   = np.array([3*(12*x+y), 3*(12*x+y)+1, 3*(12*x+y)+2]) # Global Facet Vertex ID
             facetData[12*x+y,4]     = subtetVol[12*x+y]       # Subtet Volume
             facetData[12*x+y,5]     = pArea[12*x+y]           # Projected Facet Area
             facetData[12*x+y,6:9]   = facetCenters[12*x+y,:]  # Facet Centroid
