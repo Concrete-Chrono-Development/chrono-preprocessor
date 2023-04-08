@@ -136,6 +136,10 @@ class inputWindow_LDPMCSL:
         # Set initial output directory
         self.form[5].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
+        # Connect selectObject and deselectObject Button in the Geometry Tab
+        QtCore.QObject.connect(self.form[1].selectObjectButton, QtCore.SIGNAL("clicked()"), self.selectGeometry)
+        QtCore.QObject.connect(self.form[1].deselectObjectButton, QtCore.SIGNAL("clicked()"), self.deselectGeometry)
+
         # Connect Open File Buttons
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFilePara)
         QtCore.QObject.connect(self.form[1].readFileButton, QtCore.SIGNAL("clicked()"), self.openFileGeo)
@@ -152,6 +156,21 @@ class inputWindow_LDPMCSL:
         # Only show a close button
         # def accept() in no longer needed, since there is no OK button
         return int(QtGui.QDialogButtonBox.Close)
+
+    def selectGeometry(self):
+            
+        # Select Geometry
+        sel = FreeCADGui.Selection.getSelection()
+        if len(sel) == 0:
+            App.Console.PrintMessage("Please select a geometry"+"\n")
+        else:
+            self.form[1].selectedObject.setText(sel[0].Name)
+
+    def deselectGeometry(self):
+                
+        # Deselect Geometry
+        self.form[1].selectedObject.setText("")
+
 
     def openFilePara(self):
 
@@ -550,7 +569,7 @@ class inputWindow_LDPMCSL:
 
         # Generate geometry
         self.form[5].statusWindow.setText("Status: Generating geometry.") 
-        genGeo = gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile)
+        genGeo = gen_LDPMCSL_geometry(self.form,dimensions,geoType,geoName,cadFile)
         self.form[5].progressBar.setValue(2) 
 
         # Set view

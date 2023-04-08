@@ -35,7 +35,7 @@ import Part
 from FreeCAD import Base
 
 
-def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
+def gen_LDPMCSL_geometry(form,dimensions,geoType,geoName,cadFile):
 
     """
     Variables:
@@ -342,7 +342,13 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
 
 
     if geoType == "Custom":
-        pass
+        # Get part name from self.form[1].selectedObject
+        partName = form[1].selectedObject.toPlainText()
+
+        # Find the part in the document and change its name to geoName
+        part = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(partName)[0]
+        part.Label = geoName
+
 
 
     if geoType == "Import CAD":

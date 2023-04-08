@@ -73,14 +73,155 @@ class genWindow_LDPMCSL:
         cwloadUIicon(self.form[1],"ldpmOutput.svg")
 
 
+        materialProps = [\
+            "Density",\
+            "CompressiveStrength",\
+            "ShearNormalCoupling",\
+            "InitialHardeningModulusRatio",\
+            "FinalHardeningModulusRatio",\
+            "DensificationRatio",\
+            "TransitionalStrainRatio",\
+            "ShearTensileStrengthRatio",\
+            "InitialInternalFrictionCoefficient",\
+            "SofteningExponent",\
+            "DeviatoricStrainRatio",\
+            "DeviatoricDamage",\
+            "FinalInternalFrictionCoefficient",\
+            "TransitionalNormalStress",\
+            "TensileStrength",\
+            "TensileCharacteristicLength",\
+            "NormalModulus",\
+            ]
+
+
+
         # Set initial output directory
         self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
+        # Check if "LDPMmaterial" or "CSLmaterial" is an object in the document
+        if App.ActiveDocument.getObject("LDPMmaterial") != None:
+            self.elementType = "LDPM"
+        elif App.ActiveDocument.getObject("CSLmaterial") != None:
+            self.elementType = "CSL"
+        else:
+            # If neither material is present, then abort process and throw error
+            App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+
+        # Get number of LDPM or CSL components
+        # Check for number of LDPM components
+        if self.elementType == "LDPM":
+            geoName = self.elementType + "geo" + str(0).zfill(3)
+            i = 0
+            count = 0
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+            except:
+                count = count+1
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+            except:
+                count = count+1
+            if count == 2:
+                test = False
+            
+            while test == True:
+                i = i+1
+                geoName = self.elementType + "geo" + str(i).zfill(3)
+                try:
+                    test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+                except:
+                    count = count+1
+                try:
+                    test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+                except:
+                    count = count+1
+                if count == 2:
+                    test = False
+            self.numPartsLDPM = i
+            self.numPartsCSL = 0
+
+       # Check for number of CSL components
+        elif self.elementType == "CSL":
+            geoName = self.elementType + "geo" + str(0).zfill(3)
+            i = 0
+            count = 0
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+            except:
+                count = count+1
+            try:
+                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+            except:
+                count = count+1
+            if count == 2:
+                test = False
+            
+            while test == True:
+                i = i+1
+                geoName = self.elementType + "geo" + str(i).zfill(3)
+                try:
+                    test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
+                except:
+                    count = count+1
+                try:
+                    test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
+                except:
+                    count = count+1
+                if count == 2:
+                    test = False
+            self.numPartsCSL = i
+            self.numPartsLDPM = 0
 
 
-        #### TO DO: Add in the ability to read in the LDPM/CSL input data for the side panel "Confirm Output" ####
+
+        # Store information about the LDPM/CSL components
+        modelInfo = []
+        modelInfo.append("Element Type: " + self.elementType)
+        modelInfo.append("Number of Components: " + str(max(self.numPartsLDPM,self.numPartsCSL)))
+
+        # Get number of nodes and elements
+        if self.elementType == "LDPM":
+            for i in range(self.numPartsLDPM):
+                meshName = self.elementType + "mesh" + str(i).zfill(3)
+                femesh=App.ActiveDocument.getObject(meshName)
+                numNodes = femesh.FemMesh.NodeCount
+                numElements = femesh.FemMesh.TetraCount
+            modelInfo.append("Part " + str(i))
+            modelInfo.append("Number of Nodes: " + str(numNodes))
+            modelInfo.append("Number of Tets: " + str(numElements))
+        elif self.elementType == "CSL":
+            for i in range(self.numPartsCSL):
+                meshName = self.elementType + "mesh" + str(i).zfill(3)
+                femesh=App.ActiveDocument.getObject(meshName)
+                numNodes = femesh.FemMesh.NodeCount
+                numElements = femesh.FemMesh.TetraCount
+            modelInfo.append("Part " + str(i))
+            modelInfo.append("Number of Nodes: " + str(numNodes))
+            modelInfo.append("Number of Tets: " + str(numElements))
+
+
+        # Get Material Properties
+        if self.elementType == "LDPM":
+            mat = App.ActiveDocument.LDPMmaterial
+            modelInfo.append("Material Properties")
+            for i in range(len(materialProps)):
+                modelInfo.append(materialProps[i] + ": " + str(mat.getPropertyByName(materialProps[i])))
+
+        elif self.elementType == "CSL":
+            mat = App.ActiveDocument.CSLmaterial
+            modelInfo.append("Material Properties")
+            for i in range(len(materialProps)):
+                modelInfo.append(materialProps[i] + ": " + str(mat.getPropertyByName(materialProps[i])))
+
+
+        # Change modelinfo to a string with newlines
+        modelInfoStr = ""
+        for i in range(len(modelInfo)):
+            modelInfoStr = modelInfoStr + "<p>" + modelInfo[i] + "</p>"
+
+        
         # Display all LDPM/CSL input data in the side panel "Confirm Output"
-        self.form[0].statusWindow.setText("Display Model Data here...")
+        self.form[0].statusWindow.setText(modelInfoStr)
             
 
 
@@ -131,7 +272,8 @@ class genWindow_LDPMCSL:
 
         print('Writing files.')
 
-        elementType = "LDPM"
+        elementType = self.elementType
+        numParts = max(self.numPartsLDPM,self.numPartsCSL)
 
         nodesFilename = "LDPMgeo000-data-nodes.dat"
         tetsFilename = "LDPMgeo000-data-tets.dat"
@@ -151,36 +293,7 @@ class genWindow_LDPMCSL:
 
 
 
-        # Check for number of LDPM components
-        elementType = "LDPM"
-        geoName = elementType + "geo" + str(0).zfill(3)
-        i = 0
-        count = 0
-        try:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-        except:
-            count = count+1
-        try:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-        except:
-            count = count+1
-        if count == 2:
-            test = False
-        
-        while test == True:
-            i = i+1
-            geoName = elementType + "geo" + str(i).zfill(3)
-            try:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-            except:
-                count = count+1
-            try:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-            except:
-                count = count+1
-            if count == 2:
-                test = False
-        numPartsLDPM = i
+
 
 
 
@@ -196,50 +309,9 @@ class genWindow_LDPMCSL:
             pass
 
 
-        # Check for number of CSL components
-        elementType = "CSL"
-        geoName = elementType + "geo" + str(0).zfill(3)
-        i = 0
-        count = 0
-        try:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-        except:
-            count = count+1
-        try:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-        except:
-            count = count+1
-        if count == 2:
-            test = False
-        
-        while test == True:
-            i = i+1
-            geoName = elementType + "geo" + str(i).zfill(3)
-            try:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-            except:
-                count = count+1
-            try:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-            except:
-                count = count+1
-            if count == 2:
-                test = False
-        numPartsCSL = i
+        analysisName = elementType + "analysis"
+        materialName = elementType + "material"
 
-        if numPartsLDPM == 0 and numPartsCSL ==0:
-            raise Exception("No LDPM or CSL parts detected!")
-
-
-        if numPartsLDPM > 0:
-            elementType = "LDPM"
-            analysisName = elementType + "analysis"
-            materialName = elementType + "material"
-
-        if numPartsCSL > 0:
-            elementType = "CSL"
-            analysisName = elementType + "analysis"
-            materialName = elementType + "material"
 
         geoName = elementType + "geo" + str(0).zfill(3)
         LDPMnodesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMnodesData").getPropertyByName("Location"))
