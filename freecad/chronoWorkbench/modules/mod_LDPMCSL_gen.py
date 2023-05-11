@@ -99,7 +99,9 @@ class genWindow_LDPMCSL:
         self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
         # Check if "LDPMmaterial" or "CSLmaterial" is an object in the document
-        if App.ActiveDocument.getObject("LDPMmaterial") != None:
+        if App.Active.getObject("LDPMmaterial") != None and App.Active.getObject("CSLmaterial") != None:
+            App.Console.PrintMessage("Both LDPM and CSL material found. Please only include one material object and try again."+"\n")
+        elif App.ActiveDocument.getObject("LDPMmaterial") != None:
             self.elementType = "LDPM"
         elif App.ActiveDocument.getObject("CSLmaterial") != None:
             self.elementType = "CSL"
@@ -228,9 +230,11 @@ class genWindow_LDPMCSL:
         # Connect Open File Buttons
         QtCore.QObject.connect(self.form[1].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
-        # Run generation for LDPM or CSL
-        QtCore.QObject.connect(self.form[1].writeChrono, QtCore.SIGNAL("clicked()"), self.generation)
+        # Run Project Chrono generation for LDPM or CSL
+        QtCore.QObject.connect(self.form[1].writeChrono, QtCore.SIGNAL("clicked()"), self.chronoGeneration)
 
+        # Run Abaqus generation for LDPM or CSL
+        QtCore.QObject.connect(self.form[1].writeAbaqus, QtCore.SIGNAL("clicked()"), self.abaqusGeneration)
 
 
     def getStandardButtons(self):
@@ -266,20 +270,19 @@ class genWindow_LDPMCSL:
 
 
 
-    def generation(self):
-
+    def chronoGeneration(self):
 
 
         print('Writing files.')
 
+        # Set element type and number of parts
         elementType = self.elementType
         numParts = max(self.numPartsLDPM,self.numPartsCSL)
 
+        # Set filenames
         nodesFilename = "LDPMgeo000-data-nodes.dat"
         tetsFilename = "LDPMgeo000-data-tets.dat"
         facetsFilename = "LDPMgeo000-data-facets.dat"
-
-
 
         # Make output directory if does not exist
         outDir =  self.form[1].outputDir.text()
@@ -287,14 +290,6 @@ class genWindow_LDPMCSL:
             os.mkdir(outDir)
         except:
             pass
-
-
-
-
-
-
-
-
 
 
         i = 0
@@ -308,24 +303,20 @@ class genWindow_LDPMCSL:
         except:
             pass
 
-
+        # Set analysis and material names
         analysisName = elementType + "analysis"
         materialName = elementType + "material"
 
-
+        # Get locations of data files
         geoName = elementType + "geo" + str(0).zfill(3)
         LDPMnodesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMnodesData").getPropertyByName("Location"))
         LDPMtetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMtetsData").getPropertyByName("Location"))
         LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
 
-
+        # Copy files to output directory
         shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/LDPMgeo000-data-nodes.dat")
         shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/LDPMgeo000-data-tets.dat")
         shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facets.dat")
-
-
-
-   
 
 
         materialProps = [\
@@ -347,8 +338,7 @@ class genWindow_LDPMCSL:
             "TensileCharacteristicLength",\
             "NormalModulus",\
             ]
-        
-        
+                
         materialPropsDesc = []
         
         materialPropsValues = []
@@ -372,14 +362,6 @@ class genWindow_LDPMCSL:
             simPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(analysisName).getPropertyByName(simProps[x]))
 
 
-        print(len(materialProps))
-        print(len(materialPropsValues))
-        print(len(materialPropsDesc))
-
-
-
-
-
 
         # Make Project Chrono input file
         mkChronoInput(elementType, analysisName, materialProps, materialPropsDesc, materialPropsValues, simProps, simPropsValues, \
@@ -390,16 +372,19 @@ class genWindow_LDPMCSL:
 
 
 
+    def abaqusGeneration(self):
+        pass
+
 
 
         
     # What to do when "Close" Button Clicked
     def reject(self):
-         try:
-             Gui.ActiveDocument.resetEdit()
-             Gui.Control.closeDialog()
-         except:
-             Gui.Control.closeDialog()
+        try:
+            Gui.ActiveDocument.resetEdit()
+            Gui.Control.closeDialog()
+        except:
+            Gui.Control.closeDialog()
 
         
 
