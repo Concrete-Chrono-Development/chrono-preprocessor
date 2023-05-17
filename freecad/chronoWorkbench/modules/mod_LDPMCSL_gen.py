@@ -99,16 +99,20 @@ class genWindow_LDPMCSL:
         # Set initial output directory
         self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
-        # Check if "LDPMmaterial" or "CSLmaterial" is an object in the document
-        if App.Active.getObject("LDPMmaterial") != None and App.Active.getObject("CSLmaterial") != None:
-            App.Console.PrintMessage("Both LDPM and CSL material found. Please only include one material object and try again."+"\n")
-        elif App.ActiveDocument.getObject("LDPMmaterial") != None:
+        # Try to see if there is a material object in the document
+        try:
+            test = App.ActiveDocument.getObject("LDPMmaterial")
             self.elementType = "LDPM"
-        elif App.ActiveDocument.getObject("CSLmaterial") != None:
-            self.elementType = "CSL"
-        else:
-            # If neither material is present, then abort process and throw error
-            App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+        except:
+            try:
+                test = App.ActiveDocument.getObject("CSLmaterial")
+                self.elementType = "CSL"
+            except:
+                App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+                self.elementType = "None"
+                self.numPartsLDPM,self.numPartsCSL = 0,0
+                modelInfo = []
+
 
         # Get number of LDPM or CSL components
         # Check for number of LDPM components

@@ -55,14 +55,61 @@ def mkAbaqusInput(elementType, analysisName, materialProps, materialPropsDesc, m
         analysis = doc.getObject("LDPManalysis")
 
     # Read in the nodes from the nodes file and store in a numpy array
+    # Assume that the file has the following format:
+    #// ================================================================================
+    #// CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+    #//
+    #// Copyright (c) 2023 
+    #// All rights reserved. 
+    #//
+    #// Use of the code that generated this file is governed by a BSD-style license that
+    #// can be found in the LICENSE file at the top level of the distribution and at
+    #// github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+    #//
+    #// ================================================================================
+    #// Node Data File
+    #// ================================================================================
+    #//
+    #// Data Structure:
+    #// X Y Z 
+    #//
+    #// ================================================================================
+    #0 25 44.98529816
+    #0 22.22222137 50
+    #0 27.77777863 50
+    #0 50 22.22222137
+    #0 45.12414169 25.00591087
     with open(Path(outDir + outName + '/' + nodesFilename)) as f:
-        nodes = f.readlines()
-    allNodes = np.array([x.strip().split() for x in nodes[1:]], dtype=np.float64)
+        allNodes = np.loadtxt(f, skiprows=19)
 
     # Read in the tets from the tets file and store in a numpy array
+    # Assume that the file has the following format:
+    #// ================================================================================
+    #// CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
+    #//
+    #// Copyright (c) 2023 
+    #// All rights reserved. 
+    #//
+    #// Use of the code that generated this file is governed by a BSD-style license that
+    #// can be found in the LICENSE file at the top level of the distribution and at
+    #// github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
+    #//
+    #// ================================================================================
+    #// Tetrahedra Data File
+    #// ================================================================================
+    #//
+    #// Data Structure:
+    #// Node 1 Node 2 Node 3 Node 4
+    #// Note: Node numbers are zero-indexed
+    #//
+    #// ================================================================================
+    #66 90 92 785
+    #707 585 1080 992    
     with open(Path(outDir + outName + '/' + elemFilename)) as f:
-        tets = f.readlines()
-    allTets = np.array([x.strip().split() for x in tets[1:]], dtype=np.int64)
+        allTets = np.loadtxt(f, skiprows=19)
+
+    # Increase all tet indices by 1 to account for the fact that Abaqus is 1-indexed
+    allTets = allTets + 1
 
 
 
