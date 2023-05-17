@@ -53,6 +53,7 @@ from freecad.chronoWorkbench.util.cwloadUIfile                    import cwloadU
 from freecad.chronoWorkbench.util.cwloadUIicon                    import cwloadUIicon
 
 from freecad.chronoWorkbench.output.mkChronoInput                  import mkChronoInput
+from freecad.chronoWorkbench.output.mkAbaqusInput                  import mkAbaqusInput
 
 
 
@@ -98,16 +99,20 @@ class genWindow_LDPMCSL:
         # Set initial output directory
         self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
-        # Check if "LDPMmaterial" or "CSLmaterial" is an object in the document
-        if App.Active.getObject("LDPMmaterial") != None and App.Active.getObject("CSLmaterial") != None:
-            App.Console.PrintMessage("Both LDPM and CSL material found. Please only include one material object and try again."+"\n")
-        elif App.ActiveDocument.getObject("LDPMmaterial") != None:
+        # Try to see if there is a material object in the document
+        try:
+            test = App.Active.getObject("LDPMmaterial")
             self.elementType = "LDPM"
-        elif App.ActiveDocument.getObject("CSLmaterial") != None:
-            self.elementType = "CSL"
-        else:
-            # If neither material is present, then abort process and throw error
-            App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+        except:
+            try:
+                test = App.Active.getObject("CSLmaterial")
+                self.elementType = "CSL"
+            except:
+                App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+                self.elementType = "None"
+                self.numPartsLDPM,self.numPartsCSL = 0,0
+                modelInfo = []
+
 
         # Get number of LDPM or CSL components
         # Check for number of LDPM components
@@ -233,7 +238,7 @@ class genWindow_LDPMCSL:
         # Run Project Chrono generation for LDPM or CSL
         QtCore.QObject.connect(self.form[1].writeChrono, QtCore.SIGNAL("clicked()"), self.chronoGeneration)
 
-        # Run Abaqus generation for LDPM or CSL
+        # Run Abaqus generation for LDPM
         QtCore.QObject.connect(self.form[1].writeAbaqus, QtCore.SIGNAL("clicked()"), self.abaqusGeneration)
 
 
@@ -272,6 +277,10 @@ class genWindow_LDPMCSL:
 
     def chronoGeneration(self):
 
+        # Print error and exit if no LDPM or CSL material found
+        if self.elementType != "LDPM" and self.elementType != "CSL":
+            App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+            return
 
         print('Writing files.')
 
@@ -290,7 +299,6 @@ class genWindow_LDPMCSL:
             os.mkdir(outDir)
         except:
             pass
-
 
         i = 0
         outName = '/' + "chronoPackage" + elementType + str(i).zfill(3)
@@ -373,9 +381,110 @@ class genWindow_LDPMCSL:
 
 
     def abaqusGeneration(self):
-        pass
+        
+        # Print error and exit if no LDPM or CSL material found
+        if self.elementType != "LDPM" and self.elementType != "CSL":
+            App.Console.PrintMessage("No LDPM or CSL material found. Please create a material object and try again."+"\n")
+            return
+        
+        # Print error and exit if CSL material found
+        if self.elementType == "CSL":
+            App.Console.PrintMessage("CSL element not yet supported for Abaqus."+"\n")
+            return
+
+        print('Writing files.')
+
+        # Set element type and number of parts
+        elementType = self.elementType
+        numParts = max(self.numPartsLDPM,self.numPartsCSL)
+
+        # Set filenames
+        nodesFilename = "LDPMgeo000-data-nodes.dat"
+        tetsFilename = "LDPMgeo000-data-tets.dat"
+        facetsFilename = "LDPMgeo000-data-facets.dat"
+
+        # Make output directory if does not exist
+        outDir =  self.form[1].outputDir.text()
+        try:
+            os.mkdir(outDir)
+        except:
+            pass
 
 
+        i = 0
+        outName = '/' + "abaqusPackage" + elementType + str(i).zfill(3)
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = '/' + "abaqusPackage" + elementType + str(i).zfill(3)
+
+        try:
+            os.mkdir(outDir + outName)
+        except:
+            pass
+
+        # Set analysis and material names
+        analysisName = elementType + "analysis"
+        materialName = elementType + "material"
+
+        # Get locations of data files
+        geoName = elementType + "geo" + str(0).zfill(3)
+        LDPMnodesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMnodesData").getPropertyByName("Location"))
+        LDPMtetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMtetsData").getPropertyByName("Location"))
+        LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
+
+        # Copy files to output directory
+        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/LDPMgeo000-data-nodes.dat")
+        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/LDPMgeo000-data-tets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facets.dat")
+
+
+
+        materialProps = [\
+            "Density",\
+            "CompressiveStrength",\
+            "ShearNormalCoupling",\
+            "InitialHardeningModulusRatio",\
+            "FinalHardeningModulusRatio",\
+            "DensificationRatio",\
+            "TransitionalStrainRatio",\
+            "ShearTensileStrengthRatio",\
+            "InitialInternalFrictionCoefficient",\
+            "SofteningExponent",\
+            "DeviatoricStrainRatio",\
+            "DeviatoricDamage",\
+            "FinalInternalFrictionCoefficient",\
+            "TransitionalNormalStress",\
+            "TensileStrength",\
+            "TensileCharacteristicLength",\
+            "NormalModulus",\
+            ]
+                
+        materialPropsDesc = []
+        
+        materialPropsValues = []
+
+        simProps = [\
+            "TotalTime",\
+            "TimestepSize",\
+            "NumberOfThreads",\
+            "NumberOutputSteps",\
+            ]
+
+        simPropsValues = []
+
+
+        # Read material properties from model
+        for x in range(len(materialProps)):
+            materialPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(materialName).getPropertyByName(materialProps[x]))
+
+
+        # Read simulation properties from model
+        for x in range(len(simProps)):
+            simPropsValues.append(App.getDocument(App.ActiveDocument.Name).getObject(analysisName).getPropertyByName(simProps[x]))
+
+        # Make Abaqus input file
+        mkAbaqusInput(elementType, analysisName, materialProps, materialPropsDesc, materialPropsValues, simProps, simPropsValues, \
+            nodesFilename, tetsFilename, facetsFilename, geoName, outDir, outName)
 
         
     # What to do when "Close" Button Clicked
