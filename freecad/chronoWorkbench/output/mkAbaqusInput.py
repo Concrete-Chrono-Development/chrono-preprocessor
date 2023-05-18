@@ -80,7 +80,7 @@ def mkAbaqusInput(elementType, analysisName, materialProps, materialPropsDesc, m
     #0 50 22.22222137
     #0 45.12414169 25.00591087
     with open(Path(outDir + outName + '/' + nodesFilename)) as f:
-        allNodes = np.loadtxt(f, skiprows=19)
+        allNodes = np.loadtxt(f, skiprows=18)
 
     # Read in the tets from the tets file and store in a numpy array
     # Assume that the file has the following format:
