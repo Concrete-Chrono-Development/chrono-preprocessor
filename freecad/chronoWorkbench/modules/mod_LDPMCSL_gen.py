@@ -289,10 +289,12 @@ class genWindow_LDPMCSL:
         elementType = self.elementType
         numParts = max(self.numPartsLDPM,self.numPartsCSL)
 
+        partName = "LDPMgeo000"
+
         # Set filenames
-        nodesFilename = "LDPMgeo000-data-nodes.dat"
-        tetsFilename = "LDPMgeo000-data-tets.dat"
-        facetsFilename = "LDPMgeo000-data-facets.dat"
+        nodesFilename = partName + "-data-nodes.dat"
+        tetsFilename = partName + "-data-tets.dat"
+        facetsFilename = partName + "-data-facets.dat"
 
         # Make output directory if does not exist
         outDir =  self.form[1].outputDir.text()
@@ -323,10 +325,11 @@ class genWindow_LDPMCSL:
         LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
 
         # Copy files to output directory
-        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/LDPMgeo000-data-nodes.dat")
-        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/LDPMgeo000-data-tets.dat")
-        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facets.dat")
-        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facetsVertices.dat")
+        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/" + partName + "-data-nodes.dat")
+        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/" + partName + "-data-tets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facetsVertices.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-faceFacets.dat")
 
         materialProps = [\
             "Density",\
@@ -395,14 +398,16 @@ class genWindow_LDPMCSL:
 
         print('Writing files.')
 
+        partName = 'LDPMgeo000'
+
         # Set element type and number of parts
         elementType = self.elementType
         numParts = max(self.numPartsLDPM,self.numPartsCSL)
 
         # Set filenames
-        nodesFilename = "LDPMgeo000-data-nodes.dat"
-        tetsFilename = "LDPMgeo000-data-tets.dat"
-        facetsFilename = "LDPMgeo000-data-facets.dat"
+        nodesFilename = partName + "-data-nodes.dat"
+        tetsFilename = partName + "-data-tets.dat"
+        facetsFilename = partName + "-data-facets.dat"
 
         # Make output directory if does not exist
         outDir =  self.form[1].outputDir.text()
@@ -434,10 +439,11 @@ class genWindow_LDPMCSL:
         LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
 
         # Copy files to output directory
-        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/LDPMgeo000-data-nodes.dat")
-        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/LDPMgeo000-data-tets.dat")
-        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/LDPMgeo000-data-facets.dat")
-
+        shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/" + partName + "-data-nodes.dat")
+        shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/" + partName + "-data-tets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facets.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facetsVertices.dat")
+        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-faceFacets.dat")
 
 
         materialProps = [\
