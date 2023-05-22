@@ -10,6 +10,7 @@
 ##
 ## ===========================================================================
 ## Developed by Northwestern University
+## For U.S. Army ERDC Contract No. W9132T22C0015
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
@@ -18,7 +19,7 @@
 ## ===========================================================================
 
 import os
-import FreeCADGui as Gui
+import FreeCADGui as Gui #type: ignore
 from freecad.chronoWorkbench import GUIPATH
 
 

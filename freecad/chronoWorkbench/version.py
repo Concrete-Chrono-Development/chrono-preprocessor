@@ -9,7 +9,9 @@
 ## github.com/Concrete-Chrono-Development/chrono-preprocessor/blob/main/LICENSE
 ##
 ## ================================================================================
-## Author: Matthew Troemner
+## Developed by Northwestern University
+## For U.S. Army ERDC Contract No. W9132T22C0015
+## Primary Authors: Matthew Troemner
 ## ================================================================================
 ##
 ## Description coming soon...
@@ -17,4 +19,4 @@
 ##
 ## ================================================================================
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
