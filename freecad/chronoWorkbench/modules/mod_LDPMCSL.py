@@ -10,6 +10,7 @@
 ##
 ## ===========================================================================
 ## Developed by Northwestern University
+## For U.S. Army ERDC Contract No. W9132T22C0015
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
@@ -91,6 +92,7 @@ from freecad.chronoWorkbench.output.mkData_LDPMCSL_tets                   import
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_edges                  import mkData_LDPMCSL_edges
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facets                 import mkData_LDPMCSL_facets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetsVertices         import mkData_LDPMCSL_facetsVertices
+from freecad.chronoWorkbench.output.mkData_LDPMCSL_faceFacets             import mkData_LDPMCSL_faceFacets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_particles              import mkData_LDPMCSL_particles
 from freecad.chronoWorkbench.output.mkDisp_LDPMCSL_sieveCurves            import mkDisp_LDPMCSL_sieveCurves
 
@@ -867,6 +869,7 @@ class inputWindow_LDPMCSL:
         # If data files requested, generate Facet File
         mkData_LDPMCSL_facets(geoName,tempPath,facetData)
         mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
+        mkData_LDPMCSL_faceFacets(geoName,tempPath,meshVertices,surfaceFaces)
 
 
         self.form[5].statusWindow.setText("Status: Writing particle data file.")

@@ -10,6 +10,7 @@
 ##
 ## ===========================================================================
 ## Developed by Northwestern University
+## For U.S. Army ERDC Contract No. W9132T22C0015
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
@@ -18,7 +19,7 @@
 ##
 ## ===========================================================================
 
-import FreeCAD as App
+import FreeCAD as App #type: ignore
 import ObjectsFem #type: ignore
 import numpy as np
 from femmesh.gmshtools import GmshTools as gmsh #type: ignore
