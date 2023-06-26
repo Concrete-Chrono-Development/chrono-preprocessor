@@ -250,10 +250,22 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
 
 
 
-    # Calculate the centroid of all facets for each edge
+    # Calculate the centroid of all facets for each edge, weighted based on projected area (pArea)
     for x in range(0,maxEdgeID+1):
-        facetData[np.where(facetData[:,0] == x)[0],10:13] = \
-            np.mean(facetData[np.where(facetData[:,0] == x)[0],7:10],axis=0)
-        
+                
+        # Find the row indices where the edge ID matches the edge ID in facetData
+        edgeRows = list(np.where(facetData[:,0] == x)[0])
+
+        # Find the sum of the centroids (weighted) of all facets for the edge
+        edgeCentroidSum = np.sum(facetData[edgeRows,7:10]*np.expand_dims(facetData[edgeRows,6], axis=1), axis=0)
+
+        # Find the sum of the projected area of all facets for the edge
+        edgeAreaSum = np.sum(facetData[edgeRows,6])
+
+        # Find the centroid of all facets for the edge
+        edgeCentroid = edgeCentroidSum/edgeAreaSum
+
+        # Assign the centroid of all facets for the edge to the centroid column in facetData
+        facetData[edgeRows,10:13] = edgeCentroid           
 
     return facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial
