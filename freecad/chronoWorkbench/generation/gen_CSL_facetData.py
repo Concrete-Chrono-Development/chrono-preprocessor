@@ -192,7 +192,7 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
     pArea = abs(areaCalc1/areaCalc2*facetAreas)
 
     # Initialize a data matrix for all facet data
-    facetData = np.empty([len(allTets)*12,23])
+    facetData = np.empty([len(allTets)*12,24])
 
     # Initialize a matrix for facet material information
     facetMaterial = np.empty([len(allTets)*12,])
@@ -229,7 +229,7 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
 
             edgeID = int(np.asarray(nodeA+nodeB).astype(int))
             
-            # [Edge Tet Vertices:(IDx IDy IDz) Vol pArea Projected Center:(cx cy cz) pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
+            # [Edge Tet Vertices:(IDx IDy IDz) Vol pArea Projected Center:(cx cy cz) Polygon Center:(Cx Cy Cz) pAreaT pNormals:(px py pz) pTan1:(qx qy qz) pTan2:(sx sy sz) mF]
             # Note that the order of the facets is Tet 1 (Facet 1-12),Tet 2 (Facet 1-12),...,Tet N (Facet 1-12)
             facetData[12*x+y,0]     = edgeID                  # Edge ID  
             facetData[12*x+y,1]     = x                       # Tet ID
@@ -238,10 +238,11 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
             facetData[12*x+y,6]     = pArea[12*x+y]           # Projected Facet Area
             facetData[12*x+y,7:10]  = projectedFacetCenters[12*x+y,:]  # Facet Centroid (projected)
             facetData[12*x+y,10:13] = 0                       # Centroid of all edge facets (goes here, calculated below)         
-            facetData[12*x+y,13:16] = pn[12*x+y,:]            # Projected Facet Normal
-            facetData[12*x+y,16:19] = ptan1[12*x+y,:]         # Projected Tangent 1
-            facetData[12*x+y,19:22] = ptan2[12*x+y,:]         # Projected Tangent 2
-            facetData[12*x+y,22]    = 0                       # Material Flag (Coming Soon)
+            facetData[12*x+y,13]    = 0                       # Area of all edge facets (goes here, calculated below)
+            facetData[12*x+y,14:17] = pn[12*x+y,:]            # Projected Facet Normal
+            facetData[12*x+y,17:20] = ptan1[12*x+y,:]         # Projected Tangent 1
+            facetData[12*x+y,20:23] = ptan2[12*x+y,:]         # Projected Tangent 2
+            facetData[12*x+y,23]    = 0                       # Material Flag (Coming Soon)
 
     # Sort the facet data by edge ID
     facetData = facetData[facetData[:, 0].argsort()]
@@ -262,6 +263,9 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
 
         # Find the sum of the projected area of all facets for the edge
         edgeAreaSum = np.sum(facetData[edgeRows,6])
+
+        # Assign the area of all facets for the edge to the area column in facetData
+        facetData[edgeRows,13] = edgeAreaSum
 
         # Find the centroid of all facets for the edge
         edgeCentroid = edgeCentroidSum/edgeAreaSum

@@ -60,7 +60,7 @@ def mkData_LDPMCSL_facets(geoName,tempPath,facetData):
 // Note: All indices are zero-indexed\n\
 //\n\
 // ================================================================================'
-    elif np.size(facetData,axis=1) == 23:
+    elif np.size(facetData,axis=1) == 24:
         headerText = '\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\
@@ -77,7 +77,7 @@ def mkData_LDPMCSL_facets(geoName,tempPath,facetData):
 // ================================================================================\n\
 //\n\
 // Data Structure:\n\
-// Edge Tet IDx IDy IDz Vol pArea cx cy cz Cx Cy Cz px py pz qx qy qz sx sy sz mF\n\
+// Edge Tet IDx IDy IDz Vol pArea cx cy cz Cx Cy Cz pAreaT px py pz qx qy qz sx sy sz mF\n\
 // One line per facet, ordering is by edge number\n\
 // Note: All indices are zero-indexed\n\
 //\n\
