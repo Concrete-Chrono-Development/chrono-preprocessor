@@ -65,6 +65,7 @@ from freecad.chronoWorkbench.generation.gen_CSL_facetData                 import
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tesselation           import gen_LDPMCSL_tesselation
 from freecad.chronoWorkbench.generation.gen_LDPM_facetData                import gen_LDPM_facetData
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_analysis              import gen_LDPMCSL_analysis
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_flowEdges             import gen_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_geometry              import gen_LDPMCSL_geometry
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_initialMesh           import gen_LDPMCSL_initialMesh
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_particle              import gen_LDPMCSL_particle
@@ -80,6 +81,7 @@ from freecad.chronoWorkbench.input.read_LDPMCSL_tetgen                    import
 # Importing: output
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_particles               import mkVtk_LDPMCSL_particles
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_facets                  import mkVtk_LDPMCSL_facets
+from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_flowEdges               import mkVtk_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetFacets            import mkVtk_LDPM_singleTetFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdgeFacets           import mkVtk_LDPM_singleEdgeFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetParticles         import mkVtk_LDPM_singleTetParticles
@@ -93,8 +95,10 @@ from freecad.chronoWorkbench.output.mkData_LDPMCSL_edges                  import
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facets                 import mkData_LDPMCSL_facets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetsVertices         import mkData_LDPMCSL_facetsVertices
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_faceFacets             import mkData_LDPMCSL_faceFacets
+from freecad.chronoWorkbench.output.mkData_LDPMCSL_flowEdges              import mkData_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_particles              import mkData_LDPMCSL_particles
 from freecad.chronoWorkbench.output.mkDisp_LDPMCSL_sieveCurves            import mkDisp_LDPMCSL_sieveCurves
+from freecad.chronoWorkbench.output.mkIges_LDPMCSL_flowEdges              import mkIges_LDPMCSL_flowEdges
 
 
 # Turn off error for divide by zero and invalid operations
@@ -248,6 +252,7 @@ class inputWindow_LDPMCSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
+            htcToggle, htcLength,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
 
@@ -517,6 +522,7 @@ class inputWindow_LDPMCSL:
             wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
+            htcToggle, htcLength,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
         try:
@@ -772,7 +778,13 @@ class inputWindow_LDPMCSL:
         [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
             gen_LDPMCSL_tesselation(allNodes,allTets,parDiameterList,minPar,geoName)    
 
+        # If edge elements are turned on, perform edge computations
+        if htcToggle in ['on','On']:
+            edgeData = gen_LDPMCSL_flowEdges(htcLength,allNodes,allTets,tetPoints,maxPar,\
+                meshVertices,meshTets,coord1,coord2,coord3,coord4,maxC)
 
+        else:
+            edgeData = 0
 
 
 
@@ -878,6 +890,17 @@ class inputWindow_LDPMCSL:
         mkData_LDPMCSL_particles(allNodes,parDiameterList,geoName,tempPath)
 
 
+        if htcToggle in ['on','On']:
+
+            self.form[5].statusWindow.setText("Status: Writing flow edge data file.")
+
+            # Generate edge element data file
+            mkData_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+
+
+
+
+
         self.form[5].statusWindow.setText("Status: Writing visualization files.")
 
 
@@ -889,7 +912,14 @@ class inputWindow_LDPMCSL:
 
         # If visuals requested, generate Facet VTK File
         mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData)
-        
+
+        # If visuals requested, generate flow edge VTK File
+        if htcToggle in ['on','On']:
+
+            mkVtk_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+            mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+
+
         if singleTetGen == True:
             if elementType == "LDPM":
                 mkVtk_LDPM_singleTetFacets(geoName,tempPath,tetFacets)

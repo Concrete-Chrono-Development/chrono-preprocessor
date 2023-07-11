@@ -130,8 +130,10 @@ def read_LDPMCSL_inputs(form):
     airFrac2            = float(form[3].airFracArb.value() or 0)
 
     # Additional Parameters
-    # ... Coming Soon ...
-
+    HTCtoggle           = form[4].HTCtoggle.currentText()
+    HTClength           = form[4].HTClength.text()
+    HTClength           = float(HTClength.split(" ")[0].strip())
+    
     # Generation Data
     outputDir           = form[5].outputDir.text()
     singleTetGen        = form[5].singleTetGen.isChecked()
@@ -144,4 +146,5 @@ def read_LDPMCSL_inputs(form):
         wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
+        HTCtoggle, HTClength,\
         outputDir, singleTetGen, modelType

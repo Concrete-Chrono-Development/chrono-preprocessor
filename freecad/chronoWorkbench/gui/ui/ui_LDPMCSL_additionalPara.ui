@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowIcon">
-   <iconset resource="../icons.qrc">
+   <iconset>
     <normaloff>:/icons/PartDesignWorkbench.svg</normaloff>:/icons/PartDesignWorkbench.svg</iconset>
   </property>
   <property name="sizeGripEnabled" stdset="0">
@@ -21,7 +21,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="styleSheet">
       <string notr="true">border-color: rgb(182, 182, 182);</string>
@@ -47,6 +47,9 @@
       </property>
       <item row="1" column="0">
        <widget class="QStackedWidget" name="widgetStack2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="styleSheet">
          <string notr="true">border-color: rgb(182, 182, 182);</string>
         </property>
@@ -54,11 +57,17 @@
          <number>0</number>
         </property>
         <widget class="QWidget" name="Page1_box">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QComboBox" name="comboBox">
+             <widget class="QComboBox" name="HTCtoggle">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -90,7 +99,10 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="textLabel2">
+             <widget class="QLabel" name="HTCtoggleLabel">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="text">
                <string>Turn On/Off HTC edge elements</string>
               </property>
@@ -101,7 +113,10 @@
           <item row="1" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+             <widget class="QDoubleSpinBox" name="HTClength">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -121,7 +136,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="maximum">
                <double>999999.000000000000000</double>
@@ -129,7 +144,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="textLabel2_2">
+             <widget class="QLabel" name="HTClengthLabel">
               <property name="text">
                <string>Edge element length for surface cases</string>
               </property>
@@ -156,6 +171,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="Page2_cylinder">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -559,6 +577,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="Page3_cone">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_11">
@@ -868,6 +889,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="Page4_sphere">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_18">
@@ -1048,6 +1072,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="Page5_ellipsoid">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_22">
@@ -1715,6 +1742,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="page_prism">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
            <widget class="QLabel" name="labelPrismPolygon">
@@ -1739,6 +1769,9 @@
          </layout>
         </widget>
         <widget class="QWidget" name="page">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_36">
@@ -1826,7 +1859,7 @@
    <item row="0" column="0">
     <widget class="QComboBox" name="PrimitiveTypeCB">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1842,7 +1875,7 @@
        <string notr="true">HTC Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_Body_old.svg</normaloff>:/icons/PartDesign_Body_old.svg</iconset>
       </property>
      </item>
@@ -1851,7 +1884,7 @@
        <string notr="true">Fiber-Reinforcement Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
       </property>
      </item>
@@ -1860,7 +1893,7 @@
        <string notr="true">Rebar Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
       </property>
      </item>
@@ -1869,7 +1902,7 @@
        <string notr="true">Periodic Mesh Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_LinearPattern.svg</normaloff>:/icons/PartDesign_LinearPattern.svg</iconset>
       </property>
      </item>
@@ -1878,7 +1911,7 @@
        <string notr="true">Multi-Material Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
       </property>
      </item>
@@ -1887,7 +1920,7 @@
        <string notr="true">Cement-Scale Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
       </property>
      </item>
@@ -1896,7 +1929,7 @@
        <string notr="true">Other Parameters</string>
       </property>
       <property name="icon">
-       <iconset resource="../icons.qrc">
+       <iconset>
         <normaloff>:/icons/PartDesign_Clone.svg</normaloff>:/icons/PartDesign_Clone.svg</iconset>
       </property>
      </item>
