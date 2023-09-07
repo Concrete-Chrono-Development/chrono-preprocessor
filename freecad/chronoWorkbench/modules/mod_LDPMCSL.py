@@ -881,7 +881,7 @@ class inputWindow_LDPMCSL:
         # If data files requested, generate Facet File
         mkData_LDPMCSL_facets(geoName,tempPath,facetData)
         mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
-        mkData_LDPMCSL_faceFacets(geoName,tempPath,meshVertices,surfaceFaces)
+        mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
 
 
         self.form[5].statusWindow.setText("Status: Writing particle data file.")

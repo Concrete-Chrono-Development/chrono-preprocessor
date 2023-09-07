@@ -23,20 +23,20 @@ from pathlib import Path
 import numpy as np
 
 
-def mkData_LDPMCSL_faceFacets(geoName,tempPath,meshVertices,surfaceFaces):
+def mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces):
 
     """
     Variable List:
     --------------------------------------------------------------------------
     ### Inputs ###
-    - meshVertices:         Array of all vertices in the mesh
+    - surfaceNodes:         Array of all vertices in the mesh
     - surfaceFaces:         Array of all surface faces in the mesh
     --------------------------------------------------------------------------
     ### Outputs ###
     - A data file of all face facets in the model
     --------------------------------------------------------------------------
     """
-
+    
     faceFacets = np.empty((len(surfaceFaces)*6,10))
 
     for x in range(len(surfaceFaces)):
@@ -49,16 +49,16 @@ def mkData_LDPMCSL_faceFacets(geoName,tempPath,meshVertices,surfaceFaces):
 
         # [n x1 y1 z1 x2 y2 z2 x3 y3 z3]
         # Node 0
-        faceFacets[6*x,:] = np.concatenate(([surfaceFaces[x,0]],meshVertices[surfaceFaces[x,0]-1],(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
-        faceFacets[6*x+1,:] = np.concatenate(([surfaceFaces[x,0]],meshVertices[surfaceFaces[x,0]-1],(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
+        faceFacets[6*x,:] = np.concatenate(([surfaceFaces[x,0]],surfaceNodes[surfaceFaces[x,0]],(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
+        faceFacets[6*x+1,:] = np.concatenate(([surfaceFaces[x,0]],surfaceNodes[surfaceFaces[x,0]],(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
 
         # Node 1
-        faceFacets[6*x+2,:] = np.concatenate(([surfaceFaces[x,1]],meshVertices[surfaceFaces[x,1]-1],(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
-        faceFacets[6*x+3,:] = np.concatenate(([surfaceFaces[x,1]],meshVertices[surfaceFaces[x,1]-1],(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
+        faceFacets[6*x+2,:] = np.concatenate(([surfaceFaces[x,1]],surfaceNodes[surfaceFaces[x,1]],(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
+        faceFacets[6*x+3,:] = np.concatenate(([surfaceFaces[x,1]],surfaceNodes[surfaceFaces[x,1]],(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
 
         # Node 2
-        faceFacets[6*x+4,:] = np.concatenate(([surfaceFaces[x,2]],meshVertices[surfaceFaces[x,2]-1],(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
-        faceFacets[6*x+5,:] = np.concatenate(([surfaceFaces[x,2]],meshVertices[surfaceFaces[x,2]-1],(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2,((meshVertices[surfaceFaces[x,0]-1]+(meshVertices[surfaceFaces[x,1]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,1]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,2]-1])/2)/2+(meshVertices[surfaceFaces[x,2]-1]+(meshVertices[surfaceFaces[x,0]-1]+meshVertices[surfaceFaces[x,1]-1])/2)/2)/3))
+        faceFacets[6*x+4,:] = np.concatenate(([surfaceFaces[x,2]],surfaceNodes[surfaceFaces[x,2]],(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
+        faceFacets[6*x+5,:] = np.concatenate(([surfaceFaces[x,2]],surfaceNodes[surfaceFaces[x,2]],(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2,((surfaceNodes[surfaceFaces[x,0]]+(surfaceNodes[surfaceFaces[x,1]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,1]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,2]])/2)/2+(surfaceNodes[surfaceFaces[x,2]]+(surfaceNodes[surfaceFaces[x,0]]+surfaceNodes[surfaceFaces[x,1]])/2)/2)/3))
 
     headerText = '\
 // ================================================================================\n\
