@@ -123,6 +123,7 @@ class inputWindow_LDPMCSL:
         self.form.append(cwloadUIfile("ui_LDPMCSL_mixDesign.ui"))          
         self.form.append(cwloadUIfile("ui_LDPMCSL_additionalPara.ui"))       
         self.form.append(cwloadUIfile("ui_LDPMCSL_generation.ui"))
+        self.form.append(cwloadUIfile("ui_LDPMCSL_debugging.ui"))
 
         # Label, Load Icons, and Initialize Panels
         self.form[0].setWindowTitle("Model Settings")
@@ -131,6 +132,7 @@ class inputWindow_LDPMCSL:
         self.form[3].setWindowTitle("Mix Design")
         self.form[4].setWindowTitle("Additional Parameters")
         self.form[5].setWindowTitle("Model Generation") 
+        self.form[6].setWindowTitle("Debugging")
 
         cwloadUIicon(self.form[0],"FEM_MaterialMechanicalNonlinear.svg")
         cwloadUIicon(self.form[1],"PartDesign_AdditiveBox.svg")
@@ -138,6 +140,7 @@ class inputWindow_LDPMCSL:
         cwloadUIicon(self.form[3],"FEM_ConstraintFlowVelocity.svg")
         cwloadUIicon(self.form[4],"FEM_CreateNodesSet.svg")
         cwloadUIicon(self.form[5],"ldpm.svg")
+        cwloadUIicon(self.form[6],"PartDesign_Sprocket.svg")
 
         # Set initial output directory
         self.form[5].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
@@ -154,6 +157,11 @@ class inputWindow_LDPMCSL:
         # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generate, QtCore.SIGNAL("clicked()"), self.generation)
         QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
+
+        # Run debugging generation of single tetrahedron
+        QtCore.QObject.connect(self.form[6].generate_reg, QtCore.SIGNAL("clicked()"), self.debugGenerateTet)
+        QtCore.QObject.connect(self.form[6].generate_irreg, QtCore.SIGNAL("clicked()"), self.debugGenerateIrregTet)
+
 
 
 
@@ -476,6 +484,105 @@ class inputWindow_LDPMCSL:
         self.form[3].fillerDensity.setText(str(fillerDensity))
         self.form[3].airFracArb.setValue(airFrac2)
         self.form[5].outputDir.setText(outputDir)
+
+
+
+    def debugGenerateTet(self):
+
+        # Make output directory if does not exist
+        outDir =  self.form[5].outputDir.text()
+        try:
+            os.mkdir(outDir)
+        except:
+            pass
+
+        # Make a temporary path location
+        tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
+        os.mkdir(tempPath)
+
+        # Store document
+        docGui = Gui.activeDocument()
+
+        # Make new document and set view if does not exisit
+        try:
+            docGui.activeView().viewAxonometric()
+        except:
+            App.newDocument("Unnamed")
+            docGui = Gui.activeDocument()
+            docGui.activeView().viewAxonometric()
+        Gui.runCommand('Std_PerspectiveCamera',1)
+
+        # Read in inputs from input panel
+        [setupFile, constitutiveEQ, matParaSet, \
+            numCPU, numIncrements,maxIter,placementAlg,\
+            geoType, dimensions, cadFile,\
+            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
+            wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
+            fillerC, fillerDensity, airFrac2,\
+            htcToggle, htcLength,\
+            outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
+
+
+        if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
+                         "Confinement Shear Lattice (CSL) - Original"]:
+            elementType = "CSL"
+        else:
+            elementType = "LDPM"
+
+
+
+
+
+
+
+    def debugGenerateIrregTet(self):
+
+        # Make output directory if does not exist
+        outDir =  self.form[5].outputDir.text()
+        try:
+            os.mkdir(outDir)
+        except:
+            pass
+
+        # Make a temporary path location
+        tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
+        os.mkdir(tempPath)
+
+        # Store document
+        docGui = Gui.activeDocument()
+
+        # Make new document and set view if does not exisit
+        try:
+            docGui.activeView().viewAxonometric()
+        except:
+            App.newDocument("Unnamed")
+            docGui = Gui.activeDocument()
+            docGui.activeView().viewAxonometric()
+        Gui.runCommand('Std_PerspectiveCamera',1)
+
+        # Read in inputs from input panel
+        [setupFile, constitutiveEQ, matParaSet, \
+            numCPU, numIncrements,maxIter,placementAlg,\
+            geoType, dimensions, cadFile,\
+            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
+            wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
+            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
+            fillerC, fillerDensity, airFrac2,\
+            htcToggle, htcLength,\
+            outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
+
+
+        if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
+                         "Confinement Shear Lattice (CSL) - Original"]:
+            elementType = "CSL"
+        else:
+            elementType = "LDPM"
+
+
+
+
+
 
 
 
