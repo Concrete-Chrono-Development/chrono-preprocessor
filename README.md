@@ -16,6 +16,12 @@ Select below instructions for installation and setup on your local desktop.&#x20
 
 Page for details on output files: [Output Files](output-files.md)
 
+## Questions
+
+All questions and suggestions should be directed to the Stackoverflow Teams forum.
+
+> #### [Chrono Concrete Forum](https://stackoverflowteams.com/c/concrete-chrono-development)
+
 ## License
 
 The Chrono Preprocessor workbench application is licensed free and open source under the [BSD 3-Clause “New” or “Revised” License](https://choosealicense.com/licenses/bsd-3-clause/). One reason for Project Chrono's popularity is that its users are granted the freedom to modify and redistribute the software and have a right of continued free use, within the terms of the BSD license.
