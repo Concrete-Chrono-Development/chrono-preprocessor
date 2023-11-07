@@ -14,7 +14,7 @@ Select below instructions for installation and setup on your local desktop.&#x20
 
 ## Output
 
-Page for details on output files: [Output Files]([output-files.md](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/wiki/Output-Files))
+Page for details on output files: [Output Files](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/wiki/Output-Files)
 
 ## Questions
 
