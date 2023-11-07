@@ -16,19 +16,9 @@ Install the latest version of FreeCAD (use at least version 0.20.2). The downloa
 
 <details>
 
-<summary>Step 2: Install Qt Designer</summary>
+<summary>Step 2: Install Git Client</summary>
 
-Qt Designer normally ships as a part of Qt Creator. This is Qt's official editor and lets you do a lot more than just graphically design user interfaces. It is a full-fledged and very powerful C++ IDE. This power comes at a price however: The download for Qt Creator is gigabytes in size. You can download the full [Qt Creator suite](https://www.qt.io/product/development-tools). Otherwise, you can find alternative sites which provide installations with only Qt Designer. One such option is below:
-
-[https://build-system.fman.io/qt-designer-download](https://build-system.fman.io/qt-designer-download)
-
-</details>
-
-<details>
-
-<summary>Step 3: Install Git Client</summary>
-
-Any Git client can be used to push and pull from the GitHub. We recommedn using SourceTree and these instructions will assume you are using that installation. You can download SourceTree for free here:
+Any Git client can be used to push and pull from the GitHub. We recommend using SourceTree and these instructions will assume you are using that installation. You can download SourceTree for free here:
 
 [https://www.sourcetreeapp.com/](https://www.sourcetreeapp.com/)
 
@@ -36,7 +26,7 @@ Any Git client can be used to push and pull from the GitHub. We recommedn using 
 
 <details>
 
-<summary>Step 4: Pull GitHub</summary>
+<summary>Step 3: Pull GitHub</summary>
 
 We recommend pulling the GitHub directly into the FreeCAD workbench directory. Otherwise if you pull to another location then you will need to copy the pulled files to the appropriate directory.
 
@@ -56,7 +46,7 @@ We recommend pulling the GitHub directly into the FreeCAD workbench directory. O
 
 <details>
 
-<summary>Step 5: Test Installation</summary>
+<summary>Step 4: Test Installation</summary>
 
 Verify that everything is installed properly by opening FreeCAD and check if the Chrono Workbench is available in the list of installed workbenches.
 
