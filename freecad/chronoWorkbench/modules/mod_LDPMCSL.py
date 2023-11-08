@@ -64,6 +64,7 @@ from freecad.chronoWorkbench.generation.check_LDPMCSL_particleOverlapMPI  import
 from freecad.chronoWorkbench.generation.gen_CSL_facetData                 import gen_CSL_facetData
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tesselation           import gen_LDPMCSL_tesselation
 from freecad.chronoWorkbench.generation.gen_LDPM_facetData                import gen_LDPM_facetData
+from freecad.chronoWorkbench.generation.gen_LDPM_debugTet                 import gen_LDPM_debugTet
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_analysis              import gen_LDPMCSL_analysis
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_flowEdges             import gen_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_geometry              import gen_LDPMCSL_geometry
@@ -89,6 +90,10 @@ from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdgeParticles        import
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTet                  import mkVtk_LDPM_singleTet
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdge                 import mkVtk_LDPM_singleEdge
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleCell                 import mkVtk_LDPM_singleCell
+from freecad.chronoWorkbench.output.mkPy_LDPM_singleDebugParaview         import mkPy_LDPM_singleDebugParaview
+from freecad.chronoWorkbench.output.mkPy_LDPM_singleDebugParaviewLabels   import mkPy_LDPM_singleDebugParaviewLabels
+from freecad.chronoWorkbench.output.mkPy_LDPM_singleParaview              import mkPy_LDPM_singleParaview
+from freecad.chronoWorkbench.output.mkPy_LDPM_singleParaviewLabels        import mkPy_LDPM_singleParaviewLabels
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_nodes                  import mkData_LDPMCSL_nodes
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_tets                   import mkData_LDPMCSL_tets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_edges                  import mkData_LDPMCSL_edges
@@ -159,7 +164,7 @@ class inputWindow_LDPMCSL:
         QtCore.QObject.connect(self.form[5].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
 
         # Run debugging generation of single tetrahedron
-        QtCore.QObject.connect(self.form[6].generate_reg, QtCore.SIGNAL("clicked()"), self.debugGenerateTet)
+        QtCore.QObject.connect(self.form[6].generate_reg, QtCore.SIGNAL("clicked()"), self.debugGenerateRegTet)
         QtCore.QObject.connect(self.form[6].generate_irreg, QtCore.SIGNAL("clicked()"), self.debugGenerateIrregTet)
 
 
@@ -486,58 +491,18 @@ class inputWindow_LDPMCSL:
         self.form[5].outputDir.setText(outputDir)
 
 
+    def debugGenerateRegTet(self):
 
-    def debugGenerateTet(self):
-
-        # Make output directory if does not exist
-        outDir =  self.form[5].outputDir.text()
-        try:
-            os.mkdir(outDir)
-        except:
-            pass
-
-        # Make a temporary path location
-        tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
-        os.mkdir(tempPath)
-
-        # Store document
-        docGui = Gui.activeDocument()
-
-        # Make new document and set view if does not exisit
-        try:
-            docGui.activeView().viewAxonometric()
-        except:
-            App.newDocument("Unnamed")
-            docGui = Gui.activeDocument()
-            docGui.activeView().viewAxonometric()
-        Gui.runCommand('Std_PerspectiveCamera',1)
-
-        # Read in inputs from input panel
-        [setupFile, constitutiveEQ, matParaSet, \
-            numCPU, numIncrements,maxIter,placementAlg,\
-            geoType, dimensions, cadFile,\
-            minPar, maxPar, fullerCoef, sieveCurveDiameter, sieveCurvePassing,\
-            wcRatio, densityWater, cementC, flyashC, silicaC, scmC,\
-            cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
-            fillerC, fillerDensity, airFrac2,\
-            htcToggle, htcLength,\
-            outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
-
-
-        if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
-                         "Confinement Shear Lattice (CSL) - Original"]:
-            elementType = "CSL"
-        else:
-            elementType = "LDPM"
-
-
-
-
-
-
+        self.debugGenerateTet("Regular")
 
     def debugGenerateIrregTet(self):
 
+        self.debugGenerateTet("Irregular")
+
+
+    def debugGenerateTet(self,type):
+
+
         # Make output directory if does not exist
         outDir =  self.form[5].outputDir.text()
         try:
@@ -561,7 +526,7 @@ class inputWindow_LDPMCSL:
             docGui.activeView().viewAxonometric()
         Gui.runCommand('Std_PerspectiveCamera',1)
 
-        # Read in inputs from input panel
+        # Read in inputs from input panel just to get location for file output
         [setupFile, constitutiveEQ, matParaSet, \
             numCPU, numIncrements,maxIter,placementAlg,\
             geoType, dimensions, cadFile,\
@@ -572,19 +537,218 @@ class inputWindow_LDPMCSL:
             htcToggle, htcLength,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
-
         if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
                          "Confinement Shear Lattice (CSL) - Original"]:
             elementType = "CSL"
         else:
             elementType = "LDPM"
 
+        geoName = elementType + "geo" + str(0).zfill(3)
+        meshName = elementType + "mesh" + str(0).zfill(3)
+        analysisName = elementType + "analysis"
+        materialName = elementType + "material"
+        dataFilesName = elementType + 'dataFiles'+ str(0).zfill(3)
+        visualFilesName = elementType + 'visualFiles'+ str(0).zfill(3)
+
+        # Set view
+        docGui.activeView().viewAxonometric()
+        Gui.SendMsgToActiveView("ViewFit")
+        Gui.runCommand('Std_DrawStyle',6)
+        Gui.runCommand('Std_PerspectiveCamera',1)
+
+
+        # Generate analysis objects
+        self.form[5].statusWindow.setText("Status: Generating analysis objects.") 
+        genAna = gen_LDPMCSL_analysis(analysisName,materialName)
+        self.form[5].progressBar.setValue(3) 
+
+        [allNodes,allTets,parDiameterList,materialList,minPar,geoName] = gen_LDPM_debugTet(type)
+
+        [tetFacets,facetCenters,facetAreas,facetNormals,tetn1,tetn2,tetPoints,allDiameters,facetPointData,facetCellData] = \
+            gen_LDPMCSL_tesselation(allNodes,allTets,parDiameterList,minPar,geoName)   
+
+
+        self.form[5].progressBar.setValue(95) 
+
+        # Store values for unused features
+        edgedata = 0
+        edgeMaterialList = 0
+        materialRule = 0
+        multiMaterial = 'Off'
+        cementStructure = 'Off'
+
+        [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_LDPM_facetData(\
+            allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
+            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+
+        self.form[5].progressBar.setValue(98) 
+
+
+        self.form[5].statusWindow.setText("Status: Writing external facet data file.") 
+
+        # Initialize counter for number of facet materials switched
+        matSwitched = 0
+
+        itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct,\
+            PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
+            PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,\
+            matSwitched,materialRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+
+        App.activeDocument().addObject('App::DocumentObjectGroup',dataFilesName)
+        App.activeDocument().getObject(dataFilesName).Label = 'Data Files'
+
+        App.activeDocument().addObject('App::DocumentObjectGroup',visualFilesName)
+        App.activeDocument().getObject(visualFilesName).Label = 'Visualization Files'
+
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName))
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName))
+
+        self.form[5].statusWindow.setText("Status: Writing node data file.")
+
+        mkData_LDPMCSL_nodes(geoName,tempPath,allNodes)
+
+        self.form[5].statusWindow.setText("Status: Writing tet data file.")
+
+        mkData_LDPMCSL_tets(geoName,tempPath,allTets)
+
+        self.form[5].statusWindow.setText("Status: Writing facet data file.")
+
+        # If data files requested, generate Facet File
+        mkData_LDPMCSL_facets(geoName,tempPath,facetData)
+        mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
+        #mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
+
+        self.form[5].statusWindow.setText("Status: Writing particle data file.")
+
+        # If data files requested, generate Particle Data File
+        mkData_LDPMCSL_particles(allNodes,parDiameterList,geoName,tempPath)
+
+        self.form[5].statusWindow.setText("Status: Writing visualization files.")
+
+        # If visuals requested, generate Particle VTK File
+        mkVtk_LDPMCSL_particles(allNodes,parDiameterList,materialList,geoName,tempPath)
+
+        # If visuals requested, generate Facet VTK File
+        mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData)
+
+        mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath)
+
+
+        i = 0
+        outName = '/' + geoName + geoType + str(i).zfill(3)
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = '/' + geoName + geoType + str(i).zfill(3)
+
+
+        mkPy_LDPM_singleDebugParaview(geoName, outDir, outName, tempPath)
+        mkPy_LDPM_singleDebugParaviewLabels(geoName, tempPath)
+
+        # Move files to selected output directory
+        print('Moving files.')
+
+           
+        os.rename(Path(tempPath),Path(outDir + outName))
+        os.rename(Path(outDir + outName + '/' + geoName + '-para-singleTet.000.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
+
+
+        print("Generated files written to: " + str(Path(outDir + outName)))
+
+
+        # Set linked object for node data file
+        LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
+        LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMnodesData)
+        LDPMnodesData.addProperty("App::PropertyFile",'Location','Node Data File','Location of node data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-nodes.dat'))
+        
+        # Set linked object for tet data file
+        LDPMtetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMtetsData")                                     # create your object
+        LDPMtetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMtetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMtetsData)
+        LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
+
+        # Set linked object for facet data file
+        LDPMfacetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfacetsData")                                     # create your object
+        LDPMfacetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMfacetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsData)
+        LDPMfacetsData.addProperty("App::PropertyFile",'Location','Facet Data File','Location of facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facets.dat'))
+
+
+        # Set linked object for particle VTK file
+        LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
+        LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMparticlesVTK)
+        LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
+
+
+
+        #objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
+        #try:
+        #    Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 0
+        #    Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
+        #except:
+        #    pass
+
+
+
+        # Insert mesh visualization and link mesh VTK file
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)
+        LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000')
+        LDPMmeshVTK.Label = 'LDPMmeshVTK'
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
+        LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
+        # Set visualization properties for mesh
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').DisplayMode = u"Wireframe & Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').PointSize = 20.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').PointColor = (255,170,0)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').ShapeColor = (0.36,0.36,0.36)
+        
 
 
 
 
 
 
+
+
+
+        # Insert facet visualization and link facet VTK file
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk')),App.ActiveDocument.Name)        
+        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000')
+        LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMfacetsVTK)
+        LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk'))
+
+
+        # Set visualization properties for facets
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').DisplayMode = u"Faces & Wireframe"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').ShapeColor = (0.36,0.36,0.36)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').Transparency = 50
+
+
+        self.form[5].progressBar.setValue(100) 
+
+
+        # Switch to FEM GUI
+        App.ActiveDocument.recompute()
+
+
+        Gui.Control.closeDialog()
+        Gui.activateWorkbench("FemWorkbench")
+        FemGui.setActiveAnalysis(App.activeDocument().getObject(analysisName))
+
+        # Set view
+        docGui.activeView().viewAxonometric()
+        Gui.SendMsgToActiveView("ViewFit")
+        Gui.runCommand('Std_DrawStyle',6)
+        Gui.runCommand('Std_PerspectiveCamera',1)
 
 
 
@@ -1027,12 +1191,22 @@ class inputWindow_LDPMCSL:
             mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
 
 
+        i = 0
+        outName = '/' + geoName + geoType + str(i).zfill(3)
+        while os.path.isdir(Path(outDir + outName)):
+            i = i+1
+            outName = '/' + geoName + geoType + str(i).zfill(3)
+
+
+
         if singleTetGen == True:
             if elementType == "LDPM":
                 mkVtk_LDPM_singleTetFacets(geoName,tempPath,tetFacets)
                 mkVtk_LDPM_singleTetParticles(allNodes,allTets,allDiameters,geoName,tempPath)
                 mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath)
                 mkVtk_LDPM_singleCell(allNodes,allTets,parDiameterList,tetFacets,geoName,tempPath)
+                mkPy_LDPM_singleParaview(geoName, outDir, outName, tempPath)
+                mkPy_LDPM_singleParaviewLabels(geoName, tempPath)
             elif elementType == "CSL":
                 pass
                 mkVtk_LDPM_singleEdgeFacets(geoName,tempPath,allEdges,facetData,tetFacets)
@@ -1071,11 +1245,7 @@ class inputWindow_LDPMCSL:
         print('Moving files.')
 
 
-        outName = '/' + geoName + geoType + str(i).zfill(3)
-        i = 0
-        while os.path.isdir(Path(outDir + outName)):
-            i = i+1
-            outName = '/' + geoName + geoType + str(i).zfill(3)
+
             
         os.rename(Path(tempPath),Path(outDir + outName))
         os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
