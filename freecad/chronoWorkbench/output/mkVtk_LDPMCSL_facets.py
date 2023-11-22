@@ -45,7 +45,7 @@ def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets):
     
     # Make an array like above but goes from 0 to 3xlen(FacetPoints)   
     # This is the cell data for the facets
-    FacetCells = np.tile(np.arange(0,len(FacetPoints)),3).reshape(-1,3)
+    FacetCells = np.arange(0,len(FacetPoints)).reshape(-1,3)
 
 
 
