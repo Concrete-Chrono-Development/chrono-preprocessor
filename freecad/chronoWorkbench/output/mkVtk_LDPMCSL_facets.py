@@ -23,7 +23,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData):
+def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets):
 
     """
     Variables:
@@ -39,10 +39,17 @@ def mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData):
     --------------------------------------------------------------------------
     """
 
-    while facetPointData.shape[0] % 3 != 0:
-        facetPointData = np.concatenate((facetPointData, np.zeros((1, facetPointData.shape[1]))), axis=0)
 
-    facetPointData = np.around(facetPointData.reshape(-1,9), decimals=6) # reshape and condense to save memory/space
+    FacetPoints = tetFacets.reshape(-1,3)
+
+    
+    # Make an array like above but goes from 0 to 3xlen(FacetPoints)   
+    # This is the cell data for the facets
+    FacetCells = np.tile(np.arange(0,len(FacetPoints)),3).reshape(-1,3)
+
+
+
+
 
     with open(Path(tempPath + geoName + \
         '-para-facets.000.vtk'),"w") as f:                                                                          
@@ -51,26 +58,12 @@ def mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData):
         f.write('ASCII\n')    
         f.write('DATASET POLYDATA\n')        
 
-        f.write('POINTS ' + str(len(facetPointData)*3) + ' float \n') 
-        f.write("\n".join(" ".join(map(str, x)) for x in facetPointData))
+        f.write('POINTS ' + str(len(FacetPoints)) + ' float \n') 
+        f.write("\n".join(" ".join(map(str, x)) for x in FacetPoints))
         f.write('\n\n')  
 
-        f.write('POLYGONS ' + str(len(facetCellData)) + ' ' \
-            + str(round(len(facetCellData)*4)) +'\n3 ')
-        f.write("\n3 ".join(" ".join(map(str, x)) for x in facetCellData))
+        f.write('POLYGONS ' + str(len(FacetCells)) + ' ' \
+            + str(round(len(FacetCells)*4)) +'\n3 ')
+        f.write("\n3 ".join(" ".join(map(str, x)) for x in FacetCells))
 
         f.write('\n\n')  
-
-        ## NEED TO FIX BELOW FOR MULTI-MATERIAL IMPLEMENTATION
-        #if multiMaterial in ['on','On','Y','y','Yes','yes']:  
-        #    f.write('\nCELL_DATA ' + str(len(facetMaterial)) + '\n')
-        #    f.write('FIELD FieldData 1\n')
-        #    f.write('material 1 ' + str(len(facetMaterial)) + ' float\n')
-        #    for x in facetMaterial:
-        #        f.write("%s\n" % x)
-        #if cementStructure in ['on','On','Y','y','Yes','yes']:  
-        #    f.write('\nCELL_DATA ' + str(len(facetMaterial)) + '\n')
-        #    f.write('FIELD FieldData 1\n')
-        #    f.write('material 1 ' + str(len(facetMaterial)) + ' float\n')
-        #    for x in facetMaterial:
-        #        f.write("%s\n" % x) 

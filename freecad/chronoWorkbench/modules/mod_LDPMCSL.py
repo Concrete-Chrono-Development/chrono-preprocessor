@@ -630,7 +630,7 @@ class inputWindow_LDPMCSL:
         mkVtk_LDPMCSL_particles(allNodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
-        mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData)
+        mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets)
 
         mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath)
 
@@ -1182,7 +1182,7 @@ class inputWindow_LDPMCSL:
         mkVtk_LDPMCSL_particles(internalNodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
-        mkVtk_LDPMCSL_facets(geoName,tempPath,facetPointData,facetCellData)
+        mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets)
 
         # If visuals requested, generate flow edge VTK File
         if htcToggle in ['on','On']:
