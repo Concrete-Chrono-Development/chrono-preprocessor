@@ -134,6 +134,34 @@ def read_LDPMCSL_inputs(form):
     HTClength           = form[4].HTClength.text()
     HTClength           = float(HTClength.split(" ")[0].strip())
     
+    multiMatToggle      = form[4].multiMatToggle.currentText()
+    multiMatFile        = form[4].multiMatFile.text()
+    multiMatRule        = float(form[4].grainBinderFuller.value() or 9)  
+
+    grainAggMin         = form[4].grainAggMin.text()
+    grainAggMin         = float(grainAggMin.split(" ")[0].strip())
+    grainAggMax         = form[4].grainAggMax.text()
+    grainAggMax         = float(grainAggMax.split(" ")[0].strip())
+    grainAggFuller      = float(form[4].grainAggFuller.value() or 0)  
+    grainAggSieveD      = form[4].grainAggSieveD.text()        
+    grainAggSieveP      = form[4].grainAggSieveP.text()   
+
+    grainITZMin         = form[4].grainITZMin.text()
+    grainITZMin         = float(grainITZMin.split(" ")[0].strip())
+    grainITZMax         = form[4].grainITZMax.text()
+    grainITZMax         = float(grainITZMax.split(" ")[0].strip())
+    grainITZFuller      = float(form[4].grainITZFuller.value() or 0)  
+    grainITZSieveD      = form[4].grainITZSieveD.text()        
+    grainITZSieveP      = form[4].grainITZSieveP.text()   
+
+    grainBinderMin      = form[4].grainBinderMin.text()
+    grainBinderMin      = float(grainBinderMin.split(" ")[0].strip())
+    grainBinderMax      = form[4].grainBinderMax.text()
+    grainBinderMax      = float(grainBinderMax.split(" ")[0].strip())
+    grainBinderFuller   = float(form[4].grainBinderFuller.value() or 0)  
+    grainBinderSieveD   = form[4].grainBinderSieveD.text()        
+    grainBinderSieveP   = form[4].grainBinderSieveP.text()   
+
     # Generation Data
     outputDir           = form[5].outputDir.text()
     singleTetGen        = form[5].singleTetGen.isChecked()
@@ -147,4 +175,8 @@ def read_LDPMCSL_inputs(form):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         HTCtoggle, HTClength,\
+        multiMatToggle,multiMatFile,multiMatRule,\
+        grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
+        grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
+        grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
         outputDir, singleTetGen, modelType

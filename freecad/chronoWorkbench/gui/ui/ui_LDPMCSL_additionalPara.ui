@@ -45,7 +45,7 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="1" column="0">
+      <item row="0" column="0">
        <widget class="QStackedWidget" name="widgetStack2">
         <property name="enabled">
          <bool>true</bool>
@@ -1073,13 +1073,13 @@
         </widget>
         <widget class="QWidget" name="Page5_ellipsoid">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_22">
             <item>
-             <widget class="QComboBox" name="comboBox_6">
+             <widget class="QComboBox" name="multiMatToggle">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1119,12 +1119,12 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="0" colspan="2">
+          <item row="1" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_23">
             <item>
-             <widget class="QLineEdit" name="le_working_dir_5">
+             <widget class="QLineEdit" name="multiMatFile">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -1144,9 +1144,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="readFileButton_5">
+             <widget class="QToolButton" name="readMultiMatFile">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string notr="true">...</string>
@@ -1162,10 +1162,40 @@
             </item>
            </layout>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="0">
+             <widget class="QSpinBox" name="multiMatRule">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10</number>
+              </property>
+              <property name="value">
+               <number>9</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="textLabel2_30">
+              <property name="text">
+               <string>Rule for multi-material assignments</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_24">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_15">
+             <widget class="QDoubleSpinBox" name="grainAggMin">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1185,7 +1215,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1203,7 +1233,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_16">
+             <widget class="QDoubleSpinBox" name="grainAggMax">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1223,7 +1253,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1242,10 +1272,10 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_25">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_17">
+             <widget class="QDoubleSpinBox" name="grainAggFuller">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1278,10 +1308,10 @@
             </item>
            </layout>
           </item>
-          <item row="4" column="0" colspan="2">
+          <item row="5" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_26">
             <item>
-             <widget class="QLineEdit" name="lineEdit_2">
+             <widget class="QLineEdit" name="grainAggSieveD">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1317,10 +1347,10 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="6" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_27">
             <item>
-             <widget class="QLineEdit" name="lineEdit_3">
+             <widget class="QLineEdit" name="grainAggSieveP">
               <property name="minimumSize">
                <size>
                 <width>125</width>
@@ -1350,10 +1380,10 @@
             </item>
            </layout>
           </item>
-          <item row="6" column="0" colspan="2">
+          <item row="7" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_28">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_19">
+             <widget class="QDoubleSpinBox" name="grainITZMin">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1373,7 +1403,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1391,7 +1421,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_20">
+             <widget class="QDoubleSpinBox" name="grainITZMax">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1411,7 +1441,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1430,10 +1460,10 @@
             </item>
            </layout>
           </item>
-          <item row="7" column="0">
+          <item row="8" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_29">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_18">
+             <widget class="QDoubleSpinBox" name="grainITZFuller">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1466,10 +1496,10 @@
             </item>
            </layout>
           </item>
-          <item row="8" column="0" colspan="2">
+          <item row="9" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_30">
             <item>
-             <widget class="QLineEdit" name="lineEdit_5">
+             <widget class="QLineEdit" name="grainITZSieveD">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1505,10 +1535,10 @@
             </item>
            </layout>
           </item>
-          <item row="9" column="0" colspan="2">
+          <item row="10" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_31">
             <item>
-             <widget class="QLineEdit" name="lineEdit_4">
+             <widget class="QLineEdit" name="grainITZSieveP">
               <property name="minimumSize">
                <size>
                 <width>125</width>
@@ -1538,10 +1568,10 @@
             </item>
            </layout>
           </item>
-          <item row="10" column="0" colspan="2">
+          <item row="11" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_32">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_22">
+             <widget class="QDoubleSpinBox" name="grainBinderMin">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1561,7 +1591,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1579,7 +1609,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_23">
+             <widget class="QDoubleSpinBox" name="grainBinderMax">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1599,7 +1629,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="decimals">
                <number>4</number>
@@ -1618,10 +1648,10 @@
             </item>
            </layout>
           </item>
-          <item row="11" column="0">
+          <item row="12" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_33">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_21">
+             <widget class="QDoubleSpinBox" name="grainBinderFuller">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1647,6 +1677,9 @@
             </item>
             <item>
              <widget class="QLabel" name="label_12">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="text">
                <string>Binder Fuller Coefficient</string>
               </property>
@@ -1654,10 +1687,10 @@
             </item>
            </layout>
           </item>
-          <item row="12" column="0" colspan="2">
+          <item row="13" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_34">
             <item>
-             <widget class="QLineEdit" name="lineEdit_7">
+             <widget class="QLineEdit" name="grainBinderSieveD">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1693,10 +1726,10 @@
             </item>
            </layout>
           </item>
-          <item row="13" column="0" colspan="2">
+          <item row="14" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_35">
             <item>
-             <widget class="QLineEdit" name="lineEdit_6">
+             <widget class="QLineEdit" name="grainBinderSieveP">
               <property name="minimumSize">
                <size>
                 <width>125</width>
@@ -1726,7 +1759,7 @@
             </item>
            </layout>
           </item>
-          <item row="14" column="1">
+          <item row="15" column="0">
            <spacer>
             <property name="orientation">
              <enum>Qt::Vertical</enum>

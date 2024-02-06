@@ -57,10 +57,14 @@ from freecad.chronoWorkbench.util.cwloadUIfile                            import
 from freecad.chronoWorkbench.util.cwloadUIicon                            import cwloadUIicon
 
 # Importing: generation
-from freecad.chronoWorkbench.generation.calc_LDPMCSL_particleVol          import calc_LDPMCSL_particleVol
+from freecad.chronoWorkbench.generation.calc_LDPMCSL_meshVolume           import calc_LDPMCSL_meshVolume
+from freecad.chronoWorkbench.generation.calc_LDPMCSL_parVolume            import calc_LDPMCSL_parVolume
+from freecad.chronoWorkbench.generation.calc_LDPMCSL_sieveCurve           import calc_LDPMCSL_sieveCurve
 from freecad.chronoWorkbench.generation.calc_LDPMCSL_surfMeshSize         import calc_LDPMCSL_surfMeshSize
 from freecad.chronoWorkbench.generation.calc_LDPMCSL_surfMeshExtents      import calc_LDPMCSL_surfMeshExtents
 from freecad.chronoWorkbench.generation.check_LDPMCSL_particleOverlapMPI  import check_LDPMCSL_particleOverlapMPI
+from freecad.chronoWorkbench.generation.check_multiMat_size               import check_multiMat_size
+from freecad.chronoWorkbench.generation.check_multiMat_matVol             import check_multiMat_matVol
 from freecad.chronoWorkbench.generation.gen_CSL_facetData                 import gen_CSL_facetData
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tesselation           import gen_LDPMCSL_tesselation
 from freecad.chronoWorkbench.generation.gen_LDPM_facetData                import gen_LDPM_facetData
@@ -73,11 +77,17 @@ from freecad.chronoWorkbench.generation.gen_LDPMCSL_particle              import
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_particleMPI           import gen_LDPMCSL_particleMPI
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_particleList          import gen_LDPMCSL_particleList
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_properties            import gen_LDPMCSL_properties
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_subParticle           import gen_LDPMCSL_subParticle
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tetrahedralization    import gen_LDPMCSL_tetrahedralization
+from freecad.chronoWorkbench.generation.gen_multiMat_refine               import gen_multiMat_refine
+from freecad.chronoWorkbench.generation.gen_multiMat_reform               import gen_multiMat_reform
+from freecad.chronoWorkbench.generation.sort_multiMat_voxels              import sort_multiMat_voxels
+from freecad.chronoWorkbench.generation.sort_multiMat_mat                 import sort_multiMat_mat
 
 # Importing: input
 from freecad.chronoWorkbench.input.read_LDPMCSL_inputs                    import read_LDPMCSL_inputs
 from freecad.chronoWorkbench.input.read_LDPMCSL_tetgen                    import read_LDPMCSL_tetgen
+from freecad.chronoWorkbench.input.read_multiMat_file                     import read_multiMat_file
 
 # Importing: output
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_particles               import mkVtk_LDPMCSL_particles
@@ -158,6 +168,7 @@ class inputWindow_LDPMCSL:
         QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFilePara)
         QtCore.QObject.connect(self.form[1].readFileButton, QtCore.SIGNAL("clicked()"), self.openFileGeo)
         QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
+        QtCore.QObject.connect(self.form[4].readMultiMatFile, QtCore.SIGNAL("clicked()"), self.openMultiMatFile)
 
         # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generate, QtCore.SIGNAL("clicked()"), self.generation)
@@ -254,6 +265,23 @@ class inputWindow_LDPMCSL:
         return OpenName
 
 
+    def openMultiMatFile(self):
+
+        path = App.ConfigGet("UserHomePath")
+        filetype = "Voxel Data File (*.img)"
+
+        OpenName = ""
+        try:
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a voxel data file"),path,             filetype) # type: ignore
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        except Exception:
+            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a voxel data file", path,             filetype) #PySide
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        if OpenName == "":                                                            # if the name file are not selected then Abord process
+            App.Console.PrintMessage("Process aborted"+"\n")
+        else:
+            self.form[4].multiMatFile.setText(OpenName)
+
 
     def writeParameters(self):
 
@@ -266,6 +294,10 @@ class inputWindow_LDPMCSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
+            multiMatToggle,multiMatFile,multiMatRule,\
+            grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
+            grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
+            grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
 
@@ -535,6 +567,10 @@ class inputWindow_LDPMCSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
+            multiMatToggle,multiMatFile,multiMatRule,\
+            grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
+            grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
+            grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
         if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
@@ -573,13 +609,13 @@ class inputWindow_LDPMCSL:
         # Store values for unused features
         edgedata = 0
         edgeMaterialList = 0
-        materialRule = 0
+        multiMatRule = 0
         multiMaterial = 'Off'
         cementStructure = 'Off'
 
         [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_LDPM_facetData(\
             allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+            tetn2,materialList,multiMatRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
 
         self.form[5].progressBar.setValue(98) 
 
@@ -592,7 +628,7 @@ class inputWindow_LDPMCSL:
         itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct,\
             PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
             PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,\
-            matSwitched,materialRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            matSwitched,multiMatRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
         App.activeDocument().addObject('App::DocumentObjectGroup',dataFilesName)
@@ -794,6 +830,10 @@ class inputWindow_LDPMCSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
+            multiMatToggle,multiMatFile,multiMatRule,\
+            grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
+            grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
+            grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
             outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
         try:
@@ -801,6 +841,27 @@ class inputWindow_LDPMCSL:
             sieveCurvePassing = ast.literal_eval(sieveCurvePassing)
         except:
             pass
+
+        try:
+            grainAggSieveD = ast.literal_eval(grainAggSieveD)
+            grainAggSieveP = ast.literal_eval(grainAggSieveP)
+        except:
+            pass
+
+        try:
+            grainITZSieveD = ast.literal_eval(grainITZSieveD)
+            grainITZSieveP = ast.literal_eval(grainITZSieveP)
+        except:
+            pass
+
+
+        try:
+            grainBinderSieveD = ast.literal_eval(grainBinderSieveD)
+            grainBinderSieveP = ast.literal_eval(grainBinderSieveP)
+        except:
+            pass
+
+
 
         if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
                          "Confinement Shear Lattice (CSL) - Original"]:
@@ -864,32 +925,46 @@ class inputWindow_LDPMCSL:
         self.form[5].progressBar.setValue(3) 
 
 
-
         # Generate surface mesh
         self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
-        [meshVertices,meshTets, surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(analysisName,geoName,meshName,minPar,maxPar)
+        [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(analysisName,geoName,meshName,minPar,maxPar)
         self.form[5].progressBar.setValue(5) 
 
 
         # Gets extents of geometry
         [minC,maxC] = calc_LDPMCSL_surfMeshExtents(meshVertices)
 
+
+
+
+
+
+
+        # Convert density to Kg/m3
+        cementC = cementC * (1.0E+12)
+        flyashC = flyashC * (1.0E+12)
+        silicaC = silicaC * (1.0E+12)
+        scmC = scmC * (1.0E+12)
+        fillerC = fillerC * (1.0E+12)
+        cementDensity = cementDensity * (1.0E+12)
+        flyashDensity = flyashDensity * (1.0E+12)
+        silicaDensity = silicaDensity * (1.0E+12)
+        scmDensity = scmDensity * (1.0E+12)
+        fillerDensity = fillerDensity * (1.0E+12)
+        densityWater = densityWater * (1.0E+12)
+
+
+
+
         self.form[5].statusWindow.setText("Status: Calculating input data.") 
-        # Calculate required volume of particles and sieve curve data
-        [volFracPar, tetVolume, parVolTotal,cdf,cdf1,kappa_i,newSieveCurveD, newSieveCurveP, NewSet] = calc_LDPMCSL_particleVol(wcRatio,airFrac,fullerCoef,cementC,cementDensity,densityWater,\
-            flyashC,silicaC,scmC,flyashDensity,silicaDensity,scmDensity,fillerC,fillerDensity,\
-            meshVertices,meshTets,minPar,maxPar,sieveCurveDiameter,sieveCurvePassing)
-
-        # Temporary to skip over sieve curve option
-        #newSieveCurveD = 0
-        #NewSet = 0
-
-        self.form[5].statusWindow.setText("Status: Calculating list of particles.") 
-        # Calculate list of particle diameters for placement
-        [maxParNum,parDiameterList] = gen_LDPMCSL_particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
-            cdf,kappa_i,NewSet,fullerCoef)
         
-        
+
+        # Gets volume of geometry
+        tetVolume = calc_LDPMCSL_meshVolume(meshVertices,meshTets)
+
+
+
+
 
         # Calculation of surface mesh size
         maxEdgeLength = calc_LDPMCSL_surfMeshSize(meshVertices,surfaceFaces)
@@ -907,124 +982,276 @@ class inputWindow_LDPMCSL:
 
 
 
-
         verts = meshVertices[np.array(meshTets).flatten()-1]
         max_dist = np.max(np.sqrt(np.sum(verts**2, axis=1)))
 
 
 
 
-        # Initialize empty particle nodes list outside geometry
-        internalNodes = (np.zeros((len(parDiameterList),3))+2)*maxC
+
+
+        ########################## Begin Setting Up Particles and Materials ##############################
+
+        if multiMatToggle == "On":
+
+            # Read in multi-material file
+            [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
+
+            # Confirm if the voxelated multi-material file is larger than the provided geometry
+            topoCheck = check_multiMat_size(multiMatX,multiMatY,multiMatZ,multiMatRes,minC,maxC)
+
+            # Organize and store voxels of each material
+            [aggVoxels,itzVoxels,binderVoxels] = sort_multiMat_voxels(multiMatVoxels)
+
+
+
+            # Do calculations for aggregate, binder, and ITZ
+            for i in range(3):
+                
+                if i == 0:
+                    [grainMin,grainMax,grainFuller,grainSieveD,grainSieveP] = [grainAggMin,grainAggMax,grainAggFuller,grainAggSieveD,grainAggSieveP]
+                elif i == 1:
+                    [grainMin,grainMax,grainFuller,grainSieveD,grainSieveP] = [grainBinderMin,grainBinderMax,grainBinderFuller,grainBinderSieveD,grainBinderSieveP]
+                elif i == 2:
+                    [grainMin,grainMax,grainFuller,grainSieveD,grainSieveP] = [grainITZMin,grainITZMax,grainITZFuller,grainITZSieveD,grainITZSieveP]
+
+
+                # Shift sieve curve if needed
+                if grainSieveD != (0 or None or [] or ""):
+                    [newGrainSieveCurveD,newGrainSieveCurveP,grainNewSet,grainW_min,grainW_max] = calc_LDPMCSL_sieveCurve(grainMin,grainMax,grainSieveD,grainSieveP)
+                else:
+                    newGrainSieveCurveD,newGrainSieveCurveP,grainNewSet,grainW_min,grainW_max = 0, 0, 0, 0, 0
+
+                # Calculates volume of each set of grains
+                [volGrainFracPar,volGrains,cdf,cdf1,kappa_i] = calc_LDPMCSL_parVolume(tetVolume*len(aggVoxels)/(len(aggVoxels)+len(itzVoxels)+len(binderVoxels)), wcRatio, cementC,
+                                                            airFrac, grainFuller, 
+                                                            flyashC, silicaC, scmC, fillerC,
+                                                            flyashDensity, silicaDensity, 
+                                                            scmDensity, fillerDensity, cementDensity,
+                                                            densityWater, grainMin, grainMax,
+                                                            newGrainSieveCurveD, newGrainSieveCurveP, 
+                                                            grainNewSet, grainW_min, grainW_max)
+
+                # Generates list of needed grains
+                [maxGrainsNum,grainsDiameterList] = gen_LDPMCSL_particleList(volGrains,grainMin,grainMax,newGrainSieveCurveD,cdf,kappa_i,grainNewSet,grainFuller)
+
+                if i == 0:
+                    aggGrainsDiameterList = grainsDiameterList
+                elif i == 1:
+                    binderGrainsDiameterList = grainsDiameterList
+                elif i == 2:
+                    itzGrainsDiameterList = grainsDiameterList
+
+            # Combine all grain lists (in order of aggregate > ITZ > binder -- the order they will be placed in the geometry)
+            subParDiameterList = np.concatenate((aggGrainsDiameterList,itzGrainsDiameterList,binderGrainsDiameterList))
+
+            # Initialize empty list of all nodes outside geometry
+            internalNodes = (np.zeros((len(aggGrainsDiameterList)+\
+                len(binderGrainsDiameterList)+len(itzGrainsDiameterList),3))+2)*maxC
 
 
 
 
-        self.form[5].statusWindow.setText('Status: Placing particles into geometry. (' + str(0) + '/' + str(len(parDiameterList)) + ')') 
+        if multiMatToggle == "Off":
+
+
+            # Shift sieve curve if needed
+            if sieveCurveDiameter != (0 or None or [] or ""):
+                # Shifts sieve curve to appropriate range
+                [newSieveCurveD, newSieveCurveP, NewSet, w_min, w_max] = calc_LDPMCSL_sieveCurve(minPar, maxPar, sieveCurveDiameter, sieveCurvePassing)
+            else:
+                newSieveCurveD, newSieveCurveP, w_min, w_max, NewSet = 0, 0, 0, 0, 0
+
+            # Calculates volume of particles needed
+            [volFracPar, parVolTotal, cdf, cdf1, kappa_i] = calc_LDPMCSL_parVolume(tetVolume, wcRatio, cementC,
+                                                        airFrac, fullerCoef, 
+                                                        flyashC, silicaC, scmC, fillerC,
+                                                        flyashDensity, silicaDensity, 
+                                                        scmDensity, fillerDensity, cementDensity,
+                                                        densityWater, minPar, maxPar,
+                                                        newSieveCurveD, newSieveCurveP, 
+                                                        NewSet, w_min, w_max)
+
+
+
+            self.form[5].statusWindow.setText("Status: Calculating list of particles.") 
+            # Calculate list of particle diameters for placement
+            [maxParNum,parDiameterList] = gen_LDPMCSL_particleList(parVolTotal,minPar,maxPar,newSieveCurveD,\
+                cdf,kappa_i,NewSet,fullerCoef)
+        
+            # Initialize empty particle nodes list outside geometry
+            internalNodes = (np.zeros((len(parDiameterList),3))+2)*maxC
+        
+
+
+        ########################## Begin Placing Particles ##############################
+
+       
+
+
+        self.form[5].statusWindow.setText('Status: Placing particles into geometry. (' + str(0) + '/' + str(len(internalNodes)) + ')') 
+        
         # Initialize values
         newMaxIter = 6
         particlesPlaced = 0
 
+
+
+        
+        if multiMatToggle == "On":
+
+            for i in range(3):
+
+                # Place in order of aggregate > ITZ > binder
+                if i == 0:
+                    [grainsDiameterList,voxels,grainMin,grainMax] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax]
+                elif i == 1:
+                    [grainsDiameterList,voxels,grainMin,grainMax] = [itzGrainsDiameterList,itzVoxels,grainITZMin,grainITZMax]
+                elif i == 2:
+                    [grainsDiameterList,voxels,grainMin,grainMax] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax]
+
+
+                # Generate particles for length of needed aggregate (not placed via MPI)
+                for x in range(particlesPlaced,len(grainsDiameterList)):
+
+                    # Generate particle
+                    [newMaxIter,node,iterReq] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
+                        aggOffset,subParDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
+                        multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,minC,maxC)
+
+                    # Update progress bar every 1% of placement
+                    if x % np.rint(len(grainsDiameterList)/100) == 0:
+                        self.form[5].progressBar.setValue(80*((x)/len(grainsDiameterList))+6) 
+
+                    if len(grainsDiameterList)<=1000:
+                        # Update number particles placed every 1%
+                        if x % np.rint(len(grainsDiameterList)/100) == 0:
+                            self.form[5].statusWindow.setText("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                    elif len(grainsDiameterList)<=10000:
+                        # Update number particles placed every 0.1%
+                        if x % np.rint(len(grainsDiameterList)/1000) == 0:
+                            self.form[5].statusWindow.setText("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                    else:
+                        # Update number particles placed every 0.01%
+                        if x % np.rint(len(grainsDiameterList)/10000) == 0:
+                            self.form[5].statusWindow.setText("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+
+                    if i == 0:
+                        internalNodes[x,:] = node
+                    elif i == 1:
+                        internalNodes[x+len(aggGrainsDiameterList),:] = node
+                    elif i == 2:
+                        internalNodes[x+len(aggGrainsDiameterList)+len(itzGrainsDiameterList),:] = node
         
 
 
+                self.form[5].statusWindow.setText("Status: Placing material " + str(i) + " grains into geometry. (" + str(len(grainsDiameterList)) + '/' + str(len(grainsDiameterList)) + ')')
 
-
-        if numCPU > 1:
+        materialList = np.concatenate((np.ones(len(aggGrainsDiameterList))*3,np.ones(len(itzGrainsDiameterList))*1, np.ones(len(binderGrainsDiameterList))*2))
         
+        # Set minimum particle to be smallest of the three materials 
+        minPar = min(grainAggMin,grainITZMin,grainBinderMin)
+
+        # Create empty lists if not cementStructure
+        PoresDiameterList, ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0
+
+
+
+
+
+
+        if multiMatToggle == "Off":
+
+            if numCPU > 1:
             
-            for increment in range(numIncrements-1):
+                
+                for increment in range(numIncrements-1):
 
-                process_pool = multiprocessing.Pool(numCPU)
+                    process_pool = multiprocessing.Pool(numCPU)
 
-                outputMPI = process_pool.map(functools.partial(gen_LDPMCSL_particleMPI, surfaceNodes,maxParNum, minC, maxC, meshVertices, \
-                    meshTets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
-                    maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,internalNodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
+                    outputMPI = process_pool.map(functools.partial(gen_LDPMCSL_particleMPI, surfaceNodes,maxParNum, minC, maxC, meshVertices, \
+                        meshTets, coord1,coord2,coord3,coord4,newMaxIter,maxIter,minPar,\
+                        maxPar,aggOffset,verbose,parDiameterList,maxEdgeLength,max_dist,internalNodes), parDiameterList[particlesPlaced:particlesPlaced+math.floor(len(parDiameterList)/numIncrements)])
 
-                nodeMPI = np.array(outputMPI)[:,0:3]
-                diameter = np.array(outputMPI)[:,3]
-                newMaxIter = int(max(np.array(outputMPI)[:,4]))
-                maxAttempts = int(max(np.array(outputMPI)[:,5]))
+                    nodeMPI = np.array(outputMPI)[:,0:3]
+                    diameter = np.array(outputMPI)[:,3]
+                    newMaxIter = int(max(np.array(outputMPI)[:,4]))
+                    maxAttempts = int(max(np.array(outputMPI)[:,5]))
 
-                particlesPlaced = particlesPlaced+len(np.array(outputMPI)[:,0:3])        
+                    particlesPlaced = particlesPlaced+len(np.array(outputMPI)[:,0:3])        
 
-                for x in range(len(nodeMPI)):
+                    for x in range(len(nodeMPI)):
 
-                    # Store placed particles from this increment
-                    internalNodes[particlesPlaced+x,:] = nodeMPI[x,:]
+                        # Store placed particles from this increment
+                        internalNodes[particlesPlaced+x,:] = nodeMPI[x,:]
 
-                    # Obtain extents for floating bin for node to test
-                    binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxPar/2-aggOffset,\
-                        nodeMPI[x,1]-diameter[x]/2-maxPar/2-aggOffset,nodeMPI[x,2]-\
-                        diameter[x]/2-maxPar/2-aggOffset]))
-                    binMax = np.array(([nodeMPI[x,0]+diameter[x]/2+maxPar/2+aggOffset,\
-                        nodeMPI[x,1]+diameter[x]/2+maxPar/2+aggOffset,nodeMPI[x,2]+\
-                        diameter[x]/2+maxPar/2+aggOffset]))
+                        # Obtain extents for floating bin for node to test
+                        binMin = np.array(([nodeMPI[x,0]-diameter[x]/2-maxPar/2-aggOffset,\
+                            nodeMPI[x,1]-diameter[x]/2-maxPar/2-aggOffset,nodeMPI[x,2]-\
+                            diameter[x]/2-maxPar/2-aggOffset]))
+                        binMax = np.array(([nodeMPI[x,0]+diameter[x]/2+maxPar/2+aggOffset,\
+                            nodeMPI[x,1]+diameter[x]/2+maxPar/2+aggOffset,nodeMPI[x,2]+\
+                            diameter[x]/2+maxPar/2+aggOffset]))
 
-                    # Check if particle overlapping any just added particles (ignore first one placed)
-                    if x > 0:
+                        # Check if particle overlapping any just added particles (ignore first one placed)
+                        if x > 0:
 
-                        overlap = check_LDPMCSL_particleOverlapMPI(nodeMPI[x,:],diameter[x],binMin,\
-                            binMax,minPar,aggOffset,nodeMPI[0:x],diameter[0:x])
+                            overlap = check_LDPMCSL_particleOverlapMPI(nodeMPI[x,:],diameter[x],binMin,\
+                                binMax,minPar,aggOffset,nodeMPI[0:x],diameter[0:x])
 
-                        if overlap == True:
+                            if overlap == True:
 
-                            [newMaxIter,node,iterReq] = gen_LDPMCSL_particle(surfaceNodes,\
-                                parDiameterList[particlesPlaced+x], meshVertices, \
-                                meshTets,newMaxIter,maxIter,minPar,\
-                                maxPar,aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
-                            
-                            internalNodes[particlesPlaced+x,:] = node[0,:]
-
-
-                self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
-                self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+                                [newMaxIter,node,iterReq] = gen_LDPMCSL_particle(surfaceNodes,\
+                                    parDiameterList[particlesPlaced+x], meshVertices, \
+                                    meshTets,newMaxIter,maxIter,minPar,\
+                                    maxPar,aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
+                                
+                                internalNodes[particlesPlaced+x,:] = node[0,:]
 
 
-        # Generate particles for length of needed aggregate (not placed via MPI)
-        for x in range(particlesPlaced,len(parDiameterList)):
+                    self.form[5].progressBar.setValue(95*((x)/len(parDiameterList))+6) 
+                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
-            # Generate particle
-            [newMaxIter,node,iterReq] = gen_LDPMCSL_particle(surfaceNodes,parDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,minPar,maxPar,\
-                aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
 
-            # Update progress bar every 1% of placement
-            if x % np.rint(len(parDiameterList)/100) == 0:
-                self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
+            # Generate particles for length of needed aggregate (not placed via MPI)
+            for x in range(particlesPlaced,len(parDiameterList)):
 
-            if len(parDiameterList)<=1000:
-                # Update number particles placed every 1%
+                # Generate particle
+                [newMaxIter,node,iterReq] = gen_LDPMCSL_particle(surfaceNodes,parDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,minPar,maxPar,\
+                    aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes)
+
+                # Update progress bar every 1% of placement
                 if x % np.rint(len(parDiameterList)/100) == 0:
-                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
-            elif len(parDiameterList)<=10000:
-                # Update number particles placed every 0.1%
-                if x % np.rint(len(parDiameterList)/1000) == 0:
-                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
-            else:
-                # Update number particles placed every 0.01%
-                if x % np.rint(len(parDiameterList)/10000) == 0:
-                    self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+                    self.form[5].progressBar.setValue(80*((x)/len(parDiameterList))+6) 
 
-            internalNodes[x,:] = node
+                if len(parDiameterList)<=1000:
+                    # Update number particles placed every 1%
+                    if x % np.rint(len(parDiameterList)/100) == 0:
+                        self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+                elif len(parDiameterList)<=10000:
+                    # Update number particles placed every 0.1%
+                    if x % np.rint(len(parDiameterList)/1000) == 0:
+                        self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
+                else:
+                    # Update number particles placed every 0.01%
+                    if x % np.rint(len(parDiameterList)/10000) == 0:
+                        self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(x) + '/' + str(len(parDiameterList)) + ')')
 
-        self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
+                internalNodes[x,:] = node
+
+            self.form[5].statusWindow.setText("Status: Placing particles into geometry. (" + str(len(parDiameterList)) + '/' + str(len(parDiameterList)) + ')')
 
 
-        materialList = np.ones(len(parDiameterList))
+            materialList = np.ones(len(parDiameterList))
+
+            # Create empty lists if not multi-material or cementStructure
+            aggGrainsDiameterList, itzGrainsDiameterList, binderGrainsDiameterList, PoresDiameterList,\
+                ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0
+
+
 
         placementTime = round(time.time() - start_time,2)   
         nParticles = len(parDiameterList)
-
-        # Create empty lists if not multi-material or cementStructure
-        aggGrainsDiameterList, itzDiameterList, binderDiameterList, PoresDiameterList,\
-            ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0
-
-
-
-
-
-
-
 
 
         tetTessTimeStart = time.time()
@@ -1068,8 +1295,7 @@ class inputWindow_LDPMCSL:
 
         # Store values for unused features
         edgeMaterialList = 0
-        materialRule = 0
-        multiMaterial = 'Off'
+        multiMatRule = 0
         cementStructure = 'Off'
 
 
@@ -1087,11 +1313,11 @@ class inputWindow_LDPMCSL:
         if elementType == "LDPM":
             [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_LDPM_facetData(\
                 allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-                tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+                tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData)
         elif elementType == "CSL":
             [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_CSL_facetData(\
                 allNodes,allEdges,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-                tetn2,materialList,materialRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+                tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData)
 
 
         self.form[5].progressBar.setValue(98) 
@@ -1113,11 +1339,56 @@ class inputWindow_LDPMCSL:
         # Initialize counter for number of facet materials switched
         matSwitched = 0
 
-        itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct,\
-            PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
-            PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,\
-            matSwitched,materialRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
+        # Calculate volume associated with each material (and adjust for high-order material rules)
+        if multiMatToggle == "On":
+
+            [itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct] = check_multiMat_matVol(geoName,subtetVol,facetMaterial,aggVoxels,itzVoxels,binderVoxels)
+            
+            if multiMatRule > 9:
+
+                sortedData1 = sort_multiMat_mat(facetMaterial,facetVol1,facetVol2,particleMaterial,subtetVol)
+
+                i = 0
+                
+                while (abs(itzVolFracSim-itzVolFracAct) > 0.02 or abs(itzVolFracSim-itzVolFracAct) == 0.00) and \
+                    abs(binderVolFracSim-binderVolFracAct) > 0.02 and \
+                    abs(aggVolFracSim-aggVolFracAct) > 0.02 and i < len(sortedData1):
+
+                    # Skip refinement for facets with same-material particles
+                    if sortedData1[i,3] != sortedData1[i,4]:
+                        
+                        # Refine material assignment based on volume fractions
+                        sortedData = gen_multiMat_refine(sortedData1,
+                            itzVolFracSim,binderVolFracSim,aggVolFracSim,\
+                            itzVolFracAct,binderVolFracAct,aggVolFracAct,i)
+
+                        # Recalculate and update volume fractions
+                        [itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,\
+                            aggVolFracAct] = check_multiMat_matVol(sortedData[:,5],sortedData[:,2],\
+                            aggVoxels,itzVoxels,binderVoxels)     
+
+                        sortedData1 = sortedData
+                        matSwitched = matSwitched+1
+
+                    else:
+                        pass
+
+                    i = i+1
+                    
+
+                [dataList,facetMaterial] = gen_multiMat_reform(allTets,dataList,sortedData1)
+
+            [itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,\
+                aggVolFracAct] = check_multiMat_matVol(geoName,subtetVol,facetMaterial,\
+                aggVoxels,itzVoxels,binderVoxels)
+
+        if multiMatToggle == "Off":
+
+            itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct,\
+                PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
+                PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,\
+                matSwitched,multiMatRule = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
 
@@ -1227,7 +1498,7 @@ class inputWindow_LDPMCSL:
         #    multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
         #    maxBinderD,minBinderD,binderFullerCoef,maxITZD,minITZD,ITZFullerCoef,output,fibers,\
         #    itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,\
-        #    aggVolFracAct,sieveCurveDiameter,sieveCurvePassing,matSwitched,materialRule,\
+        #    aggVolFracAct,sieveCurveDiameter,sieveCurvePassing,matSwitched,multiMatRule,\
         #    cementStructure,cementmaterialFile,maxPoresD,minPoresD,PoresFullerCoef,\
         #    PoresSieveCurveDiameter,PoresSieveCurvePassing,maxClinkerD,minClinkerD,\
         #    ClinkerFullerCoef,ClinkerSieveCurveDiameter,ClinkerSieveCurvePassing,\
