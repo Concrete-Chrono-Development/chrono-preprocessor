@@ -136,7 +136,7 @@ def read_LDPMCSL_inputs(form):
     
     multiMatToggle      = form[4].multiMatToggle.currentText()
     multiMatFile        = form[4].multiMatFile.text()
-    multiMatRule        = float(form[4].grainBinderFuller.value() or 9)  
+    multiMatRule        = float(form[4].multiMatRule.value() or 9)  
 
     grainAggMin         = form[4].grainAggMin.text()
     grainAggMin         = float(grainAggMin.split(" ")[0].strip())

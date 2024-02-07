@@ -77,6 +77,7 @@ def gen_LDPMCSL_subParticle(facePoints,parDiameter,\
         if newMaxIter >= maxIter:
             print("This particle has exceeeded the %r specified maximum iterations allowed." % (maxIter))
             print('Now exitting...')
+            input()
             #exit()
 
         # Selection of random voxel

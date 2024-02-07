@@ -40,6 +40,7 @@ def read_multiMat_file(materialFile):
 
     # Read the material file
     with open(materialFile) as f:
+        version = str(f.readlines(1))
         multiMatX = str(f.readlines(2))
         multiMatY = str(f.readlines(3))
         multiMatZ = str(f.readlines(4))
@@ -49,7 +50,6 @@ def read_multiMat_file(materialFile):
     multiMatY = np.float(multiMatY.split(":")[1].strip().replace("\\n']", ""))
     multiMatZ = np.float(multiMatZ.split(":")[1].strip().replace("\\n']", ""))
     multiMatRes = np.float(multiMatRes.split(":")[1].strip().replace("\\n']", ""))
-
 
     # Store the voxels in a numpy array
     multiMatVoxels = np.loadtxt(materialFile, skiprows=5)
