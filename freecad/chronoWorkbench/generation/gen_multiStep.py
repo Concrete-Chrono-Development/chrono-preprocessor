@@ -6,12 +6,9 @@ import multiprocessing
 import functools
 from pathlib import Path
 
-#FREECADPATH = 'C:\\Program Files\\FreeCAD 0.20\\bin'
-import sys
-#sys.path.append(FREECADPATH)
-import FreeCAD as App
 
-#APPPATH = Path(App.getUserAppDataDir() + "/Mod/chronoConcrete/freecad/")
+import sys
+import FreeCAD as App
 
 from freecad.chronoWorkbench.input.read_multiMat_file                     import read_multiMat_file
 from check_multiMat_size                                    import check_multiMat_size
