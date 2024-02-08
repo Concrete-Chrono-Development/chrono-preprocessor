@@ -37,7 +37,7 @@ We recommend pulling the GitHub directly into the FreeCAD workbench directory. O
 * Click on "**Refresh OAuth Token**" and login to GitHub and allow Sourcetree in the browser window that opens
 * Click **Ok** in Sourcetree. Then "**chrono-preprocessor**" should populate on the right side of the window. If it doesn't, you may need to click refresh.
 * Select "**chrono-preprocessor**" and click "**Clone**"
-* When filling out the clone window, it should look like the image below, but with the appropriate username filled out instead of "**\<usr>**"
+* When filling out the clone window, it should look like the image below (be sure you are naming it chronoConcrete), and with the appropriate username filled out instead of "**\<usr>**"
 * Click "**Clone**"
 
 </details>
