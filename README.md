@@ -18,9 +18,15 @@ Page for details on output files: [Output Files](https://github.com/Concrete-Chr
 
 ## Questions
 
-All questions and suggestions should be directed to the Stackoverflow Teams forum.
+All questions and feature requests should be directed to the Discussions at the top of the Repository.
 
-> #### [Chrono Concrete Forum](https://stackoverflowteams.com/c/concrete-chrono-development)
+> #### [Discussions](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/discussions)
+
+## Issues and Bugs
+
+All found issues and bugs should be directed to the Issues at the top of the Repository.
+
+> #### [Issues](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/issues)
 
 ## License
 
