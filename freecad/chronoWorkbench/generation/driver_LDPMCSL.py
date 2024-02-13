@@ -330,8 +330,12 @@ def driver_LDPMCSL(self,fastGen):
         np.save(tempPath + "meshTets.npy", meshTets)
         np.save(tempPath + "surfaceNodes.npy", surfaceNodes)
 
+        
+        # Get the current directory 
+        currentDir = os.path.dirname(os.path.realpath(__file__))
 
-        with open(Path(App.getUserAppDataDir() + "/Mod/chronoConcrete/freecad/chronoWorkbench/generation/tempGen.py"), "w") as f:
+
+        with open(Path(currentDir + "/tempGen.py"), "w") as f:
             f.write("""\n
 # ================================================================================
 # CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor
@@ -468,7 +472,7 @@ if __name__ == '__main__':
         
         
         # Run the generation   
-        os.system("python " + str(Path(App.getUserAppDataDir() + "/Mod/chronoConcrete/freecad/chronoWorkbench/generation/tempGen.py")))
+        os.system("python " + str(Path(currentDir + "/tempGen.py")))
 
 
         # Read the temporary internalNodes file
@@ -485,7 +489,7 @@ if __name__ == '__main__':
             volFracPar = np.load(tempPath + "volFracPar.npy")
 
         # Remove the temporary files
-        os.remove(Path(App.getUserAppDataDir() + "/Mod/chronoConcrete/freecad/chronoWorkbench/generation/tempGen.py"))
+        os.remove(Path(currentDir + "/tempGen.py"))
 
         # Remove the temporary data files
         os.remove(tempPath + "internalNodes.npy")
