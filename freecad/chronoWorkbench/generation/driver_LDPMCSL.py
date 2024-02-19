@@ -23,7 +23,7 @@
 
 # Importing: standard
 import os
-import sys
+import shutil
 import time
 import tempfile
 import numpy as np
@@ -1071,7 +1071,7 @@ if __name__ == '__main__':
 
 
         
-    os.rename(Path(tempPath),Path(outDir + outName))
+    shutil.move(tempPath, outDir + outName)
     os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
     os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
     os.remove(Path(outDir + outName + '/' + geoName + '.node'))
