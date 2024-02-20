@@ -842,7 +842,6 @@ if __name__ == '__main__':
 
     # Store values for unused features
     edgeMaterialList = 0
-    multiMatRule = 0
     cementStructure = 'Off'
 
 

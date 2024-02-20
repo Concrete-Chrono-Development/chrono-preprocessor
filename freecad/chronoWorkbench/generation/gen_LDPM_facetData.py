@@ -202,111 +202,115 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
             facetData[12*x+y,9:12]  = pn[12*x+y,:]            # Projected Facet Normal
             facetData[12*x+y,12:15] = ptan1[12*x+y,:]         # Projected Tangent 1
             facetData[12*x+y,15:18] = ptan2[12*x+y,:]         # Projected Tangent 2
-            facetData[12*x+y,18]    = 0                       # Material Flag 
-
 
             # Store particle materials
             particleMaterial[12*x+y,0] = materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)
             particleMaterial[12*x+y,1] = materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)
 
-            # Material rule based on particle diameters volumes
-            if materialRule == 9 or materialRule == 10:
+            # Material Flag           
+            if multiMaterial in ['off','Off','N','n','No','no']:
+                facetData[12*x+y,18]    = 0                       # Material Flag 
 
-                if facetVol1.all() == facetVol2.all():
+            else:
+
+                # Material rule based on particle diameters volumes
+                if materialRule == 9 or materialRule == 10:
                     
-                    facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                    facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-
-                else:
-
-                    if facetVol1.any() > facetVol2.any():
-
+                    if facetVol1.all() == facetVol2.all():
+                        
                         facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
                             .astype(int)-1].astype(int)
                         facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
                             .astype(int)-1].astype(int)
 
-                    else: 
+                    else:
 
-                        facetData[12*x+y,18] = materialList[allTets[x,tetn2[y]]\
-                            .astype(int)-1].astype(int)
-                        facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
-                            .astype(int)-1].astype(int)
+                        if facetVol1.any() > facetVol2.any():
 
-            elif materialRule > 0:
+                            facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
+                                .astype(int)-1].astype(int)
+                            facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
+                                .astype(int)-1].astype(int)
 
-                if materialRule == 1:
-                    aggITZ = 3
-                    aggBinder = 3
-                    itzBinder = 1
-                elif materialRule == 2:
-                    aggITZ = 3
-                    aggBinder = 3
-                    itzBinder = 2
-                elif materialRule == 3:
-                    aggITZ = 3
-                    aggBinder = 2
-                    itzBinder = 1
-                elif materialRule == 4:
-                    aggITZ = 3
-                    aggBinder = 2
-                    itzBinder = 2
-                elif materialRule == 5:
-                    aggITZ = 1
-                    aggBinder = 3
-                    itzBinder = 1
-                elif materialRule == 6:
-                    aggITZ = 1
-                    aggBinder = 3
-                    itzBinder = 2
-                elif materialRule == 7:
-                    aggITZ = 1
-                    aggBinder = 2
-                    itzBinder = 1
-                elif materialRule == 8:
-                    aggITZ = 1
-                    aggBinder = 2
-                    itzBinder = 2
-                
-                if materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int) \
-                    == materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int):
+                        else: 
+
+                            facetData[12*x+y,18] = materialList[allTets[x,tetn2[y]]\
+                                .astype(int)-1].astype(int)
+                            facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
+                                .astype(int)-1].astype(int)
+
+                elif materialRule > 0:
+
+                    if materialRule == 1:
+                        aggITZ = 3
+                        aggBinder = 3
+                        itzBinder = 1
+                    elif materialRule == 2:
+                        aggITZ = 3
+                        aggBinder = 3
+                        itzBinder = 2
+                    elif materialRule == 3:
+                        aggITZ = 3
+                        aggBinder = 2
+                        itzBinder = 1
+                    elif materialRule == 4:
+                        aggITZ = 3
+                        aggBinder = 2
+                        itzBinder = 2
+                    elif materialRule == 5:
+                        aggITZ = 1
+                        aggBinder = 3
+                        itzBinder = 1
+                    elif materialRule == 6:
+                        aggITZ = 1
+                        aggBinder = 3
+                        itzBinder = 2
+                    elif materialRule == 7:
+                        aggITZ = 1
+                        aggBinder = 2
+                        itzBinder = 1
+                    elif materialRule == 8:
+                        aggITZ = 1
+                        aggBinder = 2
+                        itzBinder = 2
                     
-                    facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                    facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                        .astype(int)-1].astype(int)
-                
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==2:
+                    if materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int) \
+                        == materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int):
+                        
+                        facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
+                            .astype(int)-1].astype(int)
+                        facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
+                            .astype(int)-1].astype(int)
+                    
+                    elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==2:
 
-                    facetData[12*x+y,18] = itzBinder
-                    facetMaterial[12*x+y] = itzBinder
+                        facetData[12*x+y,18] = itzBinder
+                        facetMaterial[12*x+y] = itzBinder
 
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==2 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
+                    elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==2 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
 
-                    facetData[12*x+y,18] = itzBinder
-                    facetMaterial[12*x+y] = itzBinder
+                        facetData[12*x+y,18] = itzBinder
+                        facetMaterial[12*x+y] = itzBinder
 
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==3:
+                    elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==1 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==3:
 
-                    facetData[12*x+y,18] = aggITZ
-                    facetMaterial[12*x+y] = aggITZ
+                        facetData[12*x+y,18] = aggITZ
+                        facetMaterial[12*x+y] = aggITZ
 
-                elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==3 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
+                    elif materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)==3 and materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)==1:
 
-                    facetData[12*x+y,18] = aggITZ
-                    facetMaterial[12*x+y] = aggITZ
+                        facetData[12*x+y,18] = aggITZ
+                        facetMaterial[12*x+y] = aggITZ
+
+                    else:
+                        
+                        facetData[12*x+y,18] = aggBinder
+                        facetMaterial[12*x+y] = aggBinder
 
                 else:
-                    
-                    facetData[12*x+y,18] = aggBinder
-                    facetMaterial[12*x+y] = aggBinder
 
-            else:
-
-                facetData[12*x+y,18] = 0
-                facetMaterial[12*x+y] = 0              
+                    facetData[12*x+y,18] = 0
+                    facetMaterial[12*x+y] = 0              
 
 
 
