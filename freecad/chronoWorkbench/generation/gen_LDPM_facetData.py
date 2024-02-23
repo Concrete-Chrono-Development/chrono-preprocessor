@@ -210,6 +210,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
             # Material Flag           
             if multiMaterial in ['off','Off','N','n','No','no']:
                 facetData[12*x+y,18]    = 0                       # Material Flag 
+                facetMaterial[12*x+y]   = 0                       # Material Flag
 
             else:
 
