@@ -1005,7 +1005,7 @@ if __name__ == '__main__':
     mkVtk_LDPMCSL_particles(internalNodes,parDiameterList,materialList,geoName,tempPath)
 
     # If visuals requested, generate Facet VTK File
-    mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets)
+    mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)
 
     # If visuals requested, generate flow edge VTK File
     if htcToggle in ['on','On']:

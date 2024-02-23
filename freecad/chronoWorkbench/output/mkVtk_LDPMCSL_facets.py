@@ -23,7 +23,7 @@ import numpy as np
 from pathlib import Path
 
 
-def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets):
+def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial):
 
     """
     Variables:
@@ -33,6 +33,7 @@ def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets):
     - tempPath:         Path to the temporary directory
     - facetPointData:   List of facet point data
     - facetCellData:    List of facet cell data
+    - facetMaterial:    List of facet material data
     --------------------------------------------------------------------------
     ### Outputs ###
     - A VTK file that can be visualized in Paraview
@@ -65,5 +66,12 @@ def mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets):
         f.write('POLYGONS ' + str(len(FacetCells)) + ' ' \
             + str(round(len(FacetCells)*4)) +'\n3 ')
         f.write("\n3 ".join(" ".join(map(str, x)) for x in FacetCells))
+
+        # Add the material data
+        f.write('\n\nCELL_DATA ' + str(len(FacetCells)) + '\n')
+        f.write('FIELD FieldData 1\n')
+        f.write('Material 1 ' + str(len(FacetCells)) + ' float\n')   
+        f.write("\n".join(map(str, facetMaterial)))
+
 
         f.write('\n\n')  

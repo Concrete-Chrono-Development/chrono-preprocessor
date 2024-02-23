@@ -668,7 +668,7 @@ class inputWindow_LDPMCSL:
         mkVtk_LDPMCSL_particles(allNodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
-        mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets)
+        mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)
 
         mkVtk_LDPM_singleTet(allNodes,allTets,geoName,tempPath)
 
