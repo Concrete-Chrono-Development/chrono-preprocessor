@@ -84,6 +84,7 @@ You can select version 4.4.1.
 Open the file **bashrc** and put the following line and save.
 
 **export PATH=$PATH:~/gmsh-4.4.1-Linux64/bin**
+
 Run the command on a terminal > "**source ~/.bashrc**"
 
 </details>
