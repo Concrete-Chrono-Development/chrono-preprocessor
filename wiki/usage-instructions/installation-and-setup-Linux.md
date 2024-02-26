@@ -33,30 +33,30 @@ Open a terminal. Run the following commands step by step.
 
 <details>
 
-<summary>Step 3: * Clone ChronoConcrete Workbench from GitHub to FreeCad user application data directory. 
+<summary>Step 3: Clone ChronoConcrete Workbench from GitHub to FreeCad user application data directory. 
  </summary>
 
 
-* Open a terminal
-* Clone > "**git clone https://github.com/Concrete-Chrono-Development/chrono-preprocessor chronoConcrete** "
+* Open a terminal.
+* Clone > "**git clone https://github.com/Concrete-Chrono-Development/chrono-preprocessor chronoConcrete**".
 * Check if the Chrono Workbench is available in the list of installed workbenches.
 
 </details>
 
 <details>
 
-<summary>Step 4: Check **tetgen** Installation</summary>
+<summary>Step 4: Check "tetgen" Installation</summary>
 
 TetGen is a program to generate tetrahedral meshes of any 3D polyhedral domains.
 Verify that **tetgen** is installed properly in FreeCAD. 
 
 
 * Go to " ~/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen"
-* Run on a terminal > ** ./tetgen **
+* Run on a terminal > **./tetgen**
 
-* Check if there is a warning such as > ** bash: ./tetgen: Permission denied **
-* Run the following command -> "**chmod -R 777 * **" to give all permission. 
-* Run again on a terminal > ** ./tetgen ** 
+* Check if there is a warning such as > **bash: ./tetgen: Permission denied**
+* Run the following command -> "chmod -R 777 *" to give all permission. 
+* Run again on a terminal > **./tetgen** 
 
 * Add **tetgen** path in the bash script.
 Open the file **bashrc** and put the following line and save. 
@@ -69,7 +69,7 @@ Run the command on a terminal > "**source ~/.bashrc**"
 
 <details>
 
-<summary>Step 5: **gmsh** Installation</summary>
+<summary>Step 5: "gmsh" Installation</summary>
 
 Gmsh is an open source 3D finite element mesh generator with a built-in CAD engine. 
 
@@ -79,11 +79,11 @@ Gmsh is an open source 3D finite element mesh generator with a built-in CAD engi
 
 You can select version 4.4.1.
 
-* Open a terminal and go > ** ~/gmsh-4.4.1-Linux64/bin ** 
-* Check by runnung on terminal > ** ./gmsh **
+* Open a terminal and go > **~/gmsh-4.4.1-Linux64/bin** 
+* Check by runnung on terminal > **./gmsh**
 
 * Add **gmsh** path in the bash script.
-Open the file **bashrc** and put the following line and save
+Open the file **bashrc** and put the following line and save.
 
 **export PATH=$PATH:~/gmsh-4.4.1-Linux64/bin**
 Run the command on a terminal > "**source ~/.bashrc**"
