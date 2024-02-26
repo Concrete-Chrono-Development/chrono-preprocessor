@@ -61,6 +61,7 @@ Verify that **tetgen** is installed properly in FreeCAD.
 Open the file **bashrc** and put the following line and save. 
 
 **export PATH=$PATH:~/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen**
+
 Run the command on a terminal > "**source ~/.bashrc**"
 
 </details>
