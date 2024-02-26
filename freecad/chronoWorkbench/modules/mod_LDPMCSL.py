@@ -204,10 +204,12 @@ class inputWindow_LDPMCSL:
     def openFileGeo(self):
 
         path = App.ConfigGet("UserHomePath")
-        filetype = "Supported formats (*.brep *.brp *.iges *.igs *.step *.stp);;\
+        filetype = "Supported formats (*.brep *.brp *.iges *.igs *.step *.stp *.inp *.vtk *.vtu);;\
                     BREP format       (*.brep *.brp);; \
                     IGES format       (*.iges *.igs);; \
-                    STEP format       (*.step *.stp)"
+                    STEP format       (*.step *.stp);; \
+                    Abaqus/CalcuLix format  (*.inp);; \
+                    VTK Legacy/modern format (*.vtk *.vtu)"
 
         OpenName = ""
         try:

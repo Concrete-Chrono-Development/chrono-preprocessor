@@ -30,6 +30,7 @@ import math
 
 import FreeCAD as App
 import ImportGui
+import Fem
 import JoinFeatures
 import BOPTools.JoinFeatures
 import Part
@@ -45,7 +46,7 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
     - dimensions: List of dimensions for the geometry
     - geoType: Type of geometry to be created
     - geoName: Name of the geometry
-    - cadFile: Path to the CAD file to be imported
+    - cadFile: Path to the CAD or mesh file to be imported
     --------------------------------------------------------------------------
     ### Outputs ###
     - geo: Geometry object
@@ -353,13 +354,25 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
 
 
 
-    if geoType == "Import CAD":
-        ImportGui.insert(cadFile,App.ActiveDocument.Name)
+    if geoType == "Import CAD or Mesh":
+        # Check if filetype is CAD (needing meshing) or mesh (already meshed)
+        fileName = cadFile.split(".")
+        fileExtension = fileName[-1]
+
+        # If the file is a CAD file insert with ImportGui, else insert with Fem
+        if fileExtension in ["brep", "brp", "iges", "igs", "step", "stp"]:
+            ImportGui.insert(cadFile,App.ActiveDocument.Name)
+        else:
+            Fem.insert(cadFile,App.ActiveDocument.Name)
+
         filename = os.path.basename(cadFile)
         filename, file_extension = os.path.splitext(filename)
         filename = re.sub("\.", "_", filename)
         filename = re.sub("/.", "_", filename)
-        geo = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(filename)[0]
+        filename = re.sub("-", "_", filename)
+
+        geo = App.getDocument(App.ActiveDocument.Name).getObject(filename)
         geo.Label = geoName
+
 
     App.ActiveDocument.recompute()

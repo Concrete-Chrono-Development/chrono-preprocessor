@@ -1614,7 +1614,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Import CAD</string>
+       <string>Import CAD or Mesh</string>
       </property>
       <property name="icon">
        <iconset>

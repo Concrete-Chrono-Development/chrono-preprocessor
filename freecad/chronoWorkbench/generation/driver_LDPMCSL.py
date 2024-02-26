@@ -23,6 +23,7 @@
 
 # Importing: standard
 import os
+import re
 import shutil
 import time
 import tempfile
@@ -252,7 +253,7 @@ def driver_LDPMCSL(self,fastGen):
 
     # Generate surface mesh
     self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
-    [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(analysisName,geoName,meshName,minPar,maxPar)
+    [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(cadFile,analysisName,geoName,meshName,minPar)
     self.form[5].progressBar.setValue(5) 
 
 
@@ -1015,10 +1016,22 @@ if __name__ == '__main__':
 
 
     i = 0
-    outName = '/' + geoName + geoType + str(i).zfill(3)
+    # Use single names for geoTypes
+    if geoType in ["Box","Cylinder","Cone","Sphere","Ellipsoid","Prism","Dogbone","Custom"]:
+        geoTypeOutName = geoType
+    elif geoType == "Notched Prism - Semi Circle":
+        geoTypeOutName = "NotchedPrismSemiCircle"
+    elif geoType == "Notched Prism - Square":
+        geoTypeOutName = "NotchedPrismSquare"
+    elif geoType == "Notched Prism - Ellipse":
+        geoTypeOutName = "NotchedPrismEllipse"
+    elif geoType == "Import CAD or Mesh":
+        geoTypeOutName = "ImportedFile"
+
+    outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
     while os.path.isdir(Path(outDir + outName)):
         i = i+1
-        outName = '/' + geoName + geoType + str(i).zfill(3)
+        outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
 
 
 
@@ -1111,7 +1124,7 @@ if __name__ == '__main__':
     LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
 
-    if geoType in ['Cylinder', 'Cone', 'Sphere']:
+    if geoType in ['Cylinder', 'Cone', 'Sphere','Import CAD or Mesh']:
 
 
         # Insert mesh visualization and link mesh VTK file
@@ -1126,8 +1139,9 @@ if __name__ == '__main__':
         Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').MaxFacesShowInner = 0
         Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').DisplayMode = u"Faces"
 
-        objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
+        
         try:
+            objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
             Gui.getDocument(App.ActiveDocument.Name).getObject(objName).Transparency = 50
             Gui.getDocument(App.ActiveDocument.Name).getObject(objName).ShapeColor = (0.80,0.80,0.80)
         except:
@@ -1164,9 +1178,23 @@ if __name__ == '__main__':
 
 
     # Set visualization properties for particle centers
-    Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).DisplayMode = u"Nodes"
-    Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointSize = 3.00
-    Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointColor = (0.00,0.00,0.00)
+    # Need to load differently for generated vs loaded meshes
+    if geoType == "Import CAD or Mesh":
+        filename = os.path.basename(cadFile)
+        filename, file_extension = os.path.splitext(filename)
+        filename = re.sub("\.", "_", filename)
+        filename = re.sub("/.", "_", filename)
+        filename = re.sub("-", "_", filename)
+        geoObj = App.getDocument(App.ActiveDocument.Name).getObject(filename)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).Transparency = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).DisplayMode = u"Faces, Wireframe & Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).ShapeColor = (0.80,0.80,0.80)
+     
+    else:
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).DisplayMode = u"Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointSize = 3.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointColor = (0.00,0.00,0.00)
 
 
 
