@@ -51,3 +51,104 @@ We recommend pulling the GitHub directly into the FreeCAD workbench directory. O
 Verify that everything is installed properly by opening FreeCAD and check if the Chrono Workbench is available in the list of installed workbenches.
 
 </details>
+
+
+# 💻 Linux Installation and Setup
+
+Follow the below instructions to get set up with the Chrono Preprocessor.  
+
+
+<details>
+
+<summary>Step 1: Install FreeCAD</summary>
+
+Open a terminal. Run the following commands step by step. 
+
+* apt-get -y update
+* apt-get -y install software-properties-common
+* add-apt-repository ppa:freecad-maintainers/freecad-stable
+* apt-get -y  update
+* apt-get -y install mesa-utils libglew-dev freeglut3-dev libgl1-mesa-dri freeca
+
+</details>
+
+<details>
+
+<summary>Step 2: Find FreeCad User Workbench directory. </summary>
+
+* Open FreeCAD.
+* To find FreeCad User Workbench directory, run following command in FreeCad python panel:  
+               “App.getUserAppDataDir()” 
+
+
+
+</details>
+
+<details>
+
+<summary>Step 3: Clone ChronoConcrete Workbench from GitHub to FreeCad user application data directory 
+obtained in Step 2. </summary>
+
+
+* Open a terminal.
+* Clone the repisotory 
+
+ **"git clone https://github.com/Concrete-Chrono-Development/chrono-preprocessor chronoConcrete"**
+
+* Check if the Chrono Workbench is available in the list of installed workbenches.
+
+</details>
+
+<details>
+
+<summary>Step 4: Check tetgen Installation</summary>
+
+Verify that **tetgen** is installed properly in FreeCAD. 
+
+* Find **tetgen** under FreeCAD folder.
+ You may find it in this folder  " ~/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen"
+* Run on a terminal > **./tetgen**
+
+* Check if there is a warning such as > **bash: ./tetgen: Permission denied**
+ 
+ Run the following command > "chmod -R 777 * " to give all permission. 
+ 
+
+* Add **tetgen** path into the bash script.
+Open the file **bashrc** and put the following line and save. 
+
+**export PATH=$PATH:~/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen**
+
+Run the command on a terminal > "**source ~/.bashrc**"
+
+</details>
+
+
+<details>
+
+<summary>Step 5: gmsh Installation</summary>
+
+
+* Download **gmsh** from the website and extract into an appropriate folder.
+
+[https://gmsh.info/bin/Linux/ ]
+
+You can select version 4.4.1.
+
+* Open a terminal and go to gmsh folder
+
+You may find it in this folder **~/gmsh-4.4.1-Linux64/bin** 
+
+* Check by running on terminal > **./gmsh**
+
+* Add **gmsh** path in the bash script.
+Open the file **bashrc** and put the following line and save
+
+**export PATH=$PATH:~/gmsh-4.4.1-Linux64/bin**
+
+Run the command on a terminal > "**source ~/.bashrc**"
+
+</details>
+
+
+
