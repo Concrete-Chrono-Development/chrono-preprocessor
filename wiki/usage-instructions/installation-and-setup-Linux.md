@@ -47,7 +47,6 @@ Open a terminal. Run the following commands step by step.
 
 <summary>Step 4: Check "tetgen" Installation</summary>
 
-TetGen is a program to generate tetrahedral meshes of any 3D polyhedral domains.
 Verify that **tetgen** is installed properly in FreeCAD. 
 
 
@@ -70,8 +69,6 @@ Run the command on a terminal > "**source ~/.bashrc**"
 <details>
 
 <summary>Step 5: "gmsh" Installation</summary>
-
-Gmsh is an open source 3D finite element mesh generator with a built-in CAD engine. 
 
 * Download **gmsh** from the website 
 
