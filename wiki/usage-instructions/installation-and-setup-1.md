@@ -91,7 +91,7 @@ obtained in Step 2. </summary>
 
 
 * Open a terminal.
-* Clone the repisotory 
+* Clone the repository. 
 
  **"git clone https://github.com/Concrete-Chrono-Development/chrono-preprocessor chronoConcrete"**
 
@@ -135,9 +135,9 @@ Run the command on a terminal > "**source ~/.bashrc**"
 
 You can select version 4.4.1.
 
-* Open a terminal and go to gmsh folder
+* Open a terminal and go to gmsh folder.
 
-You may find it in this folder **~/gmsh-4.4.1-Linux64/bin** 
+You may find it in this folder > **~/gmsh-4.4.1-Linux64/bin** 
 
 * Check by running on terminal > **./gmsh**
 
