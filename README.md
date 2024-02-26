@@ -11,7 +11,7 @@ The project wiki is also available here.
 Select below instructions for installation and setup on your local desktop.&#x20;
 
 > #### :computer: [Desktop Deployment](wiki/usage-instructions/installation-and-setup-1.md)
-> #### :computer: [Linux](wiki/usage-instructions/installation-and-setup-Linux.md)
+> #### :computer: [Linux Deployment](wiki/usage-instructions/installation-and-setup-Linux.md)
 
 ## Output
 
