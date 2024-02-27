@@ -12,6 +12,7 @@ Select below instructions for installation and setup on your local desktop.&#x20
 
 > #### :computer: [Desktop Deployment](wiki/usage-instructions/installation-and-setup-1.md)
 > #### :computer: [Linux Deployment](wiki/usage-instructions/installation-and-setup-Linux.md)
+> #### :computer: [QUEST Setup](wiki/usage-instructions/Setup-and-Usage-Quest.md)
 
 ## Output
 
