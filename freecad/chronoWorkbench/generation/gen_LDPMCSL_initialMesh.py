@@ -69,6 +69,8 @@ def gen_LDPMCSL_initialMesh(cadFile,analysisName, geoName, meshName, minPar):
         filename = re.sub("\.", "_", filename)
         filename = re.sub("/.", "_", filename)
         filename = re.sub("-", "_", filename)
+        # If filename starts with a number, resub it with an underscore
+        filename = re.sub("^\d", "_", filename)
         meshObj = App.getDocument(App.ActiveDocument.Name).getObject(filename + "001")
         meshObj.Label = meshName  
 

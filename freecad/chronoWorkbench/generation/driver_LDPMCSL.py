@@ -1185,6 +1185,8 @@ if __name__ == '__main__':
         filename = re.sub("\.", "_", filename)
         filename = re.sub("/.", "_", filename)
         filename = re.sub("-", "_", filename)
+        # If filename starts with a number, resub it with an underscore
+        filename = re.sub("^\d", "_", filename)
         geoObj = App.getDocument(App.ActiveDocument.Name).getObject(filename)
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).BackfaceCulling = False
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).Transparency = 0

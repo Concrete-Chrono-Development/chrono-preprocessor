@@ -370,6 +370,9 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
         filename = re.sub("\.", "_", filename)
         filename = re.sub("/.", "_", filename)
         filename = re.sub("-", "_", filename)
+        # If filename starts with a number, resub it with an underscore
+        filename = re.sub("^\d", "_", filename)
+        
 
         geo = App.getDocument(App.ActiveDocument.Name).getObject(filename)
         geo.Label = geoName
