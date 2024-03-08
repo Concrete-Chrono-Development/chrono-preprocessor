@@ -214,10 +214,10 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
 
             else:
 
-                # Material rule based on particle diameters volumes
+                # For material rule 9 and 10
                 if materialRule == 9 or materialRule == 10:
                     
-                    if facetVol1.all() == facetVol2.all():
+                    if facetVol1[12*x+y] == facetVol2[12*x+y]:
                         
                         facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
                             .astype(int)-1].astype(int)
@@ -226,7 +226,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
 
                     else:
 
-                        if facetVol1.any() > facetVol2.any():
+                        if facetVol1[12*x+y] > facetVol2[12*x+y]:
 
                             facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
                                 .astype(int)-1].astype(int)
@@ -240,6 +240,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
                             facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
                                 .astype(int)-1].astype(int)
 
+                # For material rules 1-8
                 elif materialRule > 0:
 
                     if materialRule == 1:
@@ -275,6 +276,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
                         aggBinder = 2
                         itzBinder = 2
                     
+                    # If the materials are the same
                     if materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int) \
                         == materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int):
                         
