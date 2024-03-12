@@ -33,4 +33,4 @@
 - **You can run the freecad using following command:**
 >
 >	"module load singularity"   
->	"singularity exec --env PATH=/usr/local/bin:/usr/bin:/bin:/home/NetID/.local/share/gmsh/bin:/home/NetID/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen -B /projects:/projects -B /software:/software -B /home/NetID:/home/NetID /hpc/software/freecad/0.21.2/freecad_23.10.sif  gmsh $@"
+>	"singularity exec --env PATH=/usr/local/bin:/usr/bin:/bin:/home/NetID/.local/share/gmsh/bin:/home/NetID/.local/share/FreeCAD/Mod/chronoConcrete/freecad/chronoWorkbench/tetgen -B /projects:/projects -B /software:/software -B /home/NetID:/home/NetID /hpc/software/freecad/0.21.2/freecad_23.10.sif  freecad $@"
