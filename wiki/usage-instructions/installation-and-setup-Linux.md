@@ -33,11 +33,13 @@ Open a terminal. Run the following commands step by step.
 
 <details>
 
-<summary>Step 3: Clone ChronoConcrete Workbench from GitHub to FreeCad user application data directory. 
+<summary>Step 3: Clone ChronoConcrete Workbench from GitHub to `Mod' in the FreeCad user application data directory. 
  </summary>
 
 
 * Open a terminal.
+* Navigate to the user application data directory
+* Cd into the Mod folder (mkdir a Mod folder if there is not one)
 * Clone > "**git clone https://github.com/Concrete-Chrono-Development/chrono-preprocessor chronoConcrete**".
 * Check if the Chrono Workbench is available in the list of installed workbenches.
 
