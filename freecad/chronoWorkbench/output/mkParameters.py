@@ -39,7 +39,7 @@ def mkParameters(self,tempPath):
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
-        outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
+        outputDir, dataFilesGen, visFilesGen, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
 
     # Make output directory if does not exist
@@ -125,6 +125,8 @@ def mkParameters(self,tempPath):
         f.write("grainBinderFuller = " + str(grainBinderFuller) + "\n")
         f.write("grainBinderSieveD = " + str(grainBinderSieveD) + "\n")
         f.write("grainBinderSieveP = " + str(grainBinderSieveP) + "\n")
+        f.write("dataFilesGen = " + str(dataFilesGen) + "\n")
+        f.write("visFilesGen = " + str(visFilesGen) + "\n")
         f.write("singleTetGen = " + str(singleTetGen) + "\n")
         f.write("modelType = " + modelType + "\n")
         f.write("outputDir = " + outputDir + "\n")

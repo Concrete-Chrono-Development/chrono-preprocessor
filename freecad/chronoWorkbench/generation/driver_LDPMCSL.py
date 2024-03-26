@@ -156,7 +156,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
-        outputDir, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
+        outputDir, dataFilesGen, visFilesGen, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
     try:
         sieveCurveDiameter = ast.literal_eval(sieveCurveDiameter)
@@ -954,61 +954,59 @@ if __name__ == '__main__':
     App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName))
 
 
-    self.form[5].statusWindow.setText("Status: Writing node data file.")
+    # If data files requested, generate them
+    if dataFilesGen == True:
 
-    mkData_LDPMCSL_nodes(geoName,tempPath,allNodes)
+        self.form[5].statusWindow.setText("Status: Writing node data file.")
 
-    self.form[5].statusWindow.setText("Status: Writing tet data file.")
+        mkData_LDPMCSL_nodes(geoName,tempPath,allNodes)
 
-    mkData_LDPMCSL_tets(geoName,tempPath,allTets)
+        self.form[5].statusWindow.setText("Status: Writing tet data file.")
 
-    if elementType == "CSL":
-        self.form[5].statusWindow.setText("Status: Writing edge data file.")
-        mkData_LDPMCSL_edges(geoName,tempPath,allEdges)
+        mkData_LDPMCSL_tets(geoName,tempPath,allTets)
 
-
-    self.form[5].statusWindow.setText("Status: Writing facet data file.")
-
-    # If data files requested, generate Facet File
-    mkData_LDPMCSL_facets(geoName,tempPath,facetData)
-    mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
-    mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
+        if elementType == "CSL":
+            self.form[5].statusWindow.setText("Status: Writing edge data file.")
+            mkData_LDPMCSL_edges(geoName,tempPath,allEdges)
 
 
-    self.form[5].statusWindow.setText("Status: Writing particle data file.")
+        self.form[5].statusWindow.setText("Status: Writing facet data file.")
 
-    # If data files requested, generate Particle Data File
-    mkData_LDPMCSL_particles(allNodes,parDiameterList,geoName,tempPath)
-
-
-    if htcToggle in ['on','On']:
-
-        self.form[5].statusWindow.setText("Status: Writing flow edge data file.")
-
-        # Generate edge element data file
-        mkData_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+        # If data files requested, generate Facet File
+        mkData_LDPMCSL_facets(geoName,tempPath,facetData)
+        mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
+        mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
 
 
+        self.form[5].statusWindow.setText("Status: Writing particle data file.")
+
+        # If data files requested, generate Particle Data File
+        mkData_LDPMCSL_particles(allNodes,parDiameterList,geoName,tempPath)
 
 
+        if htcToggle in ['on','On']:
 
-    self.form[5].statusWindow.setText("Status: Writing visualization files.")
+            self.form[5].statusWindow.setText("Status: Writing flow edge data file.")
 
+            # Generate edge element data file
+            mkData_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
 
+    # If visuals requested, generate them
+    if visFilesGen == True:
 
+        self.form[5].statusWindow.setText("Status: Writing visualization files.")
 
+        # If visuals requested, generate Particle VTK File
+        mkVtk_LDPMCSL_particles(internalNodes,parDiameterList,materialList,geoName,tempPath)
 
-    # If visuals requested, generate Particle VTK File
-    mkVtk_LDPMCSL_particles(internalNodes,parDiameterList,materialList,geoName,tempPath)
+        # If visuals requested, generate Facet VTK File
+        mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)
 
-    # If visuals requested, generate Facet VTK File
-    mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)
+        # If visuals requested, generate flow edge VTK File
+        if htcToggle in ['on','On']:
 
-    # If visuals requested, generate flow edge VTK File
-    if htcToggle in ['on','On']:
-
-        mkVtk_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
-        mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+            mkVtk_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
+            mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
 
 
     i = 0
@@ -1031,6 +1029,7 @@ if __name__ == '__main__':
 
 
 
+    # If single tet/cell visuals requested, generate them
     if singleTetGen == True:
         if elementType == "LDPM":
             mkVtk_LDPM_singleTetFacets(geoName,tempPath,tetFacets)
@@ -1047,30 +1046,6 @@ if __name__ == '__main__':
         else:
             pass
 
-    writeTime = round(time.time() - writeTimeStart,2)
-
-
-
-    # Generate Log file after run
-    #mkLogFile = logFile(gmshTime,nParticles,placementTime,maxPar,\
-    #    minPar,fullerCoef,wcRatio,cementC,volFracAir,q,maxIter,\
-    #    geoName,aggOffset,densityWater,densityCement,allTets,dataType,\
-    #    tetTessTime,writeTime,geoFile,dFiber,lFiber,vFiber,fiberFile,\
-    #    multiMaterial,materialFile,maxGrainD,minGrainD,grainFullerCoef,\
-    #    maxBinderD,minBinderD,binderFullerCoef,maxITZD,minITZD,ITZFullerCoef,output,fibers,\
-    #    itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,\
-    #    aggVolFracAct,sieveCurveDiameter,sieveCurvePassing,matSwitched,multiMatRule,\
-    #    cementStructure,cementmaterialFile,maxPoresD,minPoresD,PoresFullerCoef,\
-    #    PoresSieveCurveDiameter,PoresSieveCurvePassing,maxClinkerD,minClinkerD,\
-    #    ClinkerFullerCoef,ClinkerSieveCurveDiameter,ClinkerSieveCurvePassing,\
-    #    maxCHD,minCHD,CHFullerCoef,CHSieveCurveDiameter,CHSieveCurvePassing,\
-    #    maxCSH_LDD,minCSH_LDD,CSH_LDFullerCoef,CSH_LDSieveCurveDiameter,CSH_LDSieveCurvePassing,\
-    #    maxCSH_HDD,minCSH_HDD,CSH_HDFullerCoef,CSH_HDSieveCurveDiameter,CSH_HDSieveCurvePassing,\
-    #    PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
-    #    PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,outputUnits)
-
-
-
 
 
 
@@ -1078,10 +1053,12 @@ if __name__ == '__main__':
     print('Moving files.')
 
 
-
         
     shutil.move(tempPath, outDir + outName)
-    os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+    try:
+        os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+    except:
+        pass
     os.remove(Path(outDir + outName + '/' + geoName + '2D.mesh'))
     os.remove(Path(outDir + outName + '/' + geoName + '.node'))
     os.remove(Path(outDir + outName + '/' + geoName + '.ele'))
@@ -1094,47 +1071,47 @@ if __name__ == '__main__':
 
 
 
+    if dataFilesGen == True:
+        # Set linked object for node data file
+        LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
+        #LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMnodesData)
+        LDPMnodesData.addProperty("App::PropertyFile",'Location','Node Data File','Location of node data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-nodes.dat'))
+        
+        # Set linked object for tet data file
+        LDPMtetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMtetsData")                                     # create your object
+        #LDPMtetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMtetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMtetsData)
+        LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
 
-    # Set linked object for node data file
-    LDPMnodesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMnodesData")                                     # create your object
-    #LDPMnodesData.ViewObject.Proxy = IconViewProviderToFile(LDPMnodesData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-    App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMnodesData)
-    LDPMnodesData.addProperty("App::PropertyFile",'Location','Node Data File','Location of node data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-nodes.dat'))
-    
-    # Set linked object for tet data file
-    LDPMtetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMtetsData")                                     # create your object
-    #LDPMtetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMtetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-    App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMtetsData)
-    LDPMtetsData.addProperty("App::PropertyFile",'Location','Tet Data File','Location of tets data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-tets.dat'))
+        # Set linked object for facet data file
+        LDPMfacetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfacetsData")                                     # create your object
+        #LDPMfacetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMfacetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsData)
+        LDPMfacetsData.addProperty("App::PropertyFile",'Location','Facet Data File','Location of facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facets.dat'))
 
-    # Set linked object for facet data file
-    LDPMfacetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfacetsData")                                     # create your object
-    #LDPMfacetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMfacetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-    App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsData)
-    LDPMfacetsData.addProperty("App::PropertyFile",'Location','Facet Data File','Location of facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facets.dat'))
-
-
-    # Set linked object for particle VTK file
-    LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
-    #LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-    App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMparticlesVTK)
-    LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
+    if visFilesGen == True:
+        # Set linked object for particle VTK file
+        LDPMparticlesVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMparticlesVTK")                                     # create your object
+        #LDPMparticlesVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMparticlesVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMparticlesVTK)
+        LDPMparticlesVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-particles.000.vtk'))
 
 
     if geoType in ['Cylinder', 'Cone', 'Sphere','Import CAD or Mesh']:
 
+        if visFilesGen == True:
+            # Insert mesh visualization and link mesh VTK file
+            Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)        
+            LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000')
+            LDPMmeshVTK.Label = 'LDPMmeshVTK' 
+            App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
+            LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
 
-        # Insert mesh visualization and link mesh VTK file
-        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk')),App.ActiveDocument.Name)        
-        LDPMmeshVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000')
-        LDPMmeshVTK.Label = 'LDPMmeshVTK' 
-        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
-        LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
-
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').ShapeColor = (0.80,0.80,0.80)
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').BackfaceCulling = False
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').MaxFacesShowInner = 0
-        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').DisplayMode = u"Faces"
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').ShapeColor = (0.80,0.80,0.80)
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').BackfaceCulling = False
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').MaxFacesShowInner = 0
+            Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_mesh_000').DisplayMode = u"Faces"
 
         
         try:
@@ -1145,11 +1122,13 @@ if __name__ == '__main__':
             pass
 
     else:
-        # Set linked object for mesh VTK file
-        LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
-        #LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
-        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
-        LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+        if visFilesGen == True:
+            # Set linked object for mesh VTK file
+            LDPMmeshVTK = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMmeshVTK")                                     # create your object
+            #LDPMmeshVTK.ViewObject.Proxy = IconViewProviderToFile(LDPMmeshVTK,os.path.join(ICONPATH,'FEMMeshICON.svg'))
+            App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMmeshVTK)
+            LDPMmeshVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+
 
         objName = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0].Name
         try:
@@ -1159,19 +1138,20 @@ if __name__ == '__main__':
             pass
 
 
-    # Insert facet visualization and link facet VTK file
-    Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk')),App.ActiveDocument.Name)        
-    LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000')
-    LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
-    App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMfacetsVTK)
-    LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk'))
+    if visFilesGen == True:
+        # Insert facet visualization and link facet VTK file
+        Fem.insert(str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk')),App.ActiveDocument.Name)        
+        LDPMfacetsVTK = App.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000')
+        LDPMfacetsVTK.Label = 'LDPMfacetsVTK' 
+        App.getDocument(App.ActiveDocument.Name).getObject(visualFilesName).addObject(LDPMfacetsVTK)
+        LDPMfacetsVTK.addProperty("App::PropertyFile",'Location','Paraview VTK File','Location of Paraview VTK file').Location=str(Path(outDir + outName + '/' + geoName + '-para-facets.000.vtk'))
 
 
-    # Set visualization properties for facets
-    Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').DisplayMode = u"Wireframe"
-    Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').MaxFacesShowInner = 0
-    Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').BackfaceCulling = False
-    Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').ShapeColor = (0.36,0.36,0.36)
+        # Set visualization properties for facets
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').DisplayMode = u"Wireframe"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').MaxFacesShowInner = 0
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').BackfaceCulling = False
+        Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').ShapeColor = (0.36,0.36,0.36)
 
 
     # Set visualization properties for particle centers

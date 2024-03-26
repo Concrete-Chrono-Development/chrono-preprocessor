@@ -164,6 +164,8 @@ def read_LDPMCSL_inputs(form):
 
     # Generation Data
     outputDir           = form[5].outputDir.text()
+    dataFilesGen        = form[5].dataFilesGen.isChecked()
+    visFilesGen         = form[5].visFilesGen.isChecked()
     singleTetGen        = form[5].singleTetGen.isChecked()
     modelType           = form[5].modelType.currentText()
 
@@ -179,4 +181,4 @@ def read_LDPMCSL_inputs(form):
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
-        outputDir, singleTetGen, modelType
+        outputDir, dataFilesGen, visFilesGen, singleTetGen, modelType
