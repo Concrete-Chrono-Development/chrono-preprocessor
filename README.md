@@ -4,7 +4,7 @@
 
 This is a GitLab repository for the development and implementation of a preprocessor in [FreeCAD ](https://www.freecadweb.org/)for the [Project Chrono](https://www.projectchrono.org) software. The repository and wiki are in development and may be incomplete or include mistakes.
 
-The project wiki is also available here.
+The project wiki is also available [here](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/wiki).
 
 ## Installation and Setup
 
