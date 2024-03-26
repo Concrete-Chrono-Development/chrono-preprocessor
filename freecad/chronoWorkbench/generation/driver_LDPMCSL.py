@@ -113,12 +113,11 @@ from freecad.chronoWorkbench.output.mkData_LDPMCSL_flowEdges              import
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_particles              import mkData_LDPMCSL_particles
 from freecad.chronoWorkbench.output.mkDisp_LDPMCSL_sieveCurves            import mkDisp_LDPMCSL_sieveCurves
 from freecad.chronoWorkbench.output.mkIges_LDPMCSL_flowEdges              import mkIges_LDPMCSL_flowEdges
-from freecad.chronoWorkbench.output.mkParameters                          import mkParameters
 
 
 
 
-def driver_LDPMCSL(self,fastGen,tempPath):
+def driver_LDPMCSL(self,fastGen):
 
     # Make output directory if does not exist
     outDir =  self.form[5].outputDir.text()
@@ -129,6 +128,11 @@ def driver_LDPMCSL(self,fastGen,tempPath):
 
     # Initialize code start time to measure performance
     start_time = time.time()
+
+    # Make a temporary path location
+    tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
+    os.mkdir(tempPath)
+
 
 
     # Store document
@@ -1068,7 +1072,6 @@ if __name__ == '__main__':
     #    maxCSH_HDD,minCSH_HDD,CSH_HDFullerCoef,CSH_HDSieveCurveDiameter,CSH_HDSieveCurvePassing,\
     #    PoresVolFracSim,ClinkerVolFracSim,CHVolFracSim,CSH_LDVolFracSim,CSH_HDVolFracSim,\
     #    PoresVolFracAct,ClinkerVolFracAct,CHVolFracAct,CSH_LDVolFracAct,CSH_HDVolFracAct,outputUnits)
-
 
 
 
