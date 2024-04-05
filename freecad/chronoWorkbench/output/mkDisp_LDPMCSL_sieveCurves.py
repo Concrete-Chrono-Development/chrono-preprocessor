@@ -96,7 +96,7 @@ def mkDisp_LDPMCSL_sieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,
 
     # Plotting
     Plot.plot(diametersTheory, passingPercentTheory, 'Theoretical Curve') 
-    Plot.plot(diameters[passingPercent>min(passingPercent)], passingPercent[passingPercent>min(passingPercent)], 'Simulated Data (Shifted)') 
+    Plot.plot(diameters[passingPercent>min(passingPercent)], passingPercent[passingPercent>min(passingPercent)], 'Simulated Data (Shifted Up)') 
 
     # Plotting Formatting
     Plot.xlabel('Particle Diameter, $d$ (mm)') 
