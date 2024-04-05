@@ -136,6 +136,7 @@ def read_LDPMCSL_inputs(form):
     
     multiMatToggle      = form[4].multiMatToggle.currentText()
     multiMatFile        = form[4].multiMatFile.text()
+    aggFile             = form[4].aggFile.text()
     multiMatRule        = int(form[4].multiMatRule.value() or 9)  
 
     grainAggMin         = form[4].grainAggMin.text()
@@ -177,7 +178,7 @@ def read_LDPMCSL_inputs(form):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         HTCtoggle, HTClength,\
-        multiMatToggle,multiMatFile,multiMatRule,\
+        multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\

@@ -23,7 +23,7 @@ from gen_LDPMCSL_particle                                   import gen_LDPMCSL_p
 
 
 
-def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLength, max_dist, minPar, maxPar, sieveCurveDiameter, sieveCurvePassing, wcRatio, cementC, airFrac, fullerCoef, flyashC, silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity, fillerDensity, cementDensity, densityWater, multiMatToggle, multiMatFile, grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP, grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP, grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP, tetVolume, minC, maxC, verbose):
+def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLength, max_dist, minPar, maxPar, sieveCurveDiameter, sieveCurvePassing, wcRatio, cementC, airFrac, fullerCoef, flyashC, silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity, fillerDensity, cementDensity, densityWater, multiMatToggle, aggFile, multiMatFile, grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP, grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP, grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP, tetVolume, minC, maxC, verbose):
 
     # Load back in these seven matrices from their temporary files:
     # coord1, coord2, coord3, coord4, meshVertices, meshTets, surfaceNodes
@@ -42,19 +42,32 @@ def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLe
     meshTets = np.load(tempPath + 'meshTets.npy')
     surfaceNodes = np.load(tempPath + 'surfaceNodes.npy')
 
-
     if multiMatToggle == "On":
+
+
+        # Read in aggregate file
+        try:
+            [multiMatX,multiMatY,multiMatZ,multiMatRes,aggDistinctVoxels] = read_multiMat_file(aggFile)
+        except:
+            pass
+
 
         # Read in multi-material file
         [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
 
+
         # Confirm if the voxelated multi-material file is larger than the provided geometry
         topoCheck = check_multiMat_size(multiMatX,multiMatY,multiMatZ,multiMatRes,minC,maxC)
 
+
         # Organize and store voxels of each material
-        [aggVoxels,itzVoxels,binderVoxels] = sort_multiMat_voxels(multiMatVoxels)
+        [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
 
-
+        # Organize and store voxels of aggregate with the distinct ID file
+        try:
+            [aggVoxels,discard2,discard3,aggVoxelIDs] = sort_multiMat_voxels(aggDistinctVoxels)
+        except:
+            pass
 
 
         # Do calculations for aggregate, binder, and ITZ
@@ -158,7 +171,8 @@ def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLe
     particlesPlaced = 0
 
 
-
+    # Initialize particleID list of length of internalNodes
+    particleID = np.zeros(len(internalNodes))
 
     if multiMatToggle == "On":
 
@@ -166,20 +180,20 @@ def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLe
 
             # Place in order of aggregate > ITZ > binder
             if i == 0:
-                [grainsDiameterList,voxels,grainMin,grainMax] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax]
+                [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax,aggVoxelIDs]
             elif i == 1:
-                [grainsDiameterList,voxels,grainMin,grainMax] = [itzGrainsDiameterList,itzVoxels,grainITZMin,grainITZMax]
+                [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [itzGrainsDiameterList,itzVoxels,grainITZMin,grainITZMax,0]
             elif i == 2:
-                [grainsDiameterList,voxels,grainMin,grainMax] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax]
+                [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax,0]
 
 
             # Generate particles for length of needed aggregate (not placed via MPI)
             for x in range(particlesPlaced,len(grainsDiameterList)):
 
                 # Generate particle
-                [newMaxIter,node,iterReq] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
+                [newMaxIter,node,iterReq,particleID[x]] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
                     aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
-                    multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,minC,maxC)
+                    multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,voxelIDs,minC,maxC)
 
 
                 if len(grainsDiameterList)<=1000:
@@ -313,6 +327,9 @@ def gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLe
 
     # Save the parDiameterList to a temporary file
     np.save(tempPath + 'parDiameterList.npy', parDiameterList)
+
+    # Save the particleIDs to a temporary file
+    np.save(tempPath + 'particleID.npy', particleID)
 
     if multiMatToggle == "Off":
 

@@ -137,6 +137,7 @@ class inputWindow_LDPMCSL:
         QtCore.QObject.connect(self.form[1].readFileButton, QtCore.SIGNAL("clicked()"), self.openFileGeo)
         QtCore.QObject.connect(self.form[5].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
         QtCore.QObject.connect(self.form[4].readMultiMatFile, QtCore.SIGNAL("clicked()"), self.openMultiMatFile)
+        QtCore.QObject.connect(self.form[4].readAggFile, QtCore.SIGNAL("clicked()"), self.openAggFile)
 
         # Run generation for LDPM or CSL
         QtCore.QObject.connect(self.form[5].generate, QtCore.SIGNAL("clicked()"), self.generationDriver)
@@ -273,6 +274,22 @@ class inputWindow_LDPMCSL:
         else:
             self.form[4].multiMatFile.setText(OpenName)
 
+    def openAggFile(self):
+
+        path = App.ConfigGet("UserHomePath")
+        filetype = "Voxel Data File (*.pimg)"
+
+        OpenName = ""
+        try:
+            OpenName = QtGui.QFileDialog.getOpenFileName(None,QString.fromLocal8Bit("Read a voxel data file"),path,             filetype) # type: ignore
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        except Exception:
+            OpenName, Filter = QtGui.QFileDialog.getOpenFileName(None, "Read a voxel data file", path,             filetype) #PySide
+        #                                                                     "here the text displayed on windows" "here the filter (extension)"   
+        if OpenName == "":                                                            # if the name file are not selected then Abord process
+            App.Console.PrintMessage("Process aborted"+"\n")
+        else:
+            self.form[4].aggFile.setText(OpenName)
 
     def writeParameters(self):
 
@@ -484,7 +501,7 @@ class inputWindow_LDPMCSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
-            multiMatToggle,multiMatFile,multiMatRule,\
+            multiMatToggle,aggFile,multiMatFile,multiMatRule,\
             grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
             grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
             grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\

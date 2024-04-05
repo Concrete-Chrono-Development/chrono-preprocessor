@@ -35,7 +35,7 @@ def mkParameters(self,tempPath):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         htcToggle, htcLength,\
-        multiMatToggle,multiMatFile,multiMatRule,\
+        multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\

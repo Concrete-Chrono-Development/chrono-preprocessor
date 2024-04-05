@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
-    <height>745</height>
+    <width>381</width>
+    <height>704</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -18,6 +18,85 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QComboBox" name="PrimitiveTypeCB">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maxVisibleItems">
+      <number>16</number>
+     </property>
+     <item>
+      <property name="text">
+       <string notr="true">HTC Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_Body_old.svg</normaloff>:/icons/PartDesign_Body_old.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Fiber-Reinforcement Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Rebar Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Periodic Mesh Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_LinearPattern.svg</normaloff>:/icons/PartDesign_LinearPattern.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Multi-Material Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Cement-Scale Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">Other Parameters</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>:/icons/PartDesign_Clone.svg</normaloff>:/icons/PartDesign_Clone.svg</iconset>
+      </property>
+     </item>
+    </widget>
+   </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="enabled">
@@ -1163,6 +1242,49 @@
            </layout>
           </item>
           <item row="2" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_37">
+            <item>
+             <widget class="QLineEdit" name="aggFile">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="readAggFile">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string notr="true">...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="textLabel2_31">
+              <property name="text">
+               <string>Voxel file for defining aggregate</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
              <widget class="QSpinBox" name="multiMatRule">
@@ -1192,7 +1314,7 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_24">
             <item>
              <widget class="QDoubleSpinBox" name="grainAggMin">
@@ -1272,7 +1394,7 @@
             </item>
            </layout>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_25">
             <item>
              <widget class="QDoubleSpinBox" name="grainAggFuller">
@@ -1308,7 +1430,7 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_26">
             <item>
              <widget class="QLineEdit" name="grainAggSieveD">
@@ -1347,7 +1469,7 @@
             </item>
            </layout>
           </item>
-          <item row="6" column="0">
+          <item row="7" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_27">
             <item>
              <widget class="QLineEdit" name="grainAggSieveP">
@@ -1380,7 +1502,7 @@
             </item>
            </layout>
           </item>
-          <item row="7" column="0">
+          <item row="8" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_28">
             <item>
              <widget class="QDoubleSpinBox" name="grainITZMin">
@@ -1460,7 +1582,7 @@
             </item>
            </layout>
           </item>
-          <item row="8" column="0">
+          <item row="9" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_29">
             <item>
              <widget class="QDoubleSpinBox" name="grainITZFuller">
@@ -1496,7 +1618,7 @@
             </item>
            </layout>
           </item>
-          <item row="9" column="0">
+          <item row="10" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_30">
             <item>
              <widget class="QLineEdit" name="grainITZSieveD">
@@ -1535,7 +1657,7 @@
             </item>
            </layout>
           </item>
-          <item row="10" column="0">
+          <item row="11" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_31">
             <item>
              <widget class="QLineEdit" name="grainITZSieveP">
@@ -1568,7 +1690,7 @@
             </item>
            </layout>
           </item>
-          <item row="11" column="0">
+          <item row="12" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_32">
             <item>
              <widget class="QDoubleSpinBox" name="grainBinderMin">
@@ -1648,7 +1770,7 @@
             </item>
            </layout>
           </item>
-          <item row="12" column="0">
+          <item row="13" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_33">
             <item>
              <widget class="QDoubleSpinBox" name="grainBinderFuller">
@@ -1687,7 +1809,7 @@
             </item>
            </layout>
           </item>
-          <item row="13" column="0">
+          <item row="14" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_34">
             <item>
              <widget class="QLineEdit" name="grainBinderSieveD">
@@ -1726,7 +1848,7 @@
             </item>
            </layout>
           </item>
-          <item row="14" column="0">
+          <item row="15" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_35">
             <item>
              <widget class="QLineEdit" name="grainBinderSieveP">
@@ -1759,7 +1881,7 @@
             </item>
            </layout>
           </item>
-          <item row="15" column="0">
+          <item row="16" column="0">
            <spacer>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1887,85 +2009,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QComboBox" name="PrimitiveTypeCB">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maxVisibleItems">
-      <number>16</number>
-     </property>
-     <item>
-      <property name="text">
-       <string notr="true">HTC Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_Body_old.svg</normaloff>:/icons/PartDesign_Body_old.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Fiber-Reinforcement Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Rebar Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_Line.svg</normaloff>:/icons/PartDesign_Line.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Periodic Mesh Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_LinearPattern.svg</normaloff>:/icons/PartDesign_LinearPattern.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Multi-Material Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Cement-Scale Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_MultiTransform.svg</normaloff>:/icons/PartDesign_MultiTransform.svg</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Other Parameters</string>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normaloff>:/icons/PartDesign_Clone.svg</normaloff>:/icons/PartDesign_Clone.svg</iconset>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>

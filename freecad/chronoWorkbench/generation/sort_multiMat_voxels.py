@@ -48,7 +48,10 @@ def sort_multiMat_voxels(multiMatVoxels):
     itzVoxels = itzFull[itzFull != 0]
 
     # Keep only binder voxels
-    binderFull = (multiMatVoxels==3)*voxelNumbering
+    binderFull = (multiMatVoxels==0)*voxelNumbering
     binderVoxels = binderFull[binderFull != 0]
 
-    return aggVoxels,itzVoxels,binderVoxels
+    # Get aggregate voxel IDs
+    aggVoxelIDs = multiMatVoxels[aggVoxels-1]
+
+    return aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs

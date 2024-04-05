@@ -23,7 +23,7 @@ import numpy as np
 
 def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
     facetAreas,facetNormals,tetn1,tetn2,materialList,materialRule,\
-    multiMaterial,cementStructure,edgeMaterialList,facetCellData):
+    multiMaterial,cementStructure,edgeMaterialList,facetCellData,particleID):
   
     """
     Variables:
@@ -172,12 +172,17 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
     # Initialize a matrix for particle material information
     particleMaterial = np.empty([len(allTets)*12,2])
 
+    # Initialize a matrix for particle material ID information
+    particleIDs = np.empty([len(allTets)*12,2])
 
-    # Extend material list for edge nodes
+    # Extend material lists for edge nodes
     if multiMaterial in ['on','On','Y','y','Yes','yes']:
 
-        materialList = np.concatenate((2*np.ones([len(allNodes)-\
+        materialList = np.concatenate((0*np.ones([len(allNodes)-\
             len(materialList),]),materialList))
+
+        particleID = np.concatenate((0*np.ones([len(allNodes)-\
+            len(particleID),]),particleID))
 
     elif cementStructure in ['on','On','Y','y','Yes','yes']:
         materialList = np.concatenate((edgeMaterialList,materialList))
@@ -207,6 +212,9 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
             particleMaterial[12*x+y,0] = materialList[allTets[x,tetn1[y]].astype(int)-1].astype(int)
             particleMaterial[12*x+y,1] = materialList[allTets[x,tetn2[y]].astype(int)-1].astype(int)
 
+            particleIDs[12*x+y,0] = particleID[allTets[x,tetn1[y]].astype(int)-1].astype(int)
+            particleIDs[12*x+y,1] = particleID[allTets[x,tetn2[y]].astype(int)-1].astype(int)
+
             # Material Flag           
             if multiMaterial in ['off','Off','N','n','No','no']:
                 facetData[12*x+y,18]    = 0                       # Material Flag 
@@ -217,28 +225,34 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
                 # For material rule 9 and 10
                 if materialRule == 9 or materialRule == 10:
                     
-                    if facetVol1[12*x+y] == facetVol2[12*x+y]:
-                        
-                        facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
-                            .astype(int)-1].astype(int)
-                        facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
-                            .astype(int)-1].astype(int)
-
+                    # If the materials are both different aggregate, divide with ITZ
+                    if (particleIDs[12*x+y,0].astype(int)!=particleIDs[12*x+y,1].astype(int))&\
+                       ((particleIDs[12*x+y,0].astype(int)>0)&(particleIDs[12*x+y,1].astype(int)>0)):
+                            facetData[12*x+y,18] = 1;
+                            facetMaterial[12*x+y] = 1;
                     else:
-
-                        if facetVol1[12*x+y] > facetVol2[12*x+y]:
-
+                        if facetVol1[12*x+y] == facetVol2[12*x+y]:
+                            
                             facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
                                 .astype(int)-1].astype(int)
                             facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
                                 .astype(int)-1].astype(int)
 
-                        else: 
+                        else:
 
-                            facetData[12*x+y,18] = materialList[allTets[x,tetn2[y]]\
-                                .astype(int)-1].astype(int)
-                            facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
-                                .astype(int)-1].astype(int)
+                            if facetVol1[12*x+y] > facetVol2[12*x+y]:
+
+                                facetData[12*x+y,18] = materialList[allTets[x,tetn1[y]]\
+                                    .astype(int)-1].astype(int)
+                                facetMaterial[12*x+y] = materialList[allTets[x,tetn1[y]]\
+                                    .astype(int)-1].astype(int)
+
+                            else: 
+
+                                facetData[12*x+y,18] = materialList[allTets[x,tetn2[y]]\
+                                    .astype(int)-1].astype(int)
+                                facetMaterial[12*x+y] = materialList[allTets[x,tetn2[y]]\
+                                    .astype(int)-1].astype(int)
 
                 # For material rules 1-8
                 elif materialRule > 0:

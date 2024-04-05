@@ -152,7 +152,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         htcToggle, htcLength,\
-        multiMatToggle,multiMatFile,multiMatRule,\
+        multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
@@ -327,7 +327,6 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         np.save(tempPath + "meshTets.npy", meshTets)
         np.save(tempPath + "surfaceNodes.npy", surfaceNodes)
 
-        
         # Get the current directory 
         currentDir = os.path.dirname(os.path.realpath(__file__))
 
@@ -389,6 +388,7 @@ from gen_multiStep   import gen_multiStep
             if multiMatToggle == "On":
                 f.write('multiMatToggle = "' + multiMatToggle + '"\n')
                 f.write('multiMatFile = "' + multiMatFile + '"\n')
+                f.write('aggFile = "' + aggFile + '"\n')
                 f.write('multiMatRule = ' + str(multiMatRule) + '\n')
                 f.write("grainAggMin = " + str(grainAggMin) + "\n")
                 f.write("grainAggMax = " + str(grainAggMax) + "\n")
@@ -434,6 +434,7 @@ from gen_multiStep   import gen_multiStep
                     f.write("grainBinderSieveP = " + str(grainBinderSieveP) + "\n")
             else:
                 f.write('multiMatToggle = "' + multiMatToggle + '"\n')
+                f.write('aggFile = None\n')
                 f.write('multiMatFile = None\n')
                 f.write('multiMatRule = None\n')
                 f.write("grainAggMin = None\n")
@@ -457,7 +458,7 @@ from gen_multiStep   import gen_multiStep
 
 def main():
                 
-    generation = gen_multiStep(tempPath,numCPU, numIncrements, maxIter, aggOffset, maxEdgeLength, max_dist, minPar, maxPar, sieveCurveDiameter, sieveCurvePassing, wcRatio, cementC, airFrac, fullerCoef, flyashC, silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity, fillerDensity, cementDensity, densityWater, multiMatToggle, multiMatFile, grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP, grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP, grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP, tetVolume, minC, maxC, verbose)
+    generation = gen_multiStep(tempPath, numCPU, numIncrements, maxIter, aggOffset, maxEdgeLength, max_dist, minPar, maxPar, sieveCurveDiameter, sieveCurvePassing, wcRatio, cementC, airFrac, fullerCoef, flyashC, silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity, fillerDensity, cementDensity, densityWater, multiMatToggle, aggFile, multiMatFile, grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP, grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP, grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP, tetVolume, minC, maxC, verbose)
                 
                 
 if __name__ == '__main__':
@@ -467,10 +468,8 @@ if __name__ == '__main__':
         
         
         
-        
         # Run the generation   
         os.system("python " + str(Path(currentDir + "/tempGen.py")))
-
 
         # Read the temporary internalNodes file
         internalNodes = np.load(tempPath + "internalNodes.npy")
@@ -480,6 +479,9 @@ if __name__ == '__main__':
 
         # Read the temporary parDiameterList file
         parDiameterList = np.load(tempPath + "parDiameterList.npy")
+
+        # Read the particleID file
+        particleID = np.load(tempPath + "particleID.npy")
 
         if multiMatToggle == "Off":
             # Read the volFracPar file
@@ -501,6 +503,7 @@ if __name__ == '__main__':
         os.remove(tempPath + "meshVertices.npy")
         os.remove(tempPath + "meshTets.npy")
         os.remove(tempPath + "surfaceNodes.npy")
+        os.remove(tempPath + "particleID.npy")
 
 
 
@@ -514,14 +517,30 @@ if __name__ == '__main__':
 
         if multiMatToggle == "On":
 
+
+            # Read in aggregate file
+            try:
+                [multiMatX,multiMatY,multiMatZ,multiMatRes,aggDistinctVoxels] = read_multiMat_file(aggFile)
+            except:
+                pass
+
+
             # Read in multi-material file
             [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
+
 
             # Confirm if the voxelated multi-material file is larger than the provided geometry
             topoCheck = check_multiMat_size(multiMatX,multiMatY,multiMatZ,multiMatRes,minC,maxC)
 
+
             # Organize and store voxels of each material
-            [aggVoxels,itzVoxels,binderVoxels] = sort_multiMat_voxels(multiMatVoxels)
+            [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
+
+            # Organize and store voxels of aggregate with the distinct ID file
+            try:
+                [aggVoxels,discard2,discard3,aggVoxelIDs] = sort_multiMat_voxels(aggDistinctVoxels)
+            except:
+                pass
 
 
 
@@ -626,7 +645,8 @@ if __name__ == '__main__':
         particlesPlaced = 0
 
 
-
+        # Initialize particleID list of length of internalNodes
+        particleID = np.zeros(len(internalNodes))
         
         if multiMatToggle == "On":
 
@@ -634,20 +654,20 @@ if __name__ == '__main__':
 
                 # Place in order of aggregate > ITZ > binder
                 if i == 0:
-                    [grainsDiameterList,voxels,grainMin,grainMax] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax]
+                    [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax,aggVoxelIDs]
                 elif i == 1:
-                    [grainsDiameterList,voxels,grainMin,grainMax] = [itzGrainsDiameterList,itzVoxels,grainITZMin,grainITZMax]
+                    [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [itzGrainsDiameterList,itzVoxels,grainITZMin,grainITZMax,0]
                 elif i == 2:
-                    [grainsDiameterList,voxels,grainMin,grainMax] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax]
+                    [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax,0]
 
 
                 # Generate particles for length of needed aggregate (not placed via MPI)
                 for x in range(particlesPlaced,len(grainsDiameterList)):
 
                     # Generate particle
-                    [newMaxIter,node,iterReq] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
+                    [newMaxIter,node,iterReq,particleID[x]] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
                         aggOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
-                        multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,minC,maxC)
+                        multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,voxelIDs,minC,maxC)
 
                     # Update progress bar every 1% of placement
                     if x % np.rint(len(grainsDiameterList)/100) == 0:
@@ -775,8 +795,8 @@ if __name__ == '__main__':
             materialList = np.ones(len(parDiameterList))
 
             # Create empty lists if not multi-material or cementStructure
-            aggGrainsDiameterList, itzGrainsDiameterList, binderGrainsDiameterList, PoresDiameterList,\
-                ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0
+            aggGrainsDiameterList, itzGrainsDiameterList, binderGrainsDiameterList, particleID, PoresDiameterList,\
+                ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0,0
 
 
 
@@ -856,11 +876,11 @@ if __name__ == '__main__':
     if elementType == "LDPM":
         [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_LDPM_facetData(\
             allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData)
+            tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData,particleID)
     elif elementType == "CSL":
         [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_CSL_facetData(\
             allNodes,allEdges,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData)
+            tetn2,materialList,multiMatRule,multiMatToggle,cementStructure,edgeMaterialList,facetCellData,particleID)
 
 
     self.form[5].progressBar.setValue(98) 
@@ -886,11 +906,25 @@ if __name__ == '__main__':
     # Calculate volume associated with each material (and adjust for high-order material rules)
     if multiMatToggle == "On":
 
+        # Read in aggregate file
+        try:
+            [multiMatX,multiMatY,multiMatZ,multiMatRes,aggDistinctVoxels] = read_multiMat_file(aggFile)
+        except:
+            pass
+
+
         # Read in multi-material file
         [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
-        
+
+
         # Organize and store voxels of each material
-        [aggVoxels,itzVoxels,binderVoxels] = sort_multiMat_voxels(multiMatVoxels)
+        [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
+
+        # Organize and store voxels of aggregate with the distinct ID file
+        try:
+            [aggVoxels,discard2,discard3,aggVoxelIDs] = sort_multiMat_voxels(aggDistinctVoxels)
+        except:
+            pass
 
         [itzVolFracSim,binderVolFracSim,aggVolFracSim,itzVolFracAct,binderVolFracAct,aggVolFracAct] = check_multiMat_matVol(subtetVol,facetMaterial,aggVoxels,itzVoxels,binderVoxels)
         

@@ -29,7 +29,7 @@ from freecad.chronoWorkbench.generation.check_LDPMCSL_particleInside     import 
 def gen_LDPMCSL_subParticle(facePoints,parDiameter,\
     vertices,tets,newMaxIter,maxIter,minPar,maxPar,\
     parOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,nodes,\
-    multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels,minC,maxC):
+    multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels,voxelIDs,minC,maxC):
 
     """
     Variables:
@@ -59,6 +59,7 @@ def gen_LDPMCSL_subParticle(facePoints,parDiameter,\
     - iterReq:          Number of iterations required to place a particle
     --------------------------------------------------------------------------
     """  
+
 
     # Generate random numbers to use in generation
     randomN = np.random.rand(newMaxIter*3)    
@@ -126,4 +127,9 @@ def gen_LDPMCSL_subParticle(facePoints,parDiameter,\
 
                 # Indicate placed particle and break While Loop
                 if inside == True and overlap[0] == False:
-                    return newMaxIter,node,iterReq
+                    
+                    # Check if we are placing aggregate (voxelIDs is not an int)
+                    if (type(voxelIDs) == np.ndarray):
+                        return newMaxIter,node,iterReq,voxelIDs[randVoxel-1]
+                    else:
+                        return newMaxIter,node,iterReq,0
