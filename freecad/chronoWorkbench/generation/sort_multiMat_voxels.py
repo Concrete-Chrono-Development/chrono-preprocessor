@@ -30,9 +30,9 @@ def sort_multiMat_voxels(multiMatVoxels):
     - multiMatVoxels:   Voxel system with multiple materials
     --------------------------------------------------------------------------
     ### Outputs ###
-    - aggVoxels:        Voxel numbers for aggregate
-    - itzVoxels:        Voxel numbers for ITZ
-    - binderVoxels:     Voxel numbers for binder
+    - aggVoxels:        Voxel numbers for aggregate (>3)
+    - itzVoxels:        Voxel numbers for ITZ (==2)
+    - binderVoxels:     Voxel numbers for binder (==0)
     --------------------------------------------------------------------------
     """  
 

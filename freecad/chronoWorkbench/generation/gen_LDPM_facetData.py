@@ -178,7 +178,7 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
     # Extend material lists for edge nodes
     if multiMaterial in ['on','On','Y','y','Yes','yes']:
 
-        materialList = np.concatenate((0*np.ones([len(allNodes)-\
+        materialList = np.concatenate((2*np.ones([len(allNodes)-\
             len(materialList),]),materialList))
 
         particleID = np.concatenate((0*np.ones([len(allNodes)-\
