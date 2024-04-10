@@ -795,8 +795,9 @@ if __name__ == '__main__':
             materialList = np.ones(len(parDiameterList))
 
             # Create empty lists if not multi-material or cementStructure
-            aggGrainsDiameterList, itzGrainsDiameterList, binderGrainsDiameterList, particleID, PoresDiameterList,\
-                ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0,0
+            aggGrainsDiameterList, itzGrainsDiameterList, binderGrainsDiameterList, PoresDiameterList,\
+                ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0,0,0,0
+            particleID = np.zeros(len(parDiameterList))
 
 
 

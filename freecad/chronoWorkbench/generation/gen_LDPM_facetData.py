@@ -176,13 +176,13 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
     particleIDs = np.empty([len(allTets)*12,2])
 
     # Extend material lists for edge nodes
+    particleID = np.concatenate((0*np.ones([len(allNodes)-\
+        len(particleID),]),particleID))
+
     if multiMaterial in ['on','On','Y','y','Yes','yes']:
 
         materialList = np.concatenate((2*np.ones([len(allNodes)-\
             len(materialList),]),materialList))
-
-        particleID = np.concatenate((0*np.ones([len(allNodes)-\
-            len(particleID),]),particleID))
 
     elif cementStructure in ['on','On','Y','y','Yes','yes']:
         materialList = np.concatenate((edgeMaterialList,materialList))
