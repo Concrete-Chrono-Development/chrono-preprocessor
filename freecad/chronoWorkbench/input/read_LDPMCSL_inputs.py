@@ -53,6 +53,10 @@ def read_LDPMCSL_inputs(form):
     # Geometry Settings
     geoType             = form[1].geometryType.currentText()
     dimensions = []
+    if geoType == "Truncated Cone":
+        dimensions.append(form[1].truncConeHeight.text())
+        dimensions.append(form[1].truncConeRadBot.text())
+        dimensions.append(form[1].truncConeRadTop.text())
     if geoType == "Box":
         dimensions.append(form[1].boxLength.text())
         dimensions.append(form[1].boxWidth.text())
@@ -63,7 +67,7 @@ def read_LDPMCSL_inputs(form):
     if geoType == "Cone":
         dimensions.append(form[1].coneHeight.text())
         dimensions.append(form[1].coneRadius1.text())
-        dimensions.append(form[1].coneRadius2.text())
+        dimensions.append("0 mm")
     if geoType == "Sphere":
         dimensions.append(form[1].sphereRadius.text())
     if geoType == "Ellipsoid":
