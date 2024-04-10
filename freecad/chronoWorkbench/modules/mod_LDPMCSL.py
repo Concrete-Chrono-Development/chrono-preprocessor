@@ -544,12 +544,13 @@ class inputWindow_LDPMCSL:
         edgedata = 0
         edgeMaterialList = 0
         multiMatRule = 0
+        particleID = np.zeros(4)
         multiMaterial = 'Off'
         cementStructure = 'Off'
 
         [facetData,facetMaterial,subtetVol,facetVol1,facetVol2,particleMaterial] = gen_LDPM_facetData(\
             allNodes,allTets,tetFacets,facetCenters,facetAreas,facetNormals,tetn1,\
-            tetn2,materialList,multiMatRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData)
+            tetn2,materialList,multiMatRule,multiMaterial,cementStructure,edgeMaterialList,facetCellData,particleID)
 
         self.form[5].progressBar.setValue(98) 
 
