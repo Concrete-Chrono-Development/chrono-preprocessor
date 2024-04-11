@@ -66,20 +66,18 @@ from freecad.chronoWorkbench.generation.gen_LDPMCSL_analysis              import
 
 # Importing: input
 from freecad.chronoWorkbench.input.read_LDPMCSL_inputs                    import read_LDPMCSL_inputs
-from freecad.chronoWorkbench.input.read_LDPMCSL_tetgen                    import read_LDPMCSL_tetgen
-from freecad.chronoWorkbench.input.read_multiMat_file                     import read_multiMat_file
 
 # Importing: output
-from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_particles               import mkVtk_LDPMCSL_particles
+from freecad.chronoWorkbench.output.mkVtk_particles                       import mkVtk_particles
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_facets                  import mkVtk_LDPMCSL_facets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTet                  import mkVtk_LDPM_singleTet
 from freecad.chronoWorkbench.output.mkPy_LDPM_singleDebugParaview         import mkPy_LDPM_singleDebugParaview
 from freecad.chronoWorkbench.output.mkPy_LDPM_singleDebugParaviewLabels   import mkPy_LDPM_singleDebugParaviewLabels
-from freecad.chronoWorkbench.output.mkData_LDPMCSL_nodes                  import mkData_LDPMCSL_nodes
+from freecad.chronoWorkbench.output.mkData_nodes                          import mkData_nodes
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_tets                   import mkData_LDPMCSL_tets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facets                 import mkData_LDPMCSL_facets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetsVertices         import mkData_LDPMCSL_facetsVertices
-from freecad.chronoWorkbench.output.mkData_LDPMCSL_particles              import mkData_LDPMCSL_particles
+from freecad.chronoWorkbench.output.mkData_particles                      import mkData_particles
 from freecad.chronoWorkbench.output.mkParameters                          import mkParameters
 
 
@@ -157,7 +155,7 @@ class inputWindow_LDPMCSL:
         os.mkdir(tempPath)
 
         fastGen = False
-        mkParameters(self,tempPath)
+        mkParameters(self,"LDPMCSL",tempPath)
         driver_LDPMCSL(self,fastGen,tempPath)
 
     def generationDriverFast(self):
@@ -167,7 +165,7 @@ class inputWindow_LDPMCSL:
         os.mkdir(tempPath)
 
         fastGen = True
-        mkParameters(self,tempPath)
+        mkParameters(self,"LDPMCSL",tempPath)
         driver_LDPMCSL(self,fastGen,tempPath)
 
 
@@ -293,7 +291,7 @@ class inputWindow_LDPMCSL:
 
     def writeParameters(self):
 
-        mkParameters(self,"writeOnly")
+        mkParameters(self,"LDPMCSL","writeOnly")
 
     def readParameters(self):
 
@@ -405,7 +403,7 @@ class inputWindow_LDPMCSL:
             self.form[1].ellipsoidAngle1.setProperty('rawValue',(dimensions[3]))
             self.form[1].ellipsoidAngle2.setProperty('rawValue',(dimensions[4]))
             self.form[1].ellipsoidAngle3.setProperty('rawValue',(dimensions[5]))
-        elif geoType == "Prism":
+        elif geoType == "Arbitrary Prism":
             self.form[1].prismCircumradius.setProperty('rawValue',(dimensions[0]))
             self.form[1].prismHeight.setProperty('rawValue',(dimensions[1]))
             self.form[1].prismPolygon.setProperty('rawValue',(dimensions[2]))
@@ -577,7 +575,7 @@ class inputWindow_LDPMCSL:
 
         self.form[5].statusWindow.setText("Status: Writing node data file.")
 
-        mkData_LDPMCSL_nodes(geoName,tempPath,allNodes)
+        mkData_nodes(geoName,tempPath,allNodes)
 
         self.form[5].statusWindow.setText("Status: Writing tet data file.")
 
@@ -593,12 +591,12 @@ class inputWindow_LDPMCSL:
         self.form[5].statusWindow.setText("Status: Writing particle data file.")
 
         # If data files requested, generate Particle Data File
-        mkData_LDPMCSL_particles(allNodes,parDiameterList,geoName,tempPath)
+        mkData_particles(allNodes,parDiameterList,geoName,tempPath)
 
         self.form[5].statusWindow.setText("Status: Writing visualization files.")
 
         # If visuals requested, generate Particle VTK File
-        mkVtk_LDPMCSL_particles(allNodes,parDiameterList,materialList,geoName,tempPath)
+        mkVtk_particles(allNodes,parDiameterList,materialList,geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
         mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)

@@ -22,7 +22,7 @@
 import numpy as np
 
 
-def calc_LDPMCSL_parVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
+def calc_parVolume(tetVolume, wcRatio, cementC, volFracAir, fullerCoef, flyashC,
               silicaC, scmC, fillerC, flyashDensity, silicaDensity, scmDensity,
               fillerDensity, densityCement, densityWater, minPar, maxPar, 
               newSieveCurveD, newSieveCurveP, NewSet, w_min, w_max):

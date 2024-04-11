@@ -14,7 +14,7 @@
 ## Primary Authors: Matthew Troemner
 ## ===========================================================================
 ##
-## Function to generate and write a data file of all nodes in an LDPM model, 
+## Function to generate and write a data file of all nodes in a model, 
 ## for later use in Project Chrono.
 ##
 ## ===========================================================================
@@ -23,7 +23,7 @@ from pathlib import Path
 import numpy as np
 
 
-def mkData_LDPMCSL_nodes(geoName,tempPath,allNodes):
+def mkData_nodes(geoName,tempPath,nodes):
 
     """
     Variables:
@@ -31,7 +31,7 @@ def mkData_LDPMCSL_nodes(geoName,tempPath,allNodes):
     ### Inputs ###
     - geoName:      Name of the geometry file
     - tempPath:     Path to the temporary directory
-    - allNodes:     Array of all nodes in the model
+    - nodes:        Array of all nodes in the model
     --------------------------------------------------------------------------
     ### Outputs ###
     - A data file of all nodes in the model
@@ -39,7 +39,7 @@ def mkData_LDPMCSL_nodes(geoName,tempPath,allNodes):
     """
     
     np.savetxt(Path(tempPath + geoName + \
-        '-data-nodes.dat'), allNodes, fmt='%.10g', delimiter=' ', comments=''\
+        '-data-nodes.dat'), nodes, fmt='%.10g', delimiter=' ', comments=''\
         ,header='\
 // ================================================================================\n\
 // CHRONO WORKBENCH - github.com/Concrete-Chrono-Development/chrono-preprocessor\n\

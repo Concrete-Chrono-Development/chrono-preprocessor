@@ -24,7 +24,7 @@ import math
 import numpy as np
 
 
-def gen_LDPMCSL_particleList(parVolTotal, minPar, maxPar, newSieveCurveD, cdf, kappa_i, 
+def gen_particleList(parVolTotal, minPar, maxPar, newSieveCurveD, cdf, kappa_i, 
                  NewSet, fullerCoef):
     
     """

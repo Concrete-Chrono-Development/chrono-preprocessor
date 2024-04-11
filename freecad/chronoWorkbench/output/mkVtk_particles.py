@@ -21,7 +21,7 @@
 
 from pathlib import Path
 
-def mkVtk_LDPMCSL_particles(internalNodes,parDiameterList,materialList,geoName,tempPath):
+def mkVtk_particles(internalNodes,parDiameterList,materialList,geoName,tempPath):
 
     """
     Variables:

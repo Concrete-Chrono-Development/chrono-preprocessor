@@ -24,7 +24,7 @@ import numpy as np
 
 
 
-def calc_LDPMCSL_sieveCurve(minPar, maxPar, sieveCurveDiameter, sieveCurvePassing):
+def calc_sieveCurve(minPar, maxPar, sieveCurveDiameter, sieveCurvePassing):
 
     """
     Variables:

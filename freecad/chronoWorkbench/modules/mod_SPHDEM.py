@@ -48,14 +48,18 @@ import femmesh.femmesh2mesh
 
 from PySide import QtCore, QtGui
 
-from freecad.chronoWorkbench                                     import ICONPATH
-from freecad.chronoWorkbench                                     import GUIPATH
+# Importing: paths
+from freecad.chronoWorkbench                                              import ICONPATH
 
+# Importing: util
+from freecad.chronoWorkbench.util.cwloadUIfile                            import cwloadUIfile
+from freecad.chronoWorkbench.util.cwloadUIicon                            import cwloadUIicon
 
-from freecad.chronoWorkbench.util.cwloadUIfile                   import cwloadUIfile
-from freecad.chronoWorkbench.util.cwloadUIicon                   import cwloadUIicon
+# Importing: generation
+from freecad.chronoWorkbench.generation.driver_SPHDEM                     import driver_SPHDEM
 
-
+# Importing: output
+from freecad.chronoWorkbench.output.mkParameters                          import mkParameters
 
 
 # Turn off error for divide by zero and invalid operations
@@ -74,36 +78,37 @@ class inputWindow_SPHDEM:
         self.form = []
 
         # Load UI's for Side Panel
+        self.form.append(cwloadUIfile("ui_SPHDEM_modelProps.ui"))
         self.form.append(cwloadUIfile("ui_SPHDEM_geometry.ui"))
+        self.form.append(cwloadUIfile("ui_SPHDEM_particles.ui"))
+        self.form.append(cwloadUIfile("ui_SPHDEM_mixDesign.ui"))
         self.form.append(cwloadUIfile("ui_SPHDEM_generation.ui"))
 
         # Label, Load Icons, and Initialize Panels
-        #self.form[0].setWindowTitle("Model Settings")
-        self.form[0].setWindowTitle("Geometry")
-        #self.form[2].setWindowTitle("Particles")        
-        #self.form[3].setWindowTitle("Mix Design")
-        #self.form[4].setWindowTitle("Additional Parameters")
-        self.form[1].setWindowTitle("Model Generation") 
+        self.form[0].setWindowTitle("Model Settings")
+        self.form[1].setWindowTitle("Geometry")
+        self.form[2].setWindowTitle("Particles")        
+        self.form[3].setWindowTitle("Mix Design")
+        self.form[4].setWindowTitle("Model Generation") 
 
-        #cwloadUIicon(self.form[0],"FEM_MaterialMechanicalNonlinear.svg")
-        cwloadUIicon(self.form[0],"PartDesign_AdditiveBox.svg")
-        #cwloadUIicon(self.form[2],"Arch_Material_Group.svg")
-        #cwloadUIicon(self.form[3],"FEM_ConstraintFlowVelocity.svg")
-        #cwloadUIicon(self.form[4],"FEM_CreateNodesSet.svg")
-        cwloadUIicon(self.form[1],"ldpm.svg")
+        cwloadUIicon(self.form[0],"FEM_MaterialMechanicalNonlinear.svg")
+        cwloadUIicon(self.form[1],"PartDesign_AdditiveBox.svg")
+        cwloadUIicon(self.form[2],"Arch_Material_Group.svg")
+        cwloadUIicon(self.form[3],"FEM_ConstraintFlowVelocity.svg")
+        cwloadUIicon(self.form[4],"ldpm.svg")
 
         # Set initial output directory
-        self.form[1].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
+        self.form[4].outputDir.setText(str(Path(App.ConfigGet('UserHomePath') + '/chronoWorkbench')))
 
         # Connect Open File Buttons
-        #QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFilePara)
+        QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFilePara)
         #QtCore.QObject.connect(self.form[0].readFileButton, QtCore.SIGNAL("clicked()"), self.openFileGeo)
-        QtCore.QObject.connect(self.form[1].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
+        QtCore.QObject.connect(self.form[4].readDirButton, QtCore.SIGNAL("clicked()"), self.openDir)
 
         # Run generation for LDPM or CSL
-        QtCore.QObject.connect(self.form[1].generateSPH, QtCore.SIGNAL("clicked()"), self.generation)
-        QtCore.QObject.connect(self.form[1].generateDEM, QtCore.SIGNAL("clicked()"), self.generation)
-        QtCore.QObject.connect(self.form[1].writePara, QtCore.SIGNAL("clicked()"), self.generation)
+        QtCore.QObject.connect(self.form[4].generate, QtCore.SIGNAL("clicked()"), self.generationDriver)
+        QtCore.QObject.connect(self.form[4].generateFast, QtCore.SIGNAL("clicked()"), self.generationDriverFast)
+        QtCore.QObject.connect(self.form[4].writePara, QtCore.SIGNAL("clicked()"), self.writeParameters)
 
 
 
@@ -116,7 +121,7 @@ class inputWindow_SPHDEM:
     def openFilePara(self):
 
         path = App.ConfigGet("UserHomePath")
-        filetype = "CC Parameter input format (*.ccPar)"
+        filetype = "CC Parameter input format (*.cwPar)"
 
         OpenName = ""
         try:
@@ -177,85 +182,145 @@ class inputWindow_SPHDEM:
 
 
 
-    def generation(self):
-
-        # Make output directory if does not exist
-        outDir =  self.form[5].outputDir.text()
-        try:
-            os.mkdir(outDir)
-        except:
-            pass
-
-        # Initialize code start time to measure performance
-        start_time = time.time()
+    def generationDriver(self):
 
         # Make a temporary path location
         tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
         os.mkdir(tempPath)
 
+        fastGen = False
+        mkParameters(self,"SPHDEM",tempPath)
+        driver_SPHDEM(self,fastGen,tempPath)
+
+    def generationDriverFast(self):
+
+        # Make a temporary path location
+        tempPath = tempfile.gettempdir() + "/chronoConc" + str(int(np.random.uniform(1e7,1e8))) + '/'
+        os.mkdir(tempPath)
+
+        fastGen = True
+        mkParameters(self,"SPHDEM",tempPath)
+        driver_SPHDEM(self,fastGen,tempPath)
 
 
+    def writeParameters(self):
+
+        mkParameters(self,"SPHDEM","writeOnly")
+
+    def readParameters(self):
+
+        paraFile = self.form[0].setupFile.text()
+
+        # Read parameters from file
+        with open(Path(paraFile), "r") as f:
+            for line in f:
+                if "numCPU" in line:
+                    numCPU = int(line.split("=")[1].strip())
+                elif "numIncrements" in line:
+                    numIncrements = int(line.split("=")[1].strip())
+                elif "maxIter" in line:
+                    maxIter = int(line.split("=")[1].strip())
+                elif "placementAlg" in line:
+                    placementAlg = line.split("=")[1].strip()
+                elif "geoType" in line:
+                    geoType = line.split("=")[1].strip()
+                elif "dimensions" in line:
+                    # Change from format  ['17.00 mm', '2.00 mm', '5.00 mm'] to [17.00, 2.00, 5.00]
+                    dimensions = [float(x.split()[0].strip("'")) for x in line.split("=")[1].strip().strip("[").strip("]").split(",")]
+                elif "cadFile" in line:
+                    cadFile = line.split("=")[1].strip()
+                elif "minPar" in line:
+                    minPar = float(line.split("=")[1].strip())
+                elif "maxPar" in line:
+                    maxPar = float(line.split("=")[1].strip())
+                elif "fullerCoef" in line:
+                    fullerCoef = float(line.split("=")[1].strip())
+                elif "sieveCurveDiameter" in line:
+                    sieveCurveDiameter = line.split("=")[1].strip()
+                elif "sieveCurvePassing" in line:
+                    sieveCurvePassing = line.split("=")[1].strip()
+                elif "minDistCoef" in line:
+                    minDistCoef = float(line.split("=")[1].strip())
+                elif "wcRatio" in line:
+                    wcRatio = float(line.split("=")[1].strip())
+                elif "densityWater" in line:
+                    densityWater = float(line.split("=")[1].strip())
+                elif "cementC" in line:
+                    cementC = float(line.split("=")[1].strip())
+                elif "flyashC" in line:
+                    flyashC = float(line.split("=")[1].strip())
+                elif "silicaC" in line:
+                    silicaC = float(line.split("=")[1].strip())
+                elif "scmC" in line:
+                    scmC = float(line.split("=")[1].strip())
+                elif "cementDensity" in line:
+                    cementDensity = float(line.split("=")[1].strip())
+                elif "flyashDensity" in line:
+                    flyashDensity = float(line.split("=")[1].strip())
+                elif "silicaDensity" in line:
+                    silicaDensity = float(line.split("=")[1].strip())
+                elif "scmDensity" in line:
+                    scmDensity = float(line.split("=")[1].strip())
+                elif "airFrac1" in line:
+                    airFrac1 = float(line.split("=")[1].strip())
+                elif "fillerC" in line:
+                    fillerC = float(line.split("=")[1].strip())
+                elif "fillerDensity" in line:
+                    fillerDensity = float(line.split("=")[1].strip())
+                elif "airFrac2" in line:
+                    airFrac2 = float(line.split("=")[1].strip())
+                elif "outputDir" in line:
+                    outputDir = line.split("=")[1].strip()
+
+        # Write parameters to input panel
+        self.form[0].numCPUbox.setValue(numCPU)
+        self.form[0].numPIncBox.setValue(numIncrements)
+        self.form[0].numIncBox.setValue(maxIter)
+        self.form[0].placementAlg.setCurrentText(placementAlg)
+        self.form[1].geometryType.setCurrentText(geoType)
+        if geoType == "Box":
+            self.form[1].boxLength.setProperty('rawValue',(dimensions[0]))
+            self.form[1].boxWidth.setProperty('rawValue',(dimensions[1]))
+            self.form[1].boxHeight.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Cylinder":
+            self.form[1].cylinderHeight.setProperty('rawValue',(dimensions[0]))
+            self.form[1].cylinderRadius.setProperty('rawValue',(dimensions[1]))
+        elif geoType == "Truncated Cone":
+            self.form[1].coneHeight.setProperty('rawValue',(dimensions[0]))
+            self.form[1].coneRadius1.setProperty('rawValue',(dimensions[1]))
+            self.form[1].coneRadius2.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Cone":
+            self.form[1].coneHeight.setProperty('rawValue',(dimensions[0]))
+            self.form[1].coneRadius1.setProperty('rawValue',(dimensions[1]))
+            self.form[1].coneRadius2.setProperty('rawValue',(dimensions[2]))
+        elif geoType == "Arbitrary Prism":
+            self.form[1].prismCircumradius.setProperty('rawValue',(dimensions[0]))
+            self.form[1].prismHeight.setProperty('rawValue',(dimensions[1]))
+            self.form[1].prismPolygon.setProperty('rawValue',(dimensions[2]))
+        self.form[1].cadFile.setText(cadFile)
+        self.form[2].minPar.setValue(minPar)
+        self.form[2].maxPar.setValue(maxPar)
+        self.form[2].fullerCoef.setValue(fullerCoef)
+        self.form[2].sieveDiameters.setText(str(sieveCurveDiameter))
+        self.form[2].sievePassing.setText(str(sieveCurvePassing))
+        self.form[2].minDistCoef.setValue(minDistCoef)
+        self.form[3].wcRatio.setValue(wcRatio)
+        self.form[3].waterDensity.setText(str(densityWater))
+        self.form[3].cementContent.setText(str(cementC))
+        self.form[3].flyashContent.setText(str(flyashC))
+        self.form[3].silicaContent.setText(str(silicaC))
+        self.form[3].scmContent.setText(str(scmC))
+        self.form[3].cementDensity.setText(str(cementDensity))
+        self.form[3].flyashDensity.setText(str(flyashDensity))
+        self.form[3].silicaDensity.setText(str(silicaDensity))
+        self.form[3].scmDensity.setText(str(scmDensity))
+        self.form[3].airFrac.setValue(airFrac1)
+        self.form[3].fillerContent.setText(str(fillerC))
+        self.form[3].fillerDensity.setText(str(fillerDensity))
+        self.form[3].airFracArb.setValue(airFrac2)
+        self.form[4].outputDir.setText(outputDir)
 
 
-        elementType = "SPH"
-
-
-
-
-
-
-        # Store document
-        docGui = Gui.activeDocument()
-
-        # Make new document and set view if does not exisit
-        try:
-            docGui.activeView().viewAxonometric()
-        except:
-            App.newDocument("Unnamed")
-            docGui = Gui.activeDocument()
-            docGui.activeView().viewAxonometric()
-        Gui.runCommand('Std_PerspectiveCamera',1)
-
-
-        geoName = elementType + "geo" + str(0).zfill(3)
-        meshName = elementType + "mesh" + str(0).zfill(3)
-        analysisName = elementType + "analysis" + str(0).zfill(3)
-        materialName = elementType + "material" + str(0).zfill(3)
-        dataFilesName = elementType + 'dataFiles'+ str(0).zfill(3)
-        visualFilesName = elementType + 'visualFiles'+ str(0).zfill(3)
-
-        i = 0
-        try:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-        except:
-            test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-
-        while test == True:
-            i = i+1
-            geoName = elementType + "geo" + str(i).zfill(3)
-            meshName = elementType + "mesh" + str(i).zfill(3)
-            analysisName = elementType + "analysis" + str(i).zfill(3)
-            materialName = elementType + "material" + str(i).zfill(3)
-            dataFilesName = elementType + 'dataFiles'+ str(i).zfill(3)
-            visualFilesName = elementType + 'visualFiles'+ str(i).zfill(3)
-            try:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName)[0] != None)
-            except:
-                test = (App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(geoName) != [])
-
-        # Set view
-        docGui.activeView().viewAxonometric()
-        Gui.SendMsgToActiveView("ViewFit")
-        Gui.runCommand('Std_DrawStyle',6)
-        Gui.runCommand('Std_PerspectiveCamera',1)
-
-
-
-
-
-
-
-        
     # What to do when "Close" Button Clicked
     def reject(self):
          try:

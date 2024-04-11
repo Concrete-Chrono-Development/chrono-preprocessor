@@ -82,6 +82,16 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
         geo.Height    = dimensions[0]
         geo.Radius    = dimensions[1]
 
+
+    if geoType == "Truncated Cone":
+
+        # Create a cone and name it
+        geo           = App.ActiveDocument.addObject("Part::Cone",geoName)
+        geo.Label     = geoName
+        geo.Height    = dimensions[0]
+        geo.Radius1   = dimensions[1]
+        geo.Radius2   = dimensions[2]
+
     if geoType == "Cone":
 
         # Create a cone and name it

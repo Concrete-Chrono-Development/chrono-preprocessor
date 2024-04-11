@@ -28,7 +28,7 @@ import numpy as np
 import math
 
 
-def mkDisp_LDPMCSL_sieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
+def mkDisp_sieveCurves(volFracPar, tetVolume, minPar, maxPar,fullerCoef,sieveCurveDiameter,sieveCurvePassing,parDiameterList):
 
     """
     Variable List:
