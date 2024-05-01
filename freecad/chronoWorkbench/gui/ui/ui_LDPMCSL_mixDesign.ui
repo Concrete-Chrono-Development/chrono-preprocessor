@@ -377,7 +377,7 @@
             </size>
            </property>
            <property name="text">
-            <string>2.80e-10</string>
+            <string>2.80e-9</string>
            </property>
            <property name="placeholderText">
             <string>3.15e-9</string>
