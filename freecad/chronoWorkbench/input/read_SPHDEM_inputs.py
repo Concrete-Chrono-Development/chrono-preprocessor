@@ -54,6 +54,13 @@ def read_SPHDEM_inputs(form):
         dimensions.append(form[1].prismCircumradius.text())
         dimensions.append(form[1].prismHeight.text())
         dimensions.append(form[1].prismPolygon.text())
+    if geoType == "Dogbone":
+        dimensions.append(form[1].dogboneLength.text())
+        dimensions.append(form[1].dogboneWidth.text())
+        dimensions.append(form[1].dogboneThickness.text())
+        dimensions.append(form[1].gaugeLength.text())
+        dimensions.append(form[1].gaugeWidth.text())
+        dimensions.append(form[1].dogboneType.currentText())        
     cadFile             = form[1].cadFile.toPlainText()
 
     # Particle Settings

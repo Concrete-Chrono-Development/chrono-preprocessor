@@ -73,6 +73,7 @@ from freecad.chronoWorkbench.input.read_SPHDEM_inputs                     import
 # Importing: output
 from freecad.chronoWorkbench.output.mkVtk_particles                       import mkVtk_particles
 from freecad.chronoWorkbench.output.mkData_nodes                          import mkData_nodes
+from freecad.chronoWorkbench.output.mkData_surfMesh                       import mkData_surfMesh
 from freecad.chronoWorkbench.output.mkData_particles                      import mkData_particles
 from freecad.chronoWorkbench.output.mkDisp_sieveCurves                    import mkDisp_sieveCurves
 
@@ -588,6 +589,11 @@ if __name__ == '__main__':
     self.form[4].statusWindow.setText("Status: Writing node data file.")
 
     mkData_nodes(geoName,tempPath,internalNodes)
+
+
+    self.form[4].statusWindow.setText("Status: Writing surface mesh file.")
+
+    mkData_surfMesh(surfaceNodes,surfaceFaces,geoName,tempPath)
 
 
     self.form[4].statusWindow.setText("Status: Writing particle data file.")
