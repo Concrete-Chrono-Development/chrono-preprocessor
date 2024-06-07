@@ -132,6 +132,29 @@ def driver_LDPMCSL(self,fastGen,tempPath):
     except:
         pass
 
+    i = 0
+    # Use single names for geoTypes
+    if geoType in ["Box","Cylinder","Cone","Sphere","Ellipsoid","Prism","Dogbone","Custom"]:
+        geoTypeOutName = geoType
+    elif geoType == "Notched Prism - Semi Circle":
+        geoTypeOutName = "NotchedPrismSemiCircle"
+    elif geoType == "Notched Prism - Square":
+        geoTypeOutName = "NotchedPrismSquare"
+    elif geoType == "Notched Prism - Ellipse":
+        geoTypeOutName = "NotchedPrismEllipse"
+    elif geoType == "Import CAD or Mesh":
+        geoTypeOutName = "ImportedFile"
+
+    outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
+    while os.path.isdir(Path(outDir + outName)):
+        i = i+1
+        outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
+
+    # Move existing files to selected output directory
+    print('Moving files.')    
+    shutil.move(tempPath, outDir + outName)
+
+
     # Initialize code start time to measure performance
     start_time = time.time()
 
@@ -1038,23 +1061,7 @@ if __name__ == '__main__':
             mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
 
 
-    i = 0
-    # Use single names for geoTypes
-    if geoType in ["Box","Cylinder","Cone","Sphere","Ellipsoid","Prism","Dogbone","Custom"]:
-        geoTypeOutName = geoType
-    elif geoType == "Notched Prism - Semi Circle":
-        geoTypeOutName = "NotchedPrismSemiCircle"
-    elif geoType == "Notched Prism - Square":
-        geoTypeOutName = "NotchedPrismSquare"
-    elif geoType == "Notched Prism - Ellipse":
-        geoTypeOutName = "NotchedPrismEllipse"
-    elif geoType == "Import CAD or Mesh":
-        geoTypeOutName = "ImportedFile"
 
-    outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
-    while os.path.isdir(Path(outDir + outName)):
-        i = i+1
-        outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
 
 
 
