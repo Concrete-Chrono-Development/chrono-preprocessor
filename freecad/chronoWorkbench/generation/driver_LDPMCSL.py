@@ -145,6 +145,14 @@ def driver_LDPMCSL(self,fastGen,tempPath):
     elif geoType == "Import CAD or Mesh":
         geoTypeOutName = "ImportedFile"
 
+    if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
+                        "Confinement Shear Lattice (CSL) - Original"]:
+        elementType = "CSL"
+    else:
+        elementType = "LDPM"
+
+    geoName = elementType + "geo" + str(0).zfill(3)
+
     outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
     while os.path.isdir(Path(outDir + outName)):
         i = i+1
@@ -198,11 +206,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
 
 
 
-    if modelType in ["Confinement Shear Lattice (CSL) - LDPM Style ",\
-                        "Confinement Shear Lattice (CSL) - Original"]:
-        elementType = "CSL"
-    else:
-        elementType = "LDPM"
+
 
 
     if fillerC > 0:
@@ -218,7 +222,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
 
 
 
-    geoName = elementType + "geo" + str(0).zfill(3)
+
     meshName = elementType + "mesh" + str(0).zfill(3)
     analysisName = elementType + "analysis"
     materialName = elementType + "material"
