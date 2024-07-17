@@ -1150,7 +1150,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="Page5_ellipsoid">
+        <widget class="QWidget" name="multiMat">
          <property name="enabled">
           <bool>true</bool>
          </property>

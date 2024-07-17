@@ -359,6 +359,44 @@ class inputWindow_LDPMCSL:
                     airFrac2 = float(line.split("=")[1].strip())
                 elif "outputDir" in line:
                     outputDir = line.split("=")[1].strip()
+                elif "multiMatToggle" in line:
+                    multiMatToggle = line.split("=")[1].strip()
+                elif "aggFile" in line:
+                    aggFile = line.split("=")[1].strip()
+                elif "multiMatFile" in line:
+                    multiMatFile = line.split("=")[1].strip()
+                elif "multiMatRule" in line:
+                    multiMatRule = line.split("=")[1].strip()
+                elif "grainAggMin" in line:
+                    grainAggMin = float(line.split("=")[1].strip())
+                elif "grainAggMax" in line:
+                    grainAggMax = float(line.split("=")[1].strip())
+                elif "grainAggFuller" in line:
+                    grainAggFuller = float(line.split("=")[1].strip())
+                elif "grainAggSieveD" in line:
+                    grainAggSieveD = line.split("=")[1].strip()
+                elif "grainAggSieveP" in line:
+                    grainAggSieveP = line.split("=")[1].strip()
+                elif "grainITZMin" in line:
+                    grainITZMin = float(line.split("=")[1].strip())
+                elif "grainITZMax" in line:
+                    grainITZMax = float(line.split("=")[1].strip())
+                elif "grainITZFuller" in line:
+                    grainITZFuller = float(line.split("=")[1].strip())
+                elif "grainITZSieveD" in line:
+                    grainITZSieveD = line.split("=")[1].strip()
+                elif "grainITZSieveP" in line:
+                    grainITZSieveP = line.split("=")[1].strip()
+                elif "grainBinderMin" in line:
+                    grainBinderMin = float(line.split("=")[1].strip())
+                elif "grainBinderMax" in line:
+                    grainBinderMax = float(line.split("=")[1].strip())
+                elif "grainBinderFuller" in line:
+                    grainBinderFuller = float(line.split("=")[1].strip())
+                elif "grainBinderSieveD" in line:
+                    grainBinderSieveD = line.split("=")[1].strip()
+                elif "grainBinderSieveP" in line:
+                    grainBinderSieveP = line.split("=")[1].strip()
 
         # Write parameters to input panel
         self.form[0].constEQ.setCurrentText(constitutiveEQ)
@@ -452,6 +490,28 @@ class inputWindow_LDPMCSL:
         self.form[3].fillerContent.setText(str(fillerC))
         self.form[3].fillerDensity.setText(str(fillerDensity))
         self.form[3].airFracArb.setValue(airFrac2)
+        if multiMatToggle == "On":
+            self.form[4].PrimitiveTypeCB.setCurrentText("Multi-Material Parameters")
+            self.form[4].widgetStack2.setCurrentIndex(4) # Index 4 is the current page for multi-material (P-LDPM setup)  
+        self.form[4].multiMatToggle.setCurrentText(multiMatToggle)
+        self.form[4].aggFile.setText(aggFile)
+        self.form[4].multiMatFile.setText(multiMatFile)
+        self.form[4].multiMatRule.setValue(int(multiMatRule))
+        self.form[4].grainAggMin.setValue(grainAggMin)
+        self.form[4].grainAggMax.setValue(grainAggMax)
+        self.form[4].grainAggFuller.setValue(grainAggFuller)
+        self.form[4].grainAggSieveD.setText(str(grainAggSieveD))
+        self.form[4].grainAggSieveP.setText(str(grainAggSieveP))
+        self.form[4].grainITZMin.setValue(grainITZMin)
+        self.form[4].grainITZMax.setValue(grainITZMax)
+        self.form[4].grainITZFuller.setValue(grainITZFuller)
+        self.form[4].grainITZSieveD.setText(str(grainITZSieveD))
+        self.form[4].grainITZSieveP.setText(str(grainITZSieveP))
+        self.form[4].grainBinderMin.setValue(grainBinderMin)
+        self.form[4].grainBinderMax.setValue(grainBinderMax)
+        self.form[4].grainBinderFuller.setValue(grainBinderFuller)
+        self.form[4].grainBinderSieveD.setText(str(grainBinderSieveD))
+        self.form[4].grainBinderSieveP.setText(str(grainBinderSieveP))
         self.form[5].outputDir.setText(outputDir)
 
 
