@@ -158,9 +158,13 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         i = i+1
         outName = '/' + geoName + geoTypeOutName + str(i).zfill(3)
 
-    # Move existing files to selected output directory
+    # Move existing files to selected output directory and remake temp directory
     print('Moving files.')    
     shutil.move(tempPath, outDir + outName)
+    try:
+        os.mkdir(tempPath)
+    except:
+        pass
 
 
     # Initialize code start time to measure performance
@@ -1103,8 +1107,13 @@ if __name__ == '__main__':
     print('Moving files.')
 
 
+    # List all files in temp directory
+    file_names = os.listdir(tempPath)
         
-    shutil.move(tempPath, outDir + outName)
+    # Move all files to output directory    
+    for file_name in file_names:
+        shutil.move(os.path.join(tempPath, file_name), Path(outDir + outName))
+
     try:
         os.rename(Path(outDir + outName + '/' + geoName + '-para-mesh.vtk'),Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
     except:
