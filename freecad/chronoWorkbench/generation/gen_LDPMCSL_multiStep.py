@@ -186,52 +186,89 @@ def gen_LDPMCSL_multiStep(tempPath, numCPU, numIncrements, maxIter, parOffset, m
                     elif i == 2:
                         [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax,0]
 
+                    # Generate particles for length of needed aggregate (not placed via MPI)
+                    for x in range(particlesPlaced,len(grainsDiameterList)):
+
+                        # Generate particle
+                        [newMaxIter,node,iterReq,particleID[x]] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
+                            parOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
+                            multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,voxelIDs,minC,maxC)
+
+
+                        if len(grainsDiameterList)<=1000:
+                            # Update number particles placed every 1%
+                            if x % np.rint(len(grainsDiameterList)/100) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                        elif len(grainsDiameterList)<=10000:
+                            # Update number particles placed every 0.1%
+                            if x % np.rint(len(grainsDiameterList)/1000) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                        else:
+                            # Update number particles placed every 0.01%
+                            if x % np.rint(len(grainsDiameterList)/10000) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+
+                        if i == 0:
+                            internalNodes[x,:] = node
+                        elif i == 1:
+                            internalNodes[x+len(aggGrainsDiameterList),:] = node
+                        elif i == 2:
+                            internalNodes[x+len(aggGrainsDiameterList)+len(itzGrainsDiameterList),:] = node
+
+
+
+                    print("Status: Placing material " + str(i) + " grains into geometry. (" + str(len(grainsDiameterList)) + '/' + str(len(grainsDiameterList)) + ')')
+
+                materialList = np.concatenate((np.ones(len(aggGrainsDiameterList))*3,np.ones(len(itzGrainsDiameterList))*1, np.ones(len(binderGrainsDiameterList))*2))
+
+                # Set minimum particle to be smallest of the three materials 
+                minPar = min(grainAggMin,grainITZMin,grainBinderMin)
+
             else: 
                 for i in range(2):
-                    # Place in order of aggregate > ITZ > binder
+                    # Place in order of aggregate > binder
                     if i == 0:
                         [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [aggGrainsDiameterList,aggVoxels,grainAggMin,grainAggMax,aggVoxelIDs]
                     elif i == 1:
                         [grainsDiameterList,voxels,grainMin,grainMax,voxelIDs] = [binderGrainsDiameterList,binderVoxels,grainBinderMin,grainBinderMax,0]
 
+                    # Generate particles for length of needed aggregate (not placed via MPI)
+                    for x in range(particlesPlaced,len(grainsDiameterList)):
 
-                # Generate particles for length of needed aggregate (not placed via MPI)
-                for x in range(particlesPlaced,len(grainsDiameterList)):
-
-                    # Generate particle
-                    [newMaxIter,node,iterReq,particleID[x]] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
-                        parOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
-                        multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,voxelIDs,minC,maxC)
+                        # Generate particle
+                        [newMaxIter,node,iterReq,particleID[x]] = gen_LDPMCSL_subParticle(surfaceNodes,grainsDiameterList[x],meshVertices,meshTets,newMaxIter,maxIter,grainMin,grainMax,\
+                            parOffset,parDiameterList,coord1,coord2,coord3,coord4,maxEdgeLength,max_dist,internalNodes,\
+                            multiMatX,multiMatY,multiMatZ,multiMatRes,voxels,voxelIDs,minC,maxC)
 
 
-                    if len(grainsDiameterList)<=1000:
-                        # Update number particles placed every 1%
-                        if x % np.rint(len(grainsDiameterList)/100) == 0:
-                            print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
-                    elif len(grainsDiameterList)<=10000:
-                        # Update number particles placed every 0.1%
-                        if x % np.rint(len(grainsDiameterList)/1000) == 0:
-                            print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
-                    else:
-                        # Update number particles placed every 0.01%
-                        if x % np.rint(len(grainsDiameterList)/10000) == 0:
-                            print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                        if len(grainsDiameterList)<=1000:
+                            # Update number particles placed every 1%
+                            if x % np.rint(len(grainsDiameterList)/100) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                        elif len(grainsDiameterList)<=10000:
+                            # Update number particles placed every 0.1%
+                            if x % np.rint(len(grainsDiameterList)/1000) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
+                        else:
+                            # Update number particles placed every 0.01%
+                            if x % np.rint(len(grainsDiameterList)/10000) == 0:
+                                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(x) + '/' + str(len(grainsDiameterList)) + ')')
 
-                    if i == 0:
-                        internalNodes[x,:] = node
-                    elif i == 1:
-                        internalNodes[x+len(aggGrainsDiameterList),:] = node
-                    elif i == 2:
-                        internalNodes[x+len(aggGrainsDiameterList)+len(itzGrainsDiameterList),:] = node
+                        if i == 0:
+                            internalNodes[x,:] = node
+                        elif i == 1:
+                            internalNodes[x+len(aggGrainsDiameterList),:] = node
 
 
 
-                print("Status: Placing material " + str(i) + " grains into geometry. (" + str(len(grainsDiameterList)) + '/' + str(len(grainsDiameterList)) + ')')
 
-            materialList = np.concatenate((np.ones(len(aggGrainsDiameterList))*3,np.ones(len(itzGrainsDiameterList))*1, np.ones(len(binderGrainsDiameterList))*2))
+                    print("Status: Placing material " + str(i) + " grains into geometry. (" + str(len(grainsDiameterList)) + '/' + str(len(grainsDiameterList)) + ')')
 
-            # Set minimum particle to be smallest of the three materials 
-            minPar = min(grainAggMin,grainITZMin,grainBinderMin)
+                materialList = np.concatenate((np.ones(len(aggGrainsDiameterList))*3, np.ones(len(binderGrainsDiameterList))*2))
+
+                # Set minimum particle to be smallest of the three materials 
+                minPar = min(grainAggMin,grainBinderMin)
+
 
     # Create empty lists if not cementStructure
     PoresDiameterList, ClinkerDiameterList, CHDiameterList, CSH_LDDiameterList, CSH_HDDiameterList = 0,0,0,0,0
