@@ -75,6 +75,7 @@ from freecad.chronoWorkbench.generation.gen_LDPMCSL_subParticle           import
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tetrahedralization    import gen_LDPMCSL_tetrahedralization
 from freecad.chronoWorkbench.generation.gen_multiMat_refine               import gen_multiMat_refine
 from freecad.chronoWorkbench.generation.gen_multiMat_reform               import gen_multiMat_reform
+from freecad.chronoWorkbench.generation.gen_multiMat_assign               import gen_multiMat_assign
 from freecad.chronoWorkbench.generation.sort_multiMat_voxels              import sort_multiMat_voxels
 from freecad.chronoWorkbench.generation.sort_multiMat_mat                 import sort_multiMat_mat
 
@@ -944,6 +945,42 @@ if __name__ == '__main__':
 
 
 
+    
+
+
+
+    # Read in multi-material file
+    [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
+
+
+    # Organize and store voxels of each material
+    [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
+
+
+    # Extend material lists for edge nodes
+    particleID = np.concatenate((0*np.ones([len(allNodes)-\
+        len(particleID),]),particleID))
+
+    if multiMatToggle in ['on','On','Y','y','Yes','yes']:
+
+        materialList = np.concatenate((2*np.ones([len(allNodes)-\
+            len(materialList),]),materialList))
+
+    elif cementStructure in ['on','On','Y','y','Yes','yes']:
+        materialList = np.concatenate((edgeMaterialList,materialList))
+
+    else:
+        materialList = np.concatenate((0*np.ones([len(allNodes)-\
+            len(materialList),]),materialList))    
+
+
+    # For surface particles, find the nearest voxel and assign the material
+    if multiMatToggle in ['on','On','Y','y','Yes','yes']:
+        materialList = gen_multiMat_assign(allNodes,materialList,aggVoxels,itzVoxels,binderVoxels,internalNodes,multiMatX,multiMatY,multiMatZ,multiMatRes,minC)
+
+
+
+
 
 
     
@@ -1110,8 +1147,8 @@ if __name__ == '__main__':
 
         self.form[5].statusWindow.setText("Status: Writing visualization files.")
 
-        # If visuals requested, generate Particle VTK File
-        mkVtk_particles(internalNodes,parDiameterList,materialList,geoName,tempPath)
+        # If visuals requested, generate Particle VTK File (note we only want to visualize internal nodes, hence the slicing)
+        mkVtk_particles(internalNodes,parDiameterList,materialList[(len(allNodes)-len(internalNodes)):len(allNodes)],geoName,tempPath)
 
         # If visuals requested, generate Facet VTK File
         mkVtk_LDPMCSL_facets(geoName,tempPath,tetFacets,facetMaterial)

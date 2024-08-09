@@ -201,18 +201,7 @@ def gen_CSL_facetData(allNodes,allEdges,allTets,tetFacets,facetCenters,\
     particleMaterial = np.empty([len(allTets)*12,2])
 
 
-    # Extend material list for edge nodes
-    if multiMaterial in ['on','On','Y','y','Yes','yes']:
-
-        materialList = np.concatenate((2*np.ones([len(allNodes)-\
-            len(materialList),]),materialList))
-
-    elif cementStructure in ['on','On','Y','y','Yes','yes']:
-        materialList = np.concatenate((edgeMaterialList,materialList))
-
-    else:
-        materialList = np.concatenate((0*np.ones([len(allNodes)-\
-            len(materialList),]),materialList))            
+    
 
     facetCellData = (facetCellData.reshape(-1,3)).astype(int)
 
