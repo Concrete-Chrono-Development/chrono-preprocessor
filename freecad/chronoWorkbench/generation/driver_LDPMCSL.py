@@ -947,14 +947,14 @@ if __name__ == '__main__':
 
     
 
+    if multiMatToggle in ['on','On','Y','y','Yes','yes']:
+
+        # Read in multi-material file
+        [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
 
 
-    # Read in multi-material file
-    [multiMatX,multiMatY,multiMatZ,multiMatRes,multiMatVoxels] = read_multiMat_file(multiMatFile)
-
-
-    # Organize and store voxels of each material
-    [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
+        # Organize and store voxels of each material
+        [aggVoxels,itzVoxels,binderVoxels,aggVoxelIDs] = sort_multiMat_voxels(multiMatVoxels)
 
 
     # Extend material lists for edge nodes
