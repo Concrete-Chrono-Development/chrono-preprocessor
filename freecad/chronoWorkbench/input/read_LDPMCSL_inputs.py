@@ -167,6 +167,8 @@ def read_LDPMCSL_inputs(form):
     grainBinderSieveD   = form[4].grainBinderSieveD.text()        
     grainBinderSieveP   = form[4].grainBinderSieveP.text()   
 
+    periodicToggle      = form[4].periodicToggle.currentText()
+
     # Generation Data
     outputDir           = form[5].outputDir.text()
     dataFilesGen        = form[5].dataFilesGen.isChecked()
@@ -186,4 +188,5 @@ def read_LDPMCSL_inputs(form):
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
+        periodicToggle,\
         outputDir, dataFilesGen, visFilesGen, singleTetGen, modelType

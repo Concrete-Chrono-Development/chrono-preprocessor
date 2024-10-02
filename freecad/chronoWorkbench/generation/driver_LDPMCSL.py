@@ -73,6 +73,7 @@ from freecad.chronoWorkbench.generation.gen_particleList                  import
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_properties            import gen_LDPMCSL_properties
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_subParticle           import gen_LDPMCSL_subParticle
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tetrahedralization    import gen_LDPMCSL_tetrahedralization
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_periodicMesh          import gen_LDPMCSL_periodicMesh
 from freecad.chronoWorkbench.generation.gen_multiMat_refine               import gen_multiMat_refine
 from freecad.chronoWorkbench.generation.gen_multiMat_reform               import gen_multiMat_reform
 from freecad.chronoWorkbench.generation.gen_multiMat_assign               import gen_multiMat_assign
@@ -125,6 +126,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
         grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
+        periodicToggle,\
         outDir, dataFilesGen, visFilesGen, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
 
     # Make output directory if does not exist
@@ -271,8 +273,18 @@ def driver_LDPMCSL(self,fastGen,tempPath):
 
     # Generate surface mesh
     self.form[5].statusWindow.setText("Status: Generating surface mesh.") 
-    [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(cadFile,analysisName,geoName,meshName,minPar)
+    if periodicToggle == "On":
+        geoType = 'Import CAD or Mesh' # This is a hack to improve the visualization, as the periodic meshing is a quasi-imported mesh
+        cadFile = gen_LDPMCSL_periodicMesh(cadFile,analysisName,geoName,meshName,minPar,dimensions,tempPath)
+        [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(cadFile,analysisName,geoName,meshName,minPar)
+    else:
+        [meshVertices,meshTets,surfaceNodes,surfaceFaces] = gen_LDPMCSL_initialMesh(cadFile,analysisName,geoName,meshName,minPar)
+
     self.form[5].progressBar.setValue(5) 
+
+
+
+
 
 
     # Gets extents of geometry
@@ -1304,6 +1316,8 @@ if __name__ == '__main__':
         filename = re.sub("-", "_", filename)
         # If filename starts with a number, resub it with an underscore
         filename = re.sub("^\d", "_", filename)
+        if periodicToggle == "On":
+            filename = filename[:-3] + "001"
         geoObj = App.getDocument(App.ActiveDocument.Name).getObject(filename)
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).BackfaceCulling = False
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).Transparency = 0

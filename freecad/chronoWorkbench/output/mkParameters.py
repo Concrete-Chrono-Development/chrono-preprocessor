@@ -41,6 +41,7 @@ def mkParameters(self,elementSet,tempPath):
             grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
             grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
             grainBinderMin, grainBinderMax, grainBinderFuller, grainBinderSieveD, grainBinderSieveP,\
+            periodicToggle,\
             outDir, dataFilesGen, visFilesGen, singleTetGen, modelType] = read_LDPMCSL_inputs(self.form)
     else:
         [setupFile, \
