@@ -37,6 +37,7 @@ def mkParameters(self,elementSet,tempPath):
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
+            fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
             multiMatToggle,aggFile,multiMatFile,multiMatRule,\
             grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
             grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\

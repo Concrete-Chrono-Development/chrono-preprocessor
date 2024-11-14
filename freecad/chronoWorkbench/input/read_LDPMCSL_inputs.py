@@ -133,11 +133,26 @@ def read_LDPMCSL_inputs(form):
     airFrac1            = float(form[3].airFrac.value() or 0)
     airFrac2            = float(form[3].airFracArb.value() or 0)
 
-    # Additional Parameters
+    # Additional Parameters - HTC Parameters
     HTCtoggle           = form[4].HTCtoggle.currentText()
     HTClength           = form[4].HTClength.text()
     HTClength           = float(HTClength.split(" ")[0].strip())
     
+    # Additional Parameters - Fiber Reinforcement Parameters
+    fiberToggle         = form[4].fiberToggle.currentText()
+    fiberCutting        = form[4].fiberCutting.currentText()
+    fiberDiameter       = form[4].fiberDiameter.text()
+    fiberDiameter       = float(fiberDiameter.split(" ")[0].strip())
+    fiberLength         = form[4].fiberLength.text()
+    fiberLength         = float(fiberLength.split(" ")[0].strip())
+    fiberVol            = float(form[4].fiberVol.value() or 0)
+    fiberOrien1         = float(form[4].fiberOrien1.value() or 0)
+    fiberOrien2         = float(form[4].fiberOrien2.value() or 0)
+    fiberOrien2         = float(form[4].fiberOrien2.value() or 0)
+    fiberPref           = float(form[4].fiberPref.value() or 0)
+    fiberFile            = form[4].fiberFile.text()
+
+    # Additional Parameters - Multi-Material Parameters
     multiMatToggle      = form[4].multiMatToggle.currentText()
     multiMatFile        = form[4].multiMatFile.text()
     aggFile             = form[4].aggFile.text()
@@ -167,6 +182,7 @@ def read_LDPMCSL_inputs(form):
     grainBinderSieveD   = form[4].grainBinderSieveD.text()        
     grainBinderSieveP   = form[4].grainBinderSieveP.text()   
 
+    # Additional Parameters - Periodic Boundary Conditions
     periodicToggle      = form[4].periodicToggle.currentText()
 
     # Generation Data
@@ -184,6 +200,7 @@ def read_LDPMCSL_inputs(form):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         HTCtoggle, HTClength,\
+        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
         multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\

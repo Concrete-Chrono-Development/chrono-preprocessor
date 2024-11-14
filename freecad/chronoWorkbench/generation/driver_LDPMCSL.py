@@ -106,7 +106,7 @@ from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetsVertices         import
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_faceFacets             import mkData_LDPMCSL_faceFacets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_flowEdges              import mkData_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.output.mkData_particles                      import mkData_particles
-from freecad.chronoWorkbench.output.mkDisp_sieveCurves            import mkDisp_sieveCurves
+from freecad.chronoWorkbench.output.mkDisp_sieveCurves                    import mkDisp_sieveCurves
 from freecad.chronoWorkbench.output.mkIges_LDPMCSL_flowEdges              import mkIges_LDPMCSL_flowEdges
 
 
@@ -122,6 +122,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         htcToggle, htcLength,\
+        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
         multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
