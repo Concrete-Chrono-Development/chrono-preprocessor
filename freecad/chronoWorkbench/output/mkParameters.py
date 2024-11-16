@@ -37,7 +37,7 @@ def mkParameters(self,elementSet,tempPath):
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
-            fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
+            fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile,\
             multiMatToggle,aggFile,multiMatFile,multiMatRule,\
             grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
             grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
@@ -119,6 +119,16 @@ def mkParameters(self,elementSet,tempPath):
             f.write("airFrac2 = " + str(airFrac2) + "\n")
             f.write("htcToggle = " + htcToggle + "\n")
             f.write("htcLength = " + str(htcLength) + "\n")
+            f.write("fiberToggle = " + fiberToggle + "\n")
+            f.write("fiberCutting = " + fiberCutting + "\n")
+            f.write("fiberDiameter = " + str(fiberDiameter) + "\n")
+            f.write("fiberLength = " + str(fiberLength) + "\n")
+            f.write("fiberVol = " + str(fiberVol) + "\n")
+            f.write("fiberOrientation1 = " + str(fiberOrientation1) + "\n")
+            f.write("fiberOrientation2 = " + str(fiberOrientation2) + "\n")
+            f.write("fiberOrientation3 = " + str(fiberOrientation3) + "\n")
+            f.write("fiberPref = " + str(fiberPref) + "\n")
+            f.write("fiberFile = " + fiberFile + "\n")
             f.write("multiMatToggle = " + multiMatToggle + "\n")
             f.write("multiMatFile = " + multiMatFile + "\n")
             f.write("aggFile = " + aggFile + "\n")
@@ -138,6 +148,7 @@ def mkParameters(self,elementSet,tempPath):
             f.write("grainBinderFuller = " + str(grainBinderFuller) + "\n")
             f.write("grainBinderSieveD = " + str(grainBinderSieveD) + "\n")
             f.write("grainBinderSieveP = " + str(grainBinderSieveP) + "\n")
+            f.write("periodicToggle = " + periodicToggle + "\n")
             f.write("dataFilesGen = " + str(dataFilesGen) + "\n")
             f.write("visFilesGen = " + str(visFilesGen) + "\n")
             f.write("singleTetGen = " + str(singleTetGen) + "\n")

@@ -251,13 +251,13 @@
         </widget>
         <widget class="QWidget" name="Page2_cylinder">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QComboBox" name="comboBox_2">
+             <widget class="QComboBox" name="fiberToggle">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -290,6 +290,9 @@
             </item>
             <item>
              <widget class="QLabel" name="textLabel2_3">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="text">
                <string>Turn On/Off fibers</string>
               </property>
@@ -300,7 +303,10 @@
           <item row="1" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QComboBox" name="comboBox_3">
+             <widget class="QComboBox" name="fiberCutting">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -343,7 +349,7 @@
           <item row="2" column="0" rowspan="2" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+             <widget class="QDoubleSpinBox" name="fiberDiameter">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -363,7 +369,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="maximum">
                <double>999999.000000000000000</double>
@@ -382,7 +388,7 @@
           <item row="4" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+             <widget class="QDoubleSpinBox" name="fiberLength">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -402,7 +408,7 @@
                </size>
               </property>
               <property name="suffix">
-               <string>mm</string>
+               <string> mm</string>
               </property>
               <property name="maximum">
                <double>999999.000000000000000</double>
@@ -421,7 +427,7 @@
           <item row="5" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+             <widget class="QDoubleSpinBox" name="fiberVol">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -444,7 +450,7 @@
                <string/>
               </property>
               <property name="decimals">
-               <number>3</number>
+               <number>4</number>
               </property>
               <property name="maximum">
                <double>999999.000000000000000</double>
@@ -463,7 +469,7 @@
           <item row="6" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+             <widget class="QDoubleSpinBox" name="fiberOrien1">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -494,7 +500,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+             <widget class="QDoubleSpinBox" name="fiberOrien2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -525,7 +531,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+             <widget class="QDoubleSpinBox" name="fiberOrien3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -567,7 +573,7 @@
           <item row="7" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+             <widget class="QDoubleSpinBox" name="fiberPref">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -609,7 +615,7 @@
           <item row="8" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QLineEdit" name="le_working_dir">
+             <widget class="QLineEdit" name="fiberFile">
               <property name="enabled">
                <bool>false</bool>
               </property>

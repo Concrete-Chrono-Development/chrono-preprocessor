@@ -207,6 +207,7 @@ class inputWindow_SPHDEM:
 
         mkParameters(self,"SPHDEM","writeOnly")
 
+    # Read parameters from file and write to input panel in FreeCAD
     def readParameters(self):
 
         paraFile = self.form[0].setupFile.text()

@@ -293,6 +293,7 @@ class inputWindow_LDPMCSL:
 
         mkParameters(self,"LDPMCSL","writeOnly")
 
+    # Read parameters from file and write to input panel in FreeCAD
     def readParameters(self):
 
         paraFile = self.form[0].setupFile.text()
@@ -357,8 +358,30 @@ class inputWindow_LDPMCSL:
                     fillerDensity = float(line.split("=")[1].strip())
                 elif "airFrac2" in line:
                     airFrac2 = float(line.split("=")[1].strip())
-                elif "outputDir" in line:
-                    outputDir = line.split("=")[1].strip()
+                elif "htcToggle" in line:
+                    htcToggle = line.split("=")[1].strip()
+                elif "htcLength" in line:
+                    htcLength = float(line.split("=")[1].strip())
+                elif "fiberToggle" in line:
+                    fiberToggle = line.split("=")[1].strip()
+                elif "fiberCutting" in line:
+                    fiberCutting = line.split("=")[1].strip()
+                elif "fiberDiameter" in line:
+                    fiberDiameter = float(line.split("=")[1].strip())
+                elif "fiberLength" in line:
+                    fiberLength = float(line.split("=")[1].strip())
+                elif "fiberVol" in line:
+                    fiberVol = float(line.split("=")[1].strip())
+                elif "fiberOrientation1" in line:
+                    fiberOrientation1 = float(line.split("=")[1].strip())
+                elif "fiberOrientation2" in line:
+                    fiberOrientation2 = float(line.split("=")[1].strip())
+                elif "fiberOrientation3" in line:
+                    fiberOrientation3 = float(line.split("=")[1].strip())
+                elif "fiberPref" in line:
+                    fiberPref = float(line.split("=")[1].strip())
+                elif "fiberFile" in line:
+                    fiberFile = line.split("=")[1].strip()
                 elif "multiMatToggle" in line:
                     multiMatToggle = line.split("=")[1].strip()
                 elif "aggFile" in line:
@@ -397,6 +420,8 @@ class inputWindow_LDPMCSL:
                     grainBinderSieveD = line.split("=")[1].strip()
                 elif "grainBinderSieveP" in line:
                     grainBinderSieveP = line.split("=")[1].strip()
+                elif "outputDir" in line:
+                    outputDir = line.split("=")[1].strip()
 
         # Write parameters to input panel
         self.form[0].constEQ.setCurrentText(constitutiveEQ)
@@ -490,6 +515,24 @@ class inputWindow_LDPMCSL:
         self.form[3].fillerContent.setText(str(fillerC))
         self.form[3].fillerDensity.setText(str(fillerDensity))
         self.form[3].airFracArb.setValue(airFrac2)
+        if htcToggle == "On":
+            self.form[4].PrimitiveTypeCB.setCurrentText("HTC Parameters")
+            self.form[4].widgetStack2.setCurrentIndex(0) # Index 0 is the current page for HTC
+        self.form[4].HTCtoggle.setCurrentText(htcToggle)
+        self.form[4].HTClength.setValue(htcLength)
+        if fiberToggle == "On":
+            self.form[4].PrimitiveTypeCB.setCurrentText("Fiber Parameters")
+            self.form[4].widgetStack2.setCurrentIndex(1) # Index 1 is the current page for Fiber Parameters
+        self.form[4].fiberToggle.setCurrentText(fiberToggle)
+        self.form[4].fiberCutting.setCurrentText(fiberCutting)
+        self.form[4].fiberDiameter.setValue(fiberDiameter)
+        self.form[4].fiberLength.setValue(fiberLength)
+        self.form[4].fiberVol.setValue(fiberVol)
+        self.form[4].fiberOrien1.setValue(fiberOrientation1)
+        self.form[4].fiberOrien2.setValue(fiberOrientation2)
+        self.form[4].fiberOrien3.setValue(fiberOrientation3)
+        self.form[4].fiberPref.setValue(fiberPref)
+        self.form[4].fiberFile.setText(fiberFile)           
         if multiMatToggle == "On":
             self.form[4].PrimitiveTypeCB.setCurrentText("Multi-Material Parameters")
             self.form[4].widgetStack2.setCurrentIndex(4) # Index 4 is the current page for multi-material (P-LDPM setup)  
@@ -559,7 +602,7 @@ class inputWindow_LDPMCSL:
             cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
             fillerC, fillerDensity, airFrac2,\
             htcToggle, htcLength,\
-            fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
+            fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile,\
             multiMatToggle,aggFile,multiMatFile,multiMatRule,\
             grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
             grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\

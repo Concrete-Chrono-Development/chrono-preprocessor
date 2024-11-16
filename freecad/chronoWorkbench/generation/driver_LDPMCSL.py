@@ -64,6 +64,8 @@ from freecad.chronoWorkbench.generation.gen_CSL_facetData                 import
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_tesselation           import gen_LDPMCSL_tesselation
 from freecad.chronoWorkbench.generation.gen_LDPM_facetData                import gen_LDPM_facetData
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_analysis              import gen_LDPMCSL_analysis
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_facetfiberInt         import gen_LDPMCSL_facetfiberInt
+from freecad.chronoWorkbench.generation.gen_LDPMCSL_fibers                import gen_LDPMCSL_fibers
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_flowEdges             import gen_LDPMCSL_flowEdges
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_geometry              import gen_LDPMCSL_geometry
 from freecad.chronoWorkbench.generation.gen_LDPMCSL_initialMesh           import gen_LDPMCSL_initialMesh
@@ -81,6 +83,7 @@ from freecad.chronoWorkbench.generation.sort_multiMat_voxels              import
 from freecad.chronoWorkbench.generation.sort_multiMat_mat                 import sort_multiMat_mat
 
 # Importing: input
+from freecad.chronoWorkbench.input.read_ctScan_file                       import read_ctScan_file
 from freecad.chronoWorkbench.input.read_LDPMCSL_inputs                    import read_LDPMCSL_inputs
 from freecad.chronoWorkbench.input.read_LDPMCSL_tetgen                    import read_LDPMCSL_tetgen
 from freecad.chronoWorkbench.input.read_multiMat_file                     import read_multiMat_file
@@ -88,7 +91,10 @@ from freecad.chronoWorkbench.input.read_multiMat_file                     import
 # Importing: output
 from freecad.chronoWorkbench.output.mkVtk_particles                       import mkVtk_particles
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_facets                  import mkVtk_LDPMCSL_facets
+from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_fibers                  import mkVtk_LDPMCSL_fibers
 from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_flowEdges               import mkVtk_LDPMCSL_flowEdges
+from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_nonIntFibers            import mkVtk_LDPMCSL_nonIntFibers
+from freecad.chronoWorkbench.output.mkVtk_LDPMCSL_projFacets              import mkVtk_LDPMCSL_projFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetFacets            import mkVtk_LDPM_singleTetFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleEdgeFacets           import mkVtk_LDPM_singleEdgeFacets
 from freecad.chronoWorkbench.output.mkVtk_LDPM_singleTetParticles         import mkVtk_LDPM_singleTetParticles
@@ -102,6 +108,7 @@ from freecad.chronoWorkbench.output.mkData_nodes                          import
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_tets                   import mkData_LDPMCSL_tets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_edges                  import mkData_LDPMCSL_edges
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facets                 import mkData_LDPMCSL_facets
+from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetfiberInt          import mkData_LDPMCSL_facetfiberInt
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_facetsVertices         import mkData_LDPMCSL_facetsVertices
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_faceFacets             import mkData_LDPMCSL_faceFacets
 from freecad.chronoWorkbench.output.mkData_LDPMCSL_flowEdges              import mkData_LDPMCSL_flowEdges
@@ -122,7 +129,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         htcToggle, htcLength,\
-        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
+        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile,\
         multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
@@ -902,6 +909,64 @@ if __name__ == '__main__':
 
 
 
+        if fiberToggle in ['on','On','Y','y','Yes','yes']:
+            
+            fiberStartTime = time.time()
+
+            # Use fiber data from CT scan if file exists
+            if fiberFile != (0 or None or [] or ""):
+
+
+                # CTScanfiber data arrangmentt
+                CTScanFiberData = read_ctScan_file(fiberFile)
+                CTScanFiberData = np.array(CTScanFiberData).reshape(-1,10)
+                p1Fibers = CTScanFiberData[:,0:3]
+                p2Fibers = CTScanFiberData[:,3:6]
+                orienFibers = CTScanFiberData[:,6:9]
+                fiberLengths = CTScanFiberData[:,9:10]
+
+
+            # Generate fibers if no CT data
+            else:
+
+
+                if fiberPref<0 or fiberPref>1:
+
+                    self.form[5].statusWindow.setText('Fiber orientation strength is out of range, use 0-1')
+
+                # Calculate number of fibers needed 
+                nFiber = int(round(4*tetVolume*fiberVol/(math.pi*fiberDiameter**2*fiberLength)))
+
+                # Initialize empty fiber nodes list outside geometry
+                p1Fibers = (np.zeros((nFiber,3))+2)*maxC
+                p2Fibers = (np.zeros((nFiber,3))+2)*maxC
+                orienFibers = (np.zeros((nFiber,3))+2)*maxC
+                fiberLengths = (np.zeros((nFiber,1)))
+
+                # Generate fibers for number required
+                for x in range(0,nFiber):
+                    
+                    if x % 100 == 0:
+
+                        self.form[5].statusWindow.setText(str(nFiber-x) + ' Fibers Remaining')
+
+
+                    # Generate fiber
+                    [p1Fiber, p2Fiber, orienFiber, lFiber] = gen_LDPMCSL_fibers(meshVertices,meshTets,coord1,\
+                        coord2,coord3,coord4,maxIter,fiberLength,maxC,maxPar,\
+                        np.array([fiberOrientation1, fiberOrientation2, fiberOrientation3]),fiberPref,surfaceFaces,\
+                        fiberCutting)
+                    p1Fibers[x,:] = p1Fiber
+                    p2Fibers[x,:] = p2Fiber
+                    orienFibers[x,:] = orienFiber
+                    fiberLengths[x,:] = lFiber
+
+                fiberTime = round(time.time() - fiberStartTime,2)
+
+                self.form[5].statusWindow.setText(str(nFiber) + ' fibers placed in ' + str(fiberTime) + ' seconds')
+
+
+
 
 
 
@@ -1012,7 +1077,13 @@ if __name__ == '__main__':
     self.form[5].progressBar.setValue(98) 
 
 
+    if fiberToggle in ['on','On','Y','y','Yes','yes']:
 
+        self.form[5].statusWindow.setText('Determining fiber-facet intersections.')
+
+        [FiberdataList,TotalIntersections,MaxInterPerFacet,TotalTet,TotalFiber,IntersectedFiber,projectedFacet]\
+            = gen_LDPMCSL_facetfiberInt(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,\
+            geoName,allTets,allNodes,tetFacets,facetData,tetn1,tetn2,facetNormals,facetCenters)
 
 
 
@@ -1136,7 +1207,10 @@ if __name__ == '__main__':
         mkData_LDPMCSL_facets(geoName,tempPath,facetData)
         mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
         mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
+        if fiberToggle in ['on','On','Y','y','Yes','yes']:
+                mkData_LDPMCSL_facetfiberInt(geoName,FiberdataList,TotalIntersections,MaxInterPerFacet,tempPath)
 
+        
 
         self.form[5].statusWindow.setText("Status: Writing particle data file.")
 
@@ -1172,7 +1246,10 @@ if __name__ == '__main__':
             mkVtk_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
             mkIges_LDPMCSL_flowEdges(geoName,edgeData,tempPath)
 
-
+        if fiberToggle in ['on','On','Y','y','Yes','yes']:
+            mkVtk_LDPMCSL_fibers(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,geoName,tempPath)
+            mkVtk_LDPMCSL_nonIntFibers(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,geoName,IntersectedFiber,tempPath)     
+            mkVtk_LDPMCSL_projFacets(geoName,projectedFacet,tempPath)
 
 
 
@@ -1242,6 +1319,19 @@ if __name__ == '__main__':
         #LDPMfacetsData.ViewObject.Proxy = IconViewProviderToFile(LDPMfacetsData,os.path.join(ICONPATH,'FEMMeshICON.svg'))
         App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsData)
         LDPMfacetsData.addProperty("App::PropertyFile",'Location','Facet Data File','Location of facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facets.dat'))
+
+        # Set linked object for face facet data file
+        LDPMfaceFacetsData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfaceFacetsData")                                     # create your object
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfaceFacetsData)
+        LDPMfaceFacetsData.addProperty("App::PropertyFile",'Location','Face Facet Data File','Location of face facet data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-faceFacets.dat'))
+
+        # Set linked object for facet vertices data file
+        LDPMfacetsVerticesData = App.ActiveDocument.addObject("Part::FeaturePython", "LDPMfacetsVerticesData")                                     # create your object
+        App.getDocument(App.ActiveDocument.Name).getObject(dataFilesName).addObject(LDPMfacetsVerticesData)
+        LDPMfacetsVerticesData.addProperty("App::PropertyFile",'Location','Facet Vertices Data File','Location of facet vertices data file').Location=str(Path(outDir + outName + '/' + geoName + '-data-facetsVertices.dat'))
+
+
+
 
     if visFilesGen == True:
         # Set linked object for particle VTK file

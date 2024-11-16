@@ -437,13 +437,16 @@ class genWindow_LDPMCSL:
         LDPMnodesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMnodesData").getPropertyByName("Location"))
         LDPMtetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMtetsData").getPropertyByName("Location"))
         LDPMfacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsData").getPropertyByName("Location"))
+        LDPMfacetsVerticesDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfacetsVerticesData").getPropertyByName("Location"))
+        LDPMfaceFacetsDataLoc = Path(App.getDocument(App.ActiveDocument.Name).getObject("LDPMfaceFacetsData").getPropertyByName("Location"))
+
 
         # Copy files to output directory
         shutil.copyfile(LDPMnodesDataLoc, outDir + outName + "/" + partName + "-data-nodes.dat")
         shutil.copyfile(LDPMtetsDataLoc, outDir + outName + "/" + partName + "-data-tets.dat")
         shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facets.dat")
-        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-facetsVertices.dat")
-        shutil.copyfile(LDPMfacetsDataLoc, outDir + outName + "/" + partName + "-data-faceFacets.dat")
+        shutil.copyfile(LDPMfacetsVerticesDataLoc, outDir + outName + "/" + partName + "-data-facetsVertices.dat")
+        shutil.copyfile(LDPMfaceFacetsDataLoc, outDir + outName + "/" + partName + "-data-faceFacets.dat")
 
 
         materialProps = [\

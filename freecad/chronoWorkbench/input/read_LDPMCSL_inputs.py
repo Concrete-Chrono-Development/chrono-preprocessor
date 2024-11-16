@@ -146,9 +146,9 @@ def read_LDPMCSL_inputs(form):
     fiberLength         = form[4].fiberLength.text()
     fiberLength         = float(fiberLength.split(" ")[0].strip())
     fiberVol            = float(form[4].fiberVol.value() or 0)
-    fiberOrien1         = float(form[4].fiberOrien1.value() or 0)
-    fiberOrien2         = float(form[4].fiberOrien2.value() or 0)
-    fiberOrien2         = float(form[4].fiberOrien2.value() or 0)
+    fiberOrientation1   = float(form[4].fiberOrien1.value() or 0)
+    fiberOrientation2   = float(form[4].fiberOrien2.value() or 0)
+    fiberOrientation3   = float(form[4].fiberOrien3.value() or 0)
     fiberPref           = float(form[4].fiberPref.value() or 0)
     fiberFile            = form[4].fiberFile.text()
 
@@ -200,7 +200,7 @@ def read_LDPMCSL_inputs(form):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         HTCtoggle, HTClength,\
-        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrien1, fiberOrien2, fiberPref, fiberFile,\
+        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile,\
         multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
