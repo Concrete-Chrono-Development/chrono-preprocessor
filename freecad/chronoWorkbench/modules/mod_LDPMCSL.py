@@ -521,7 +521,7 @@ class inputWindow_LDPMCSL:
         self.form[4].HTCtoggle.setCurrentText(htcToggle)
         self.form[4].HTClength.setValue(htcLength)
         if fiberToggle == "On":
-            self.form[4].PrimitiveTypeCB.setCurrentText("Fiber Parameters")
+            self.form[4].PrimitiveTypeCB.setCurrentText("Fiber-Reinforcement Parameters")
             self.form[4].widgetStack2.setCurrentIndex(1) # Index 1 is the current page for Fiber Parameters
         self.form[4].fiberToggle.setCurrentText(fiberToggle)
         self.form[4].fiberCutting.setCurrentText(fiberCutting)
