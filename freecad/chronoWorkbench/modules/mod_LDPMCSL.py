@@ -316,8 +316,9 @@ class inputWindow_LDPMCSL:
                 elif "geoType" in line:
                     geoType = line.split("=")[1].strip()
                 elif "dimensions" in line:
-                    # Change from format  ['17.00 mm', '2.00 mm', '5.00 mm'] to [17.00, 2.00, 5.00]
-                    dimensions = [float(x.split()[0].strip("'")) for x in line.split("=")[1].strip().strip("[").strip("]").split(",")]
+                    if line != []:
+                        # Change from format  ['17.00 mm', '2.00 mm', '5.00 mm'] to [17.00, 2.00, 5.00]
+                        dimensions = [float(x.split()[0].strip("'")) for x in line.split("=")[1].strip().strip("[").strip("]").split(",")]
                 elif "cadFile" in line:
                     cadFile = line.split("=")[1].strip()
                 elif "minPar" in line:
