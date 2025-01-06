@@ -1414,6 +1414,10 @@ if __name__ == '__main__':
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).Transparency = 0
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).DisplayMode = u"Faces, Wireframe & Nodes"
         Gui.getDocument(App.ActiveDocument.Name).getObject(filename).ShapeColor = (0.80,0.80,0.80)
+        App.getDocument(App.ActiveDocument.Name).getObject(analysisName).addObject(App.getDocument(App.ActiveDocument.Name).getObject(filename))
+        App.getDocument(App.ActiveDocument.Name).getObject(filename).Label = meshName
+        GeoObject = App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(filename)[0]
+        GeoObject.Label = elementType + "geo" + str(0).zfill(3)
      
     else:
         Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).DisplayMode = u"Nodes"

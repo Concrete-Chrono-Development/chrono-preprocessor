@@ -191,7 +191,7 @@ class genWindow_LDPMCSL:
         if self.elementType == "LDPM":
             for i in range(self.numPartsLDPM):
                 meshName = self.elementType + "mesh" + str(i).zfill(3)
-                femesh=App.ActiveDocument.getObject(meshName)
+                femesh=App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(meshName)[0]
                 numNodes = femesh.FemMesh.NodeCount
                 numElements = femesh.FemMesh.TetraCount
             modelInfo.append("Part " + str(i))
@@ -200,7 +200,7 @@ class genWindow_LDPMCSL:
         elif self.elementType == "CSL":
             for i in range(self.numPartsCSL):
                 meshName = self.elementType + "mesh" + str(i).zfill(3)
-                femesh=App.ActiveDocument.getObject(meshName)
+                femesh=App.getDocument(App.ActiveDocument.Name).getObjectsByLabel(meshName)[0]
                 numNodes = femesh.FemMesh.NodeCount
                 numElements = femesh.FemMesh.TetraCount
             modelInfo.append("Part " + str(i))
