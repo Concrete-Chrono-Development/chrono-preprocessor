@@ -10,9 +10,7 @@ The project wiki is also available [here](https://github.com/Concrete-Chrono-Dev
 
 Select below instructions for installation and setup on your local desktop.&#x20;
 
-> #### :computer: [Windows Desktop Deployment](wiki/usage-instructions/installation-and-setup-1.md)
-> #### :computer: [Linux Desktop Deployment](wiki/usage-instructions/installation-and-setup-Linux.md)
-> #### :computer: [Northwestern Quest HPC Setup](wiki/usage-instructions/Setup-and-Usage-Quest.md)
+> #### [Installation Instructions](https://github.com/Concrete-Chrono-Development/chrono-preprocessor/wiki/Installation)
 
 ## Output
 
