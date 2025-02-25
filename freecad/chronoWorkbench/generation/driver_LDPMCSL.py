@@ -909,61 +909,61 @@ if __name__ == '__main__':
 
 
 
-        if fiberToggle in ['on','On','Y','y','Yes','yes']:
-            
-            fiberStartTime = time.time()
+    if fiberToggle in ['on','On','Y','y','Yes','yes']:
+        
+        fiberStartTime = time.time()
 
-            # Use fiber data from CT scan if file exists
-            if fiberFile != (0 or None or [] or ""):
-
-
-                # CTScanfiber data arrangmentt
-                CTScanFiberData = read_ctScan_file(fiberFile)
-                CTScanFiberData = np.array(CTScanFiberData).reshape(-1,10)
-                p1Fibers = CTScanFiberData[:,0:3]
-                p2Fibers = CTScanFiberData[:,3:6]
-                orienFibers = CTScanFiberData[:,6:9]
-                fiberLengths = CTScanFiberData[:,9:10]
+        # Use fiber data from CT scan if file exists
+        if fiberFile != (0 or None or [] or ""):
 
 
-            # Generate fibers if no CT data
-            else:
+            # CTScanfiber data arrangmentt
+            CTScanFiberData = read_ctScan_file(fiberFile)
+            CTScanFiberData = np.array(CTScanFiberData).reshape(-1,10)
+            p1Fibers = CTScanFiberData[:,0:3]
+            p2Fibers = CTScanFiberData[:,3:6]
+            orienFibers = CTScanFiberData[:,6:9]
+            fiberLengths = CTScanFiberData[:,9:10]
 
 
-                if fiberPref<0 or fiberPref>1:
-
-                    self.form[5].statusWindow.setText('Fiber orientation strength is out of range, use 0-1')
-
-                # Calculate number of fibers needed 
-                nFiber = int(round(4*tetVolume*fiberVol/(math.pi*fiberDiameter**2*fiberLength)))
-
-                # Initialize empty fiber nodes list outside geometry
-                p1Fibers = (np.zeros((nFiber,3))+2)*maxC
-                p2Fibers = (np.zeros((nFiber,3))+2)*maxC
-                orienFibers = (np.zeros((nFiber,3))+2)*maxC
-                fiberLengths = (np.zeros((nFiber,1)))
-
-                # Generate fibers for number required
-                for x in range(0,nFiber):
-                    
-                    if x % 100 == 0:
-
-                        self.form[5].statusWindow.setText(str(nFiber-x) + ' Fibers Remaining')
+        # Generate fibers if no CT data
+        else:
 
 
-                    # Generate fiber
-                    [p1Fiber, p2Fiber, orienFiber, lFiber] = gen_LDPMCSL_fibers(meshVertices,meshTets,coord1,\
-                        coord2,coord3,coord4,maxIter,fiberLength,maxC,maxPar,\
-                        np.array([fiberOrientation1, fiberOrientation2, fiberOrientation3]),fiberPref,surfaceFaces,\
-                        fiberCutting)
-                    p1Fibers[x,:] = p1Fiber
-                    p2Fibers[x,:] = p2Fiber
-                    orienFibers[x,:] = orienFiber
-                    fiberLengths[x,:] = lFiber
+            if fiberPref<0 or fiberPref>1:
 
-                fiberTime = round(time.time() - fiberStartTime,2)
+                self.form[5].statusWindow.setText('Fiber orientation strength is out of range, use 0-1')
 
-                self.form[5].statusWindow.setText(str(nFiber) + ' fibers placed in ' + str(fiberTime) + ' seconds')
+            # Calculate number of fibers needed 
+            nFiber = int(round(4*tetVolume*fiberVol/(math.pi*fiberDiameter**2*fiberLength)))
+
+            # Initialize empty fiber nodes list outside geometry
+            p1Fibers = (np.zeros((nFiber,3))+2)*maxC
+            p2Fibers = (np.zeros((nFiber,3))+2)*maxC
+            orienFibers = (np.zeros((nFiber,3))+2)*maxC
+            fiberLengths = (np.zeros((nFiber,1)))
+
+            # Generate fibers for number required
+            for x in range(0,nFiber):
+                
+                if x % 100 == 0:
+
+                    self.form[5].statusWindow.setText(str(nFiber-x) + ' Fibers Remaining')
+
+
+                # Generate fiber
+                [p1Fiber, p2Fiber, orienFiber, lFiber] = gen_LDPMCSL_fibers(meshVertices,meshTets,coord1,\
+                    coord2,coord3,coord4,maxIter,fiberLength,maxC,maxPar,\
+                    np.array([fiberOrientation1, fiberOrientation2, fiberOrientation3]),fiberPref,surfaceFaces,\
+                    fiberCutting)
+                p1Fibers[x,:] = p1Fiber
+                p2Fibers[x,:] = p2Fiber
+                orienFibers[x,:] = orienFiber
+                fiberLengths[x,:] = lFiber
+
+            fiberTime = round(time.time() - fiberStartTime,2)
+
+            self.form[5].statusWindow.setText(str(nFiber) + ' fibers placed in ' + str(fiberTime) + ' seconds')
 
 
 
