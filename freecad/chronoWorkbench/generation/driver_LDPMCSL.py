@@ -129,7 +129,7 @@ def driver_LDPMCSL(self,fastGen,tempPath):
         cementDensity, flyashDensity, silicaDensity, scmDensity, airFrac1, \
         fillerC, fillerDensity, airFrac2,\
         htcToggle, htcLength,\
-        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile,\
+        fiberToggle, fiberCutting, fiberDiameter, fiberLength, fiberVol, fiberOrientation1, fiberOrientation2, fiberOrientation3, fiberPref, fiberFile, fiberIntersections,\
         multiMatToggle,aggFile,multiMatFile,multiMatRule,\
         grainAggMin, grainAggMax, grainAggFuller, grainAggSieveD, grainAggSieveP,\
         grainITZMin, grainITZMax, grainITZFuller, grainITZSieveD, grainITZSieveP,\
@@ -1077,7 +1077,7 @@ if __name__ == '__main__':
     self.form[5].progressBar.setValue(98) 
 
 
-    if fiberToggle in ['on','On','Y','y','Yes','yes']:
+    if ((fiberToggle in ['on','On','Y','y','Yes','yes']) and (fiberIntersections in ['on','On','Y','y','Yes','yes'])):
 
         self.form[5].statusWindow.setText('Determining fiber-facet intersections.')
 
@@ -1207,7 +1207,8 @@ if __name__ == '__main__':
         mkData_LDPMCSL_facets(geoName,tempPath,facetData)
         mkData_LDPMCSL_facetsVertices(geoName,tempPath,tetFacets)
         mkData_LDPMCSL_faceFacets(geoName,tempPath,surfaceNodes,surfaceFaces)
-        if fiberToggle in ['on','On','Y','y','Yes','yes']:
+
+        if ((fiberToggle in ['on','On','Y','y','Yes','yes']) and (fiberIntersections in ['on','On','Y','y','Yes','yes'])):
                 mkData_LDPMCSL_facetfiberInt(geoName,FiberdataList,TotalIntersections,MaxInterPerFacet,tempPath)
 
         
@@ -1248,10 +1249,10 @@ if __name__ == '__main__':
 
         if fiberToggle in ['on','On','Y','y','Yes','yes']:
             mkVtk_LDPMCSL_fibers(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,geoName,tempPath)
-            mkVtk_LDPMCSL_nonIntFibers(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,geoName,IntersectedFiber,tempPath)     
             mkVtk_LDPMCSL_projFacets(geoName,projectedFacet,tempPath)
 
-
+        if ((fiberToggle in ['on','On','Y','y','Yes','yes']) and (fiberIntersections in ['on','On','Y','y','Yes','yes'])):
+            mkVtk_LDPMCSL_nonIntFibers(p1Fibers,p2Fibers,fiberDiameter,fiberLengths,orienFibers,geoName,IntersectedFiber,tempPath)    
 
 
     # If single tet/cell visuals requested, generate them
