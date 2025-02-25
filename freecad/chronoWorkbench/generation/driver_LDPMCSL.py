@@ -1446,6 +1446,12 @@ if __name__ == '__main__':
 
 
 
+    # If FreeCAD version is 1.0 or greater, import the HTC mesh
+    # Check if FreeCAD version is 1.0 or greater
+    if float(App.Version()[0]) >= 1.0:
+        if htcToggle in ['on','On']:
+            htcFile = str(Path(outDir + outName + '/' + geoName + '-para-flowEdges.000.vtk'))
+            Fem.insert(htcFile,App.ActiveDocument.Name)
 
 
 
