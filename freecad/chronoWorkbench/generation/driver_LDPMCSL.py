@@ -1398,6 +1398,24 @@ if __name__ == '__main__':
         Gui.getDocument(App.ActiveDocument.Name).getObject(geoName + '_para_facets_000').ShapeColor = (0.36,0.36,0.36)
 
 
+    # Remove initial mesh and insert final mesh visualization
+    App.getDocument(App.ActiveDocument.Name).removeObject(meshName)
+    meshFile = str(Path(outDir + outName + '/' + geoName + '-para-mesh.000.vtk'))
+    Fem.insert(meshFile,App.ActiveDocument.Name)
+
+    filename = os.path.basename(meshFile)
+    filename, file_extension = os.path.splitext(filename)
+    filename = re.sub("\.", "_", filename)
+    filename = re.sub("/.", "_", filename)
+    filename = re.sub("-", "_", filename)
+    # If filename starts with a number, resub it with an underscore
+    filename = re.sub("^\d", "_", filename)
+    newMesh = App.getDocument(App.ActiveDocument.Name).getObject(filename)
+    newMesh.Label = meshName
+
+
+
+
     # Set visualization properties for particle centers
     # Need to load differently for generated vs loaded meshes
     if geoType == "Import CAD or Mesh":
@@ -1421,9 +1439,9 @@ if __name__ == '__main__':
         GeoObject.Label = elementType + "geo" + str(0).zfill(3)
      
     else:
-        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).DisplayMode = u"Nodes"
-        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointSize = 3.00
-        Gui.getDocument(App.ActiveDocument.Name).getObject(meshName).PointColor = (0.00,0.00,0.00)
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).DisplayMode = u"Nodes"
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).PointSize = 3.00
+        Gui.getDocument(App.ActiveDocument.Name).getObject(filename).PointColor = (0.00,0.00,0.00)
 
 
 
