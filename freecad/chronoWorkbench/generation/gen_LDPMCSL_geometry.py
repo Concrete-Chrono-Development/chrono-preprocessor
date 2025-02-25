@@ -369,12 +369,6 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
         fileName = cadFile.split(".")
         fileExtension = fileName[-1]
 
-        # If the file is a CAD file insert with ImportGui, else insert with Fem
-        if fileExtension in ["brep", "brp", "iges", "igs", "step", "stp"]:
-            ImportGui.insert(cadFile,App.ActiveDocument.Name)
-        else:
-            Fem.insert(cadFile,App.ActiveDocument.Name)
-
         filename = os.path.basename(cadFile)
         filename, file_extension = os.path.splitext(filename)
         filename = re.sub("\.", "_", filename)
@@ -384,8 +378,17 @@ def gen_LDPMCSL_geometry(dimensions,geoType,geoName,cadFile):
         filename = re.sub("^\d", "_", filename)
         
 
-        geo = App.getDocument(App.ActiveDocument.Name).getObject(filename)
-        geo.Label = geoName
+        # If the file is a CAD file insert with ImportGui, else insert with Fem
+        if fileExtension in ["brep", "brp", "iges", "igs", "step", "stp"]:
+            ImportGui.insert(cadFile,App.ActiveDocument.Name)
+            geo = App.getDocument(App.ActiveDocument.Name).getObject("Part__Feature")
+            geo.Label = geoName            
+
+        else:
+            Fem.insert(cadFile,App.ActiveDocument.Name)
+            geo = App.getDocument(App.ActiveDocument.Name).getObject(filename)
+            geo.Label = geoName
+
 
 
     App.ActiveDocument.recompute()
