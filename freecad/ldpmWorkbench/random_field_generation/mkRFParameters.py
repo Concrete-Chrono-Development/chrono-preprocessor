@@ -73,6 +73,7 @@ def mkRFParameters(self, tempPath):
         f.write("z_range = " + str(params["z_range"]) + "\n")
         f.write("domain = " + str(domain) + "\n")
         f.write("corr_l = " + str(params["corr_l"]) + "\n")
+        f.write("corr_l_anisotropic = " + str(params.get("corr_l_anisotropic", False)) + "\n")
         f.write("corr_f = " + params["corr_f"] + "\n")
         f.write("dist_type = " + params["dist_type"] + "\n")
         f.write("grid_spacing = " + str(params["grid_spacing"]) + "\n")
@@ -92,5 +93,6 @@ def mkRFParameters(self, tempPath):
         f.write("rfAssignments = " + json.dumps(params["rfAssignments"]) + "\n")
         f.write("modelType = " + params["modelType"] + "\n")
         f.write("outputDir = " + outDir + "\n")
+        f.write("rfOutputDirName = " + str(params.get("rfOutputDirName", "")) + "\n")
 
     print("RF parameters written to file")
