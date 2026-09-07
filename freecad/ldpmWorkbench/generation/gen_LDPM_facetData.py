@@ -102,43 +102,71 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
     facetNormals=InitialNormal
     facets = coords.reshape(-1,9)
 
-    # Formation of rotation stacked matrix (3 x 3 x nFacets)
-    v = np.cross(facetNormals,pn.reshape(-1,3))
-    zeros = np.zeros(len(v),)
-    ssc = np.array(([[zeros, -v[:,2], v[:,1]],[ v[:,2], zeros, -v[:,0]],\
-        [ -v[:,1], v[:,0], zeros]]))
-    identity = np.dstack([np.eye(3)]*len(v))
-    mulNormalsPn = np.matmul(np.expand_dims(pn.reshape(-1,3), axis=1),np.expand_dims(facetNormals, axis=2)).T
-    numer = (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)
-    denom = (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T)
-    used_for_R = np.zeros_like(numer)
-    np.divide(numer, denom, out=used_for_R, where=np.abs(denom) > 1e-15)
+    n = facetNormals.shape[0]
+    pn = pn.reshape(-1, 3)
+    if n > 1000000:
+        ptan1 = np.empty((n, 3))
+        ptan2 = np.empty((n, 3))
+        I3 = np.eye(3)
+        for i0 in range(0, n, 100000):
+            i1 = min(i0 + 100000, n)
+            fn = facetNormals[i0:i1]
+            pnc = pn[i0:i1]
+            m = i1 - i0
+            v = np.cross(fn, pnc)
+            zeros = np.zeros(m)
+            ssc = np.array([[zeros, -v[:, 2], v[:, 1]],
+                            [v[:, 2], zeros, -v[:, 0]],
+                            [-v[:, 1], v[:, 0], zeros]])
+            identity = np.repeat(I3[:, :, None], m, axis=2)
+            mul = np.matmul(np.expand_dims(pnc, 1), np.expand_dims(fn, 2)).T
+            numer = (np.matmul(ssc.T, ssc.T).T) * (1 - mul)
+            denom = np.matmul(np.expand_dims(v, 1), np.expand_dims(v, 2)).T
+            used_for_R = np.zeros_like(numer)
+            np.divide(numer, denom, out=used_for_R, where=np.abs(denom) > 1e-15)
+            R = identity + ssc + used_for_R
+            r = np.random.rand(m, 3)
+            tan1 = np.cross(fn, r)
+            tan1 = tan1 / np.linalg.norm(tan1, axis=1, keepdims=True)
+            tan1 = np.expand_dims(tan1, axis=2)
+            t1 = np.squeeze(np.matmul(np.transpose(R.T, (0, 2, 1)), tan1))
+            t1 = t1 / np.linalg.norm(t1, axis=1, keepdims=True)
+            t2 = np.cross(pnc, t1)
+            t2 = t2 / np.linalg.norm(t2, axis=1, keepdims=True)
+            ptan1[i0:i1] = t1
+            ptan2[i0:i1] = t2
+    else:
+        v = np.cross(facetNormals,pn.reshape(-1,3))
+        zeros = np.zeros(len(v),)
+        ssc = np.array(([[zeros, -v[:,2], v[:,1]],[ v[:,2], zeros, -v[:,0]],\
+            [ -v[:,1], v[:,0], zeros]]))
+        identity = np.dstack([np.eye(3)]*len(v))
+        mulNormalsPn = np.matmul(np.expand_dims(pn.reshape(-1,3), axis=1),np.expand_dims(facetNormals, axis=2)).T
+        numer = (np.matmul(ssc.T,ssc.T).T)*(1-mulNormalsPn)
+        denom = (np.matmul(np.expand_dims(v.reshape(-1,3), axis=1),np.expand_dims(v, axis=2)).T)
+        used_for_R = np.zeros_like(numer)
+        np.divide(numer, denom, out=used_for_R, where=np.abs(denom) > 1e-15)
 
-    R = identity + ssc + used_for_R
+        R = identity + ssc + used_for_R
 
-    # Clear not needed variables from memory
-    del Check
-    del v
-    del zeros
-    del identity
-    del mulNormalsPn
-    del ssc        
+        del Check
+        del v
+        del zeros
+        del identity
+        del mulNormalsPn
+        del ssc
 
-    # Generate a random vector of size n x 3
-    r = np.random.rand(facetNormals.shape[0], 3)
+        r = np.random.rand(facetNormals.shape[0], 3)
 
-    # Make vectors that are orthogonal to the facet normal   
-    tan1 = np.cross(facetNormals,r)/np.array([np.linalg.norm(np.cross(facetNormals,r),axis=1),]*3).T
-    tan1 = np.expand_dims(tan1, axis=2)
-    
-    # Define 1st projected tangential
-    ptan1 = np.squeeze(np.matmul(np.transpose(R.T,(0, 2, 1)),tan1))/\
-        np.array([np.linalg.norm(np.squeeze(np.matmul(np.transpose(R.T,\
-            (0, 2, 1)),tan1)),axis=1),]*3).T
+        tan1 = np.cross(facetNormals,r)/np.array([np.linalg.norm(np.cross(facetNormals,r),axis=1),]*3).T
+        tan1 = np.expand_dims(tan1, axis=2)
 
-    # Define 2nd projected tangential
-    ptan2 = np.cross(pn,ptan1)/np.array([np.linalg.norm(np.cross(pn,ptan1),\
-        axis=1),]*3).T
+        ptan1 = np.squeeze(np.matmul(np.transpose(R.T,(0, 2, 1)),tan1))/\
+            np.array([np.linalg.norm(np.squeeze(np.matmul(np.transpose(R.T,\
+                (0, 2, 1)),tan1)),axis=1),]*3).T
+
+        ptan2 = np.cross(pn,ptan1)/np.array([np.linalg.norm(np.cross(pn,ptan1),\
+            axis=1),]*3).T
 
 
     # Sub-tet Volume
@@ -159,9 +187,9 @@ def gen_LDPM_facetData(allNodes,allTets,tetFacets,facetCenters,\
 
 
 
-    # Clear not needed variables from memory
-    del R
-    del tan1
+    if n <= 1000000:
+        del R
+        del tan1
     del coord1
     del coord2
     del coord3

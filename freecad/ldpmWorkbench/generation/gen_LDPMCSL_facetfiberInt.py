@@ -54,28 +54,52 @@ def gen_LDPMCSL_facetfiberInt(p1Fiber,p2Fiber,dFiber,lFiber,orienFibers,\
     # print("tets_max shape:", tets_max.shape)
     
     
-    group_size = 5000  # you can tune this value based on memory
+    group_size = 5000
     total_fibers = p1Fiber.shape[0]
+    total_tets = tets_min.shape[0]
     all_pairs = []
 
-    for i in range(0, total_fibers, group_size):
-        fm = fibers_min[i:i + group_size]
-        fM = fibers_max[i:i + group_size]
+    max_bool_bytes = 0.5 * (1024 ** 3)
+    use_large_path = (group_size * total_tets * 3) > max_bool_bytes
 
-        # Expand dims for broadcasting
-        fm_exp = fm[:, None, :]         # (F, 1, 3)
-        fM_exp = fM[:, None, :]         # (F, 1, 3)
-        tmin_exp = tets_min[None, :, :] # (1, T, 3)
-        tmax_exp = tets_max[None, :, :] # (1, T, 3)
+    if not use_large_path:
+        for i in range(0, total_fibers, group_size):
+            fm = fibers_min[i:i + group_size]
+            fM = fibers_max[i:i + group_size]
 
-        overlap = np.all((fm_exp <= tmax_exp) & (fM_exp >= tmin_exp), axis=2)  # (C, T)
+            fm_exp = fm[:, None, :]
+            fM_exp = fM[:, None, :]
+            tmin_exp = tets_min[None, :, :]
+            tmax_exp = tets_max[None, :, :]
 
-        tet_idx, fiber_idx = np.where(overlap.T)  # get (T, C) and transpose
-        fiber_idx += i  # adjust index to original fiber range
+            overlap = np.all((fm_exp <= tmax_exp) & (fM_exp >= tmin_exp), axis=2)
 
-        if len(fiber_idx) > 0:
-            # all_pairs.append(np.column_stack((fiber_idx,tet_idx)))
-            all_pairs.append(np.column_stack((tet_idx, fiber_idx)))
+            tet_idx, fiber_idx = np.where(overlap.T)
+            fiber_idx += i
+
+            if len(fiber_idx) > 0:
+                all_pairs.append(np.column_stack((tet_idx, fiber_idx)))
+    else:
+        fiber_bs = 1000
+        tet_bs = 20000
+        for i in range(0, total_fibers, fiber_bs):
+            fm = fibers_min[i:i + fiber_bs]
+            fM = fibers_max[i:i + fiber_bs]
+            fm_exp = fm[:, None, :]
+            fM_exp = fM[:, None, :]
+
+            for j in range(0, total_tets, tet_bs):
+                tmin = tets_min[j:j + tet_bs]
+                tmax = tets_max[j:j + tet_bs]
+
+                overlap = np.all(
+                    (fm_exp <= tmax[None, :, :]) & (fM_exp >= tmin[None, :, :]),
+                    axis=2,
+                )
+                c_idx, t_local = np.where(overlap)
+                if len(c_idx) == 0:
+                    continue
+                all_pairs.append(np.column_stack((t_local + j, c_idx + i)))
 
     # Combine all into final array
     if all_pairs:

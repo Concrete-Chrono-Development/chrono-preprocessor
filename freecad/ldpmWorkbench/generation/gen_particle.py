@@ -65,8 +65,8 @@ def gen_particle(facePoints,parDiameter,\
 
     iterReq = 0
     attempts = 0
-    max_attempts_critical = 3000
-    max_time_seconds = 60
+    max_attempts_critical = 1000
+    max_time_seconds = 30
 
     start_time = time.time()
 
