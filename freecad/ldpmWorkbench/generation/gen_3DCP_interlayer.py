@@ -18,6 +18,17 @@
 import numpy as np
 
 _AXIS = {"X": 0, "Y": 1, "Z": 2}
+
+
+def _report(msg):
+    text = str(msg)
+    try:
+        import FreeCAD as App
+        App.Console.PrintMessage(text + ("" if text.endswith("\n") else "\n"))
+    except Exception:
+        print(text)
+
+
 _CANONICAL_AXES = ("X", "Y", "Z")
 
 
@@ -82,7 +93,7 @@ def _merge_direction_configs(multi_directions):
         if mode not in ("Width", "Height"):
             mode = "Height"
         if axis in merged and merged[axis] != mode:
-            print(f"3DCP interlayer: axis {axis} has conflicting modes; using first entry.")
+            _report(f"3DCP interlayer: axis {axis} has conflicting modes; using first entry.")
             continue
         merged[axis] = mode
     return merged
@@ -107,7 +118,7 @@ def apply_unidirectional(facetData, facetMaterial, minC, maxC, params):
 
     positions = _interface_positions(origin, extent, first_layer, layer_thickness)
     if not positions:
-        print("3DCP interlayer: no interfaces found")
+        _report("3DCP interlayer: no interfaces found")
         return 0
 
     half_band = interface_thickness / 2.0
@@ -120,12 +131,12 @@ def apply_unidirectional(facetData, facetMaterial, minC, maxC, params):
         facetMaterial[~mask] = bulk_mf
         facetData[mask, 18] = interlayer_mf
         facetMaterial[mask] = interlayer_mf
-        print(
+        _report(
             f"3DCP interlayer: tagged {n_tagged} facets along {params.get('axis', 'Z')}-axis "
             f"({len(positions)} interfaces, bulk mF={bulk_mf}, interlayer mF={interlayer_mf})"
         )
     else:
-        print("3DCP interlayer: no facets tagged")
+        _report("3DCP interlayer: no facets tagged")
 
     return n_tagged
 
@@ -138,7 +149,7 @@ def apply_multidirectional(facetData, facetMaterial, minC, maxC, params):
 
     axis_modes = _merge_direction_configs(params.get("multiDirections", []))
     if not axis_modes:
-        print("3DCP interlayer: multidirectional enabled but no axis selected; skipping.")
+        _report("3DCP interlayer: multidirectional enabled but no axis selected; skipping.")
         return 0
 
     minC = np.asarray(minC, dtype=float).reshape(3)
@@ -167,7 +178,7 @@ def apply_multidirectional(facetData, facetMaterial, minC, maxC, params):
         axis_masks[axis] = _band_mask(coords, positions, half_band)
 
     if not axis_masks:
-        print("3DCP interlayer: no multidirectional interfaces found")
+        _report("3DCP interlayer: no multidirectional interfaces found")
         return 0
 
     mf_map = _axis_mf_map(axis_masks.keys(), params)
@@ -189,7 +200,7 @@ def apply_multidirectional(facetData, facetMaterial, minC, maxC, params):
     n_interface = int(np.count_nonzero(hit_count > 0))
     n_overlap = int(np.count_nonzero(overlap))
     axis_summary = ", ".join(f"{ax}={axis_counts.get(ax, 0)}" for ax in mf_map)
-    print(
+    _report(
         f"3DCP interlayer: multidirectional tagged {n_interface} facets "
         f"(bulk mF={bulk_mf}, overlap mF={overlap_mf}, overlap facets={n_overlap}, interfaces: {axis_summary})"
     )
@@ -225,8 +236,10 @@ def apply_custom(facetData, facetMaterial, minC, maxC, params):
 
         blocks = parse_custom_interlayer(params["customDefinition"])
     if not blocks:
-        print("3DCP interlayer: no custom layers found")
+        _report("3DCP interlayer: no custom layers found")
         return 0
+
+    minC = np.asarray(minC, dtype=float).reshape(3)
 
     bulk_mf = int(params.get("bulkMf", 1))
     if bulk_mf not in (1, 2):
@@ -240,6 +253,12 @@ def apply_custom(facetData, facetMaterial, minC, maxC, params):
         positions = list(dict.fromkeys(block.get("positions") or []))
         if not positions:
             continue
+        positions = [p + minC[axis_idx] for p in positions]
+        block = dict(block)
+        block["corners"] = [
+            {a: c[a] + minC[_AXIS[a]] for a in block["planeAxes"]}
+            for c in block["corners"]
+        ]
         coords = facetData[:, 6 + axis_idx]
         mask = _band_mask(coords, positions, half_band) & _footprint_mask(facetData, block)
         interlayer_mf = int(block.get("mf", 2))
@@ -252,12 +271,12 @@ def apply_custom(facetData, facetMaterial, minC, maxC, params):
 
     n_tagged = int(np.count_nonzero(final_mf != bulk_mf))
     if n_tagged > 0:
-        print(
+        _report(
             f"3DCP interlayer: custom tagged {n_tagged} facets "
             f"({len(blocks)} layer blocks, bulk mF={bulk_mf})"
         )
     else:
-        print("3DCP interlayer: no custom facets tagged")
+        _report("3DCP interlayer: no custom facets tagged")
 
     return n_tagged
 
@@ -275,5 +294,5 @@ def apply_3DCP_interlayer(facetData, facetMaterial, minC, maxC, params):
     if interlayer_type == "Custom":
         return apply_custom(facetData, facetMaterial, minC, maxC, params)
 
-    print(f"Interlayer type '{interlayer_type}' is not implemented yet; skipping.")
+    _report(f"Interlayer type '{interlayer_type}' is not implemented yet; skipping.")
     return 0

@@ -128,6 +128,24 @@
          </item>
         </layout>
        </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_rf_output_dirname">
+         <item>
+          <widget class="QLabel" name="label_rf_output_dirname">
+           <property name="text">
+            <string>Dir</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="rfOutputDirName">
+           <property name="placeholderText">
+            <string>optional; blank uses RF_field_XXX</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
     </item>

@@ -70,11 +70,17 @@
           </property>
           <item>
            <widget class="QLabel" name="label_rf_x_bounds">
-            <property name="maximumSize">
-             <size>
-              <width>14</width>
-              <height>16777215</height>
-             </size>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>0</number>
             </property>
             <property name="text">
              <string>X:</string>
@@ -104,15 +110,43 @@
             <property name="value" stdset="0">
              <double>0.000000000000000</double>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_rf_y_bounds">
-            <property name="maximumSize">
+           <spacer name="spacer_rf_domain_xy">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>14</width>
-              <height>16777215</height>
+              <width>12</width>
+              <height>20</height>
              </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_rf_y_bounds">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>0</number>
             </property>
             <property name="text">
              <string>Y:</string>
@@ -142,15 +176,43 @@
             <property name="value" stdset="0">
              <double>0.000000000000000</double>
             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_rf_z_bounds">
-            <property name="maximumSize">
+           <spacer name="spacer_rf_domain_yz">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>14</width>
-              <height>16777215</height>
+              <width>12</width>
+              <height>20</height>
              </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_rf_z_bounds">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>0</number>
             </property>
             <property name="text">
              <string>Z:</string>
@@ -179,6 +241,12 @@
             </property>
             <property name="value" stdset="0">
              <double>0.000000000000000</double>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
            </widget>
           </item>
@@ -272,9 +340,9 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_rf_autocorr">
+           <layout class="QHBoxLayout" name="horizontalLayout_rf_autocorr_row">
             <property name="spacing">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -289,20 +357,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="label_rf_corr_l_x">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>X:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="rfFieldCorrLX">
+             <widget class="QDoubleSpinBox" name="rfFieldCorrL">
               <property name="minimumSize">
                <size>
                 <width>75</width>
@@ -330,86 +385,224 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_rf_corr_l_y">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>16777215</height>
-               </size>
+             <widget class="QWidget" name="rfFieldCorrLXYZWidget">
+              <property name="visible">
+               <bool>false</bool>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_rf_autocorr">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_rf_corr_l_x">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <property name="indent">
+                  <number>0</number>
+                 </property>
+                 <property name="text">
+                  <string>X:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="rfFieldCorrLX">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="spacer_rf_corr_l_xy">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>12</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_rf_corr_l_y">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <property name="indent">
+                  <number>0</number>
+                 </property>
+                 <property name="text">
+                  <string>Y:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="rfFieldCorrLY">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="spacer_rf_corr_l_yz">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>12</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_rf_corr_l_z">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <property name="indent">
+                  <number>0</number>
+                 </property>
+                 <property name="text">
+                  <string>Z:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="rfFieldCorrLZ">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>0.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="rfFieldCorrLAnisotropic">
+              <property name="toolTip">
+               <string>Use different autocorrelation lengths for X, Y, and Z</string>
               </property>
               <property name="text">
-               <string>Y:</string>
+               <string/>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="rfFieldCorrLY">
-              <property name="minimumSize">
+             <spacer name="spacer_rf_autocorr">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
                <size>
-                <width>75</width>
-                <height>0</height>
+                <width>40</width>
+                <height>20</height>
                </size>
               </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>0.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_rf_corr_l_z">
-              <property name="maximumSize">
-               <size>
-                <width>14</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Z:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="rfFieldCorrLZ">
-              <property name="minimumSize">
-               <size>
-                <width>75</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>0.000000000000000</double>
-              </property>
-             </widget>
+             </spacer>
             </item>
            </layout>
           </item>
@@ -512,6 +705,9 @@
             <property name="singleStep">
              <double>0.100000000000000</double>
             </property>
+            <property name="value">
+             <double>0.333333333333333</double>
+            </property>
            </widget>
           </item>
           <item>
@@ -582,317 +778,370 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_rf_material">
-            <property name="leftMargin">
-             <number>0</number>
-             </property>
-            <property name="topMargin">
-             <number>0</number>
-             </property>
-            <property name="rightMargin">
-             <number>0</number>
-             </property>
-            <property name="bottomMargin">
-             <number>0</number>
-             </property>
-            <property name="horizontalSpacing">
-             <number>6</number>
-             </property>
-            <property name="verticalSpacing">
-             <number>2</number>
-             </property>
-          <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_rf_material">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
            <widget class="QLabel" name="label_rf_material_title">
-            <property name="minimumSize">
-             <size>
-              <width>103</width>
-              <height>0</height>
-             </size>
-             </property>
-            <property name="maximumSize">
-             <size>
-              <width>103</width>
-              <height>16777215</height>
-             </size>
-             </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
              <string>Material properties</string>
-             </property>
+            </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
+            </property>
+           </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_rf_material_mean_header">
-            <property name="minimumSize">
-             <size>
-              <width>75</width>
-              <height>0</height>
-             </size>
-             </property>
-            <property name="maximumSize">
-             <size>
-              <width>75</width>
-              <height>16777215</height>
-             </size>
-             </property>
-            <property name="text">
-             <string>Mean</string>
-             </property>
-            <property name="alignment">
-             <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_rf_material_cov_header">
-            <property name="minimumSize">
-             <size>
-              <width>75</width>
-              <height>0</height>
-             </size>
-             </property>
-            <property name="maximumSize">
-             <size>
-              <width>75</width>
-              <height>16777215</height>
-             </size>
-             </property>
-            <property name="text">
-             <string>COV(%)</string>
-             </property>
-            <property name="alignment">
-             <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_rf_elasticity">
-              <property name="minimumSize">
-               <size>
-                 <width>103</width>
-                 <height>0</height>
-               </size>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_rf_material">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QWidget" name="rfMaterialPropsWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="maximumSize">
-               <size>
-                 <width>103</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Elasticity:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
+              <layout class="QGridLayout" name="gridLayout_rf_material">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>0</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>2</number>
+               </property>
+               <item row="0" column="0">
+                <spacer name="spacer_rf_material_header_label">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Minimum</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="1">
+                <spacer name="spacer_rf_material_header_gap">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_rf_material_cov_header">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>COV(%)</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_rf_elasticity">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Elasticity:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <spacer name="spacer_rf_material_elasticity_gap">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="2">
+                <widget class="QDoubleSpinBox" name="rfFieldElasticityCOV">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>COV (%)</string>
+                 </property>
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_rf_strength">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Strength:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <spacer name="spacer_rf_material_strength_gap">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="2">
+                <widget class="QDoubleSpinBox" name="rfFieldStrengthCOV">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>COV (%)</string>
+                 </property>
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_rf_fracture">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Fracture (Energy):</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <spacer name="spacer_rf_material_fracture_gap">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="2">
+                <widget class="QDoubleSpinBox" name="rfFieldFractureCOV">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>COV (%)</string>
+                 </property>
+                 <property name="suffix">
+                  <string> %</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>999999.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="rfFieldElasticityMean">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="rfFieldElasticityCOV">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>COV (%)</string>
-              </property>
-              <property name="suffix">
-               <string> %</string>
-              </property>
-              <property name="decimals">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-             </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_rf_strength">
-              <property name="minimumSize">
-               <size>
-                 <width>103</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>103</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Strength:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="rfFieldStrengthMean">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="rfFieldStrengthCOV">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>COV (%)</string>
-              </property>
-              <property name="suffix">
-               <string> %</string>
-              </property>
-              <property name="decimals">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-             </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_rf_fracture">
-              <property name="minimumSize">
-               <size>
-                 <width>103</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>103</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Fracture (Energy):</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeft|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="rfFieldFractureMean">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="rfFieldFractureCOV">
-              <property name="minimumSize">
-               <size>
-                 <width>75</width>
-                 <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                 <width>75</width>
-                 <height>16777215</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>COV (%)</string>
-              </property>
-              <property name="suffix">
-               <string> %</string>
-              </property>
-              <property name="decimals">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <double>999999.000000000000000</double>
-              </property>
-             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="rfMaterialMeanHidden">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_rf_material_mean_hidden">
+           <item>
+            <widget class="QDoubleSpinBox" name="rfFieldElasticityMean">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>999999.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="rfFieldStrengthMean">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>999999.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="rfFieldFractureMean">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>999999.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
         <item>
          <spacer name="spacer_rf_material_matrix_gap">
@@ -973,12 +1222,12 @@
                 <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeType" stdset="0">
-                <enum>QSizePolicy::Expanding</enum>
+                <enum>QSizePolicy::Fixed</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>0</width>
+                 <height>0</height>
                 </size>
                </property>
               </spacer>
@@ -1420,12 +1669,12 @@
                 <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeType" stdset="0">
-                <enum>QSizePolicy::Expanding</enum>
+                <enum>QSizePolicy::Fixed</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>0</width>
+                 <height>0</height>
                 </size>
                </property>
               </spacer>

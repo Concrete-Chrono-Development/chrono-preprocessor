@@ -66,8 +66,129 @@ class inputWindow_RF:
         QtCore.QObject.connect(self.form[2].generateRandomField, QtCore.SIGNAL("clicked()"), self.runRFGeneration)
         QtCore.QObject.connect(self.form[1].rfGridFileReadButton, QtCore.SIGNAL("clicked()"), self.openRFGridFile)
         QtCore.QObject.connect(self.form[2].rfErrorEvaluation, QtCore.SIGNAL("clicked()"), self.runRFErrorEvaluation)
+        QtCore.QObject.connect(
+            self.form[1].rfFieldCorrLAnisotropic,
+            QtCore.SIGNAL("toggled(bool)"),
+            self.onCorrLAnisotropicToggled,
+        )
         self._last_rf_field_dir = None
         self.form[2].groupBox_rf_assignment.setVisible(False)
+        self._lockDomainSizeBoxWidths()
+        self._tightenMaterialCovLayout()
+        self._matchAutocorrSpacing()
+        self.updateCorrLAxisFields(self.form[1].rfFieldCorrLAnisotropic.isChecked())
+
+    def _lockDomainSizeBoxWidths(self):
+        rf = self.form[1]
+        policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        label_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        layout = rf.horizontalLayout_rf_domain_size
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        for w in (rf.label_rf_x_bounds, rf.label_rf_y_bounds, rf.label_rf_z_bounds):
+            w.setSizePolicy(label_policy)
+            w.setContentsMargins(0, 0, 0, 0)
+            w.setMinimumWidth(0)
+            w.setMaximumWidth(16777215)
+            # Keep label only as wide as "X:" / "Y:" / "Z:" text
+            w.adjustSize()
+            w.setFixedWidth(max(w.sizeHint().width(), 1))
+        for w in (rf.rfFieldXSize, rf.rfFieldYSize, rf.rfFieldZSize):
+            w.setFixedWidth(75)
+            w.setMinimumWidth(75)
+            w.setMaximumWidth(75)
+            w.setSizePolicy(policy)
+            try:
+                w.setContentsMargins(0, 0, 0, 0)
+            except Exception:
+                pass
+        for name in ("spacer_rf_domain_xy", "spacer_rf_domain_yz"):
+            sp = getattr(rf, name, None)
+            if sp is not None:
+                sp.changeSize(12, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        # Re-apply spacing after size changes
+        layout.invalidate()
+        layout.activate()
+
+    def _matchAutocorrSpacing(self):
+        rf = self.form[1]
+        layout = rf.horizontalLayout_rf_autocorr
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        label_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        for w in (rf.label_rf_corr_l_x, rf.label_rf_corr_l_y, rf.label_rf_corr_l_z):
+            w.setSizePolicy(label_policy)
+            w.setContentsMargins(0, 0, 0, 0)
+            w.setMinimumWidth(0)
+            w.setMaximumWidth(16777215)
+            w.adjustSize()
+            w.setFixedWidth(max(w.sizeHint().width(), 1))
+        for w in (rf.rfFieldCorrL, rf.rfFieldCorrLX, rf.rfFieldCorrLY, rf.rfFieldCorrLZ):
+            w.setFixedWidth(75)
+            w.setMinimumWidth(75)
+            w.setMaximumWidth(75)
+            w.setSizePolicy(policy)
+        for name in ("spacer_rf_corr_l_xy", "spacer_rf_corr_l_yz"):
+            sp = getattr(rf, name, None)
+            if sp is not None:
+                sp.changeSize(12, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+
+    def _tightenMaterialCovLayout(self):
+        rf = self.form[1]
+        gap = 20
+        grid = rf.gridLayout_rf_material
+        grid.setHorizontalSpacing(0)
+        grid.setColumnStretch(0, 0)
+        grid.setColumnStretch(1, 0)
+        grid.setColumnStretch(2, 0)
+        grid.setColumnMinimumWidth(1, gap)
+        max_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        fixed_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        preferred = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        rf.label_rf_material_title.setSizePolicy(preferred)
+        for w in (
+            rf.label_rf_elasticity,
+            rf.label_rf_strength,
+            rf.label_rf_fracture,
+        ):
+            w.setSizePolicy(max_policy)
+        for w in (
+            rf.label_rf_material_cov_header,
+            rf.rfFieldElasticityCOV,
+            rf.rfFieldStrengthCOV,
+            rf.rfFieldFractureCOV,
+        ):
+            w.setFixedWidth(75)
+            w.setMinimumWidth(75)
+            w.setMaximumWidth(75)
+            w.setSizePolicy(fixed_policy)
+        rf.rfMaterialPropsWidget.setSizePolicy(max_policy)
+        for name in (
+            "spacer_rf_material_header_gap",
+            "spacer_rf_material_elasticity_gap",
+            "spacer_rf_material_strength_gap",
+            "spacer_rf_material_fracture_gap",
+        ):
+            sp = getattr(rf, name, None)
+            if sp is not None:
+                sp.changeSize(gap, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+
+    def updateCorrLAxisFields(self, anisotropic):
+        rf = self.form[1]
+        rf.rfFieldCorrL.setVisible(not anisotropic)
+        rf.rfFieldCorrLXYZWidget.setVisible(anisotropic)
+
+    def onCorrLAnisotropicToggled(self, anisotropic):
+        rf = self.form[1]
+        if anisotropic:
+            v = float(rf.rfFieldCorrL.value())
+            rf.rfFieldCorrLX.setValue(v)
+            rf.rfFieldCorrLY.setValue(v)
+            rf.rfFieldCorrLZ.setValue(v)
+        else:
+            rf.rfFieldCorrL.setValue(float(rf.rfFieldCorrLX.value()))
+        self.updateCorrLAxisFields(anisotropic)
 
     def getStandardButtons(self):
 
@@ -203,13 +324,28 @@ class inputWindow_RF:
         except Exception:
             pass
 
-        corr_l = _as_list(params.get("corr_l", "[0.0, 0.0, 0.0]"), [0.0, 0.0, 0.0])
-        if len(corr_l) > 0:
-            rf.rfFieldCorrLX.setValue(_as_float(corr_l[0]))
-        if len(corr_l) > 1:
-            rf.rfFieldCorrLY.setValue(_as_float(corr_l[1]))
-        if len(corr_l) > 2:
-            rf.rfFieldCorrLZ.setValue(_as_float(corr_l[2]))
+        corr_raw = params.get("corr_l", "[0.0, 0.0, 0.0]")
+        corr_l = _as_list(corr_raw, None)
+        if corr_l is None:
+            v = _as_float(corr_raw, 0.0)
+            corr_l = [v, v, v]
+        while len(corr_l) < 3:
+            corr_l.append(corr_l[-1] if corr_l else 0.0)
+        lx = _as_float(corr_l[0])
+        ly = _as_float(corr_l[1])
+        lz = _as_float(corr_l[2])
+        rf.rfFieldCorrL.setValue(lx)
+        rf.rfFieldCorrLX.setValue(lx)
+        rf.rfFieldCorrLY.setValue(ly)
+        rf.rfFieldCorrLZ.setValue(lz)
+        if "corr_l_anisotropic" in params:
+            anisotropic = _as_bool(params.get("corr_l_anisotropic"))
+        else:
+            anisotropic = not (lx == ly == lz)
+        rf.rfFieldCorrLAnisotropic.blockSignals(True)
+        rf.rfFieldCorrLAnisotropic.setChecked(anisotropic)
+        rf.rfFieldCorrLAnisotropic.blockSignals(False)
+        self.updateCorrLAxisFields(anisotropic)
 
         _combo(rf.rfFieldCorrFunction, params.get("corr_f"))
         _combo(rf.rfFieldDistType, params.get("dist_type"))
@@ -273,6 +409,8 @@ class inputWindow_RF:
             gen.rfVisFilesGen.setChecked(_as_bool(params.get("visFilesGen"), True))
         if "outputDir" in params and params.get("outputDir", "").strip():
             gen.outputDir.setText(params.get("outputDir").strip())
+        if "rfOutputDirName" in params:
+            gen.rfOutputDirName.setText(str(params.get("rfOutputDirName", "")).strip())
         _combo(gen.modelType, params.get("modelType"))
 
         if "rfAssignments" in params:

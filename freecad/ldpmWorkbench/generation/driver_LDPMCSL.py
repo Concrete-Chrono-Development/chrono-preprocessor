@@ -1881,6 +1881,10 @@ def driver_LDPMCSL(self, runMode, tempPath):
     if elementType == "LDPM" and interlayer_params.get("enabled"):
         gen_ui.statusWindow.setText("Status: Applying 3DCP interlayer mF tags.")
         apply_3DCP_interlayer(facetData, facetMaterial, minC, maxC, interlayer_params)
+        try:
+            QtWidgets.QApplication.processEvents()
+        except Exception:
+            pass
 
     rf_realization = resolve_rf_realization(rf_params, sample_id=1)
     if rf_realization is not None:

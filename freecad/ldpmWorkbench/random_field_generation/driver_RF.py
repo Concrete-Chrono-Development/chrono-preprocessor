@@ -72,9 +72,18 @@ def _parse_first_seed(seeds_text):
     return int(parts[0])
 
 
-def _next_field_dir(output_dir):
+def _next_field_dir(output_dir, dir_name=""):
 
     base = Path(output_dir)
+    name = str(dir_name or "").strip()
+    if name:
+        name = Path(name).name
+        if not name or name in (".", ".."):
+            raise ValueError("Invalid Dir name.")
+        field_dir = base / name
+        field_dir.mkdir(parents=True, exist_ok=True)
+        return str(field_dir)
+
     index = 0
     while (base / f"RF_field_{index:03d}").exists():
         index += 1
@@ -163,7 +172,7 @@ def driver_RF(self, tempPath):
     output_dir = params["outputDir"].strip()
     os.makedirs(output_dir, exist_ok=True)
 
-    field_dir = _next_field_dir(output_dir)
+    field_dir = _next_field_dir(output_dir, params.get("rfOutputDirName", ""))
     field_name = os.path.basename(field_dir)
     seed = _parse_first_seed(params["seeds"])
 

@@ -47,6 +47,16 @@ def read_RF_inputs(form):
 
     grid_file = rf.rfGridFile.text().strip()
 
+    if rf.rfFieldCorrLAnisotropic.isChecked():
+        corr_l = [
+            float(rf.rfFieldCorrLX.value()),
+            float(rf.rfFieldCorrLY.value()),
+            float(rf.rfFieldCorrLZ.value()),
+        ]
+    else:
+        corr_l_val = float(rf.rfFieldCorrL.value())
+        corr_l = [corr_l_val, corr_l_val, corr_l_val]
+
     return {
         "numRealizations": int(ms.rfNumSamplesBox.value()),
         "seeds": ms.rfSeedsLine.text().strip(),
@@ -58,11 +68,8 @@ def read_RF_inputs(form):
         "x_range": [0.0, _qty(rf.rfFieldXSize)],
         "y_range": [0.0, _qty(rf.rfFieldYSize)],
         "z_range": [0.0, _qty(rf.rfFieldZSize)],
-        "corr_l": [
-            float(rf.rfFieldCorrLX.value()),
-            float(rf.rfFieldCorrLY.value()),
-            float(rf.rfFieldCorrLZ.value()),
-        ],
+        "corr_l": corr_l,
+        "corr_l_anisotropic": bool(rf.rfFieldCorrLAnisotropic.isChecked()),
         "corr_f": rf.rfFieldCorrFunction.currentText(),
         "dist_type": rf.rfFieldDistType.currentText(),
         "grid_spacing": float(rf.rfFieldGridSpacing.value()),
@@ -81,6 +88,7 @@ def read_RF_inputs(form):
         "cross_correlation": cross_correlation,
         "rfFieldInputFile": ms.rfFieldInputFile.text().strip(),
         "outputDir": gen.outputDir.text().strip(),
+        "rfOutputDirName": gen.rfOutputDirName.text().strip(),
         "dataFilesGen": bool(gen.rfDataFilesGen.isChecked()),
         "visFilesGen": bool(gen.rfVisFilesGen.isChecked()),
         "modelType": gen.modelType.currentText(),
